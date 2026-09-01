@@ -42,4 +42,3 @@ Next.js ISR and degrade silently to empty values if unavailable.
 - `app/` — routes, layout, global styles (Tailwind theme tokens live in `app/globals.css`)
 - `components/` — UI components (server components where possible; `"use client"` only where interactivity is needed)
 - `lib/` — site content (`content.ts`) and data helpers (`stars.ts`)
-- `plans/` — improvement plans

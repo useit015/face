@@ -8,7 +8,6 @@ export const contact = {
 
 export const hero = {
   name: "Oussama Nahiz",
-  role: "Senior Full-Stack Engineer",
   bioLead:
     "Senior full-stack engineer and 42-grad with 9+ years shipping production software across React, Node.js, TypeScript, and AI.",
   bioProof:
@@ -21,13 +20,6 @@ export const socials = [
   { label: "Toptal", href: contact.toptal, icon: "toptal" },
   { label: "Email", href: `mailto:${contact.email}`, icon: "email" },
 ] as const;
-
-export const stats = [
-  { value: "9+", label: "years shipping product software" },
-  { value: "8", label: "Toptal engagements delivered" },
-  { value: "9", label: "engineers led as co-founder & CTO" },
-  { value: "1", label: "six-figure enterprise build, solo" },
-];
 
 export type Role = {
   company: string;
@@ -228,7 +220,7 @@ export const skillGroups = [
       { name: "Supabase", icon: "supabase", url: "https://supabase.com/" },
       { name: "SQLite", icon: "sqlite", url: "https://www.sqlite.org/" },
       { name: "DynamoDB", icon: "database", url: "https://aws.amazon.com/dynamodb/" },
-      { name: "Amazon S3", icon: "database", url: "https://aws.amazon.com/s3/" },
+      { name: "Amazon S3", icon: "boxes", url: "https://aws.amazon.com/s3/" },
       { name: "GraphQL", icon: "graphql", url: "https://graphql.org/" },
     ],
   },
@@ -242,7 +234,7 @@ export const skillGroups = [
     ],
     more: [
       { name: "Serverless Framework", icon: "serverless", url: "https://www.serverless.com/" },
-      { name: "Docker Compose", icon: "docker", url: "https://docs.docker.com/compose/" },
+      { name: "Docker Compose", icon: "layers", url: "https://docs.docker.com/compose/" },
       { name: "Jenkins", icon: "jenkins", url: "https://www.jenkins.io/" },
       { name: "GitLab CI", icon: "gitlab", url: "https://docs.gitlab.com/ee/ci/" },
       { name: "Bitbucket Pipelines", icon: "bitbucket", url: "https://bitbucket.org/product/features/pipelines" },
@@ -259,8 +251,8 @@ export const skillGroups = [
       { name: "LLM integration", icon: "sparkles", url: "https://platform.openai.com/docs/guides/text" },
     ],
     more: [
-      { name: "fal.ai", icon: "sparkles", url: "https://fal.ai/" },
-      { name: "Agentic harnesses", icon: "bot", url: "https://docs.claude.com/en/docs/agents-and-tools/agent-skills" },
+      { name: "fal.ai", icon: "zap", url: "https://fal.ai/" },
+      { name: "Agentic harnesses", icon: "flask", url: "https://docs.claude.com/en/docs/agents-and-tools/agent-skills" },
       { name: "Prompt evals", icon: "list-checks", url: "https://github.com/openai/evals" },
       { name: "Model routing", icon: "route", url: "https://openrouter.ai/docs" },
       { name: "OCR / KYC", icon: "scan-face", url: "https://cloud.google.com/vision/docs/ocr" },

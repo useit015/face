@@ -18,12 +18,7 @@ export const metadata: Metadata = {
   description:
     "Senior full-stack engineer and 42-grad with 9+ years shipping production software across React, Node.js, TypeScript, and AI. I ship products end to end, from architecture to deployment.",
   icons: {
-    icon: [
-      {
-        url: "https://emojifavicons.com/sun?dark=moon&ref=st9wd.com",
-        type: "image/svg+xml",
-      },
-    ],
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
   },
   openGraph: {
     title: "Oussama Nahiz – Senior Full-Stack Engineer",
@@ -34,12 +29,12 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#faf8f2",
+  themeColor: "#f9f7f4",
 };
 
 const jsClassScript = `document.documentElement.classList.add("js")`;
 
-const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d=t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches;document.documentElement.classList.toggle("dark",d);var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",d?"#0b0b0b":"#faf8f2")}catch(e){}})()`;
+const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d=t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches;document.documentElement.classList.toggle("dark",d);var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",d?"#0d0c0a":"#f9f7f4");var i=document.querySelector('link[rel="icon"]');if(i&&d)i.href="/favicon-dark.svg"}catch(e){}})()`;
 
 const consoleScript = `try{console.log("%cViewing source? Good instinct. It's how I'd vet this page too.","font-weight:600;font-size:13px");console.log("%cIf the code passes inspection, the engineer might too — useit015@gmail.com","color:#8a8578")}catch(e){}`;
 
@@ -55,7 +50,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <script dangerouslySetInnerHTML={{ __html: consoleScript }} />
       </head>
-      <body className="min-h-full flex flex-col"><MotionProvider>{children}</MotionProvider></body>
+      <body className="min-h-full flex flex-col">
+        <MotionProvider>{children}</MotionProvider>
+      </body>
     </html>
   );
 }

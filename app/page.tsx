@@ -24,7 +24,7 @@ export default async function Home() {
         >
           <h1 className="text-base font-medium tracking-tight">{hero.name}</h1>
 
-          <ul className="flex items-center gap-1 pt-0.5">
+          <ul className="flex items-center gap-2 pt-0.5">
             {socials.map((social) => (
               <li key={social.label}>
                 <a
@@ -34,7 +34,7 @@ export default async function Home() {
                   {...(social.href.startsWith("http")
                     ? { target: "_blank", rel: "noreferrer" }
                     : {})}
-                  className="squircle flex size-7 items-center justify-center rounded-md text-foreground-secondary transition-colors duration-200 outline-none select-none hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-[0.97]"
+                  className="relative squircle flex size-7 items-center justify-center rounded-md text-foreground-secondary transition-colors duration-200 outline-none select-none before:absolute before:-inset-1.5 before:content-[''] hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-[0.97]"
                 >
                   <SocialIcon name={social.icon} className="size-3.5" />
                 </a>
@@ -71,7 +71,7 @@ export default async function Home() {
                 {hero.bioProof}
               </p>
             </div>
-            <div className="squircle size-32 overflow-hidden rounded-3xl ring-0 -mt-2">
+            <div className="squircle size-32 overflow-hidden rounded-3xl -mt-2">
               <CursorAvatar
                 size={128}
                 label="Portrait of Oussama Nahiz, following your cursor"

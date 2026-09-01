@@ -160,7 +160,7 @@ export function ExperienceSection() {
                     "linear-gradient(to right, var(--foreground) 0%, var(--timeline-line) 70%, var(--timeline-line) 100%)",
                 }}
               />
-              <Reveal variant="stagger" className="grid grid-cols-4">
+              <Reveal variant="stagger" className="grid grid-cols-4 gap-x-3">
                 {strip.map((entry, i) => (
                   <div key={entry.company} className="flex min-w-0 flex-col gap-2.5">
                     <TimelineDot active={i === 0} />

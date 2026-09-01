@@ -76,6 +76,7 @@ export async function ContributionGraph() {
       target="_blank"
       rel="noreferrer"
       title="View GitHub profile"
+      aria-label={`${total.toLocaleString("en-US")} GitHub contributions in ${new Date().getFullYear()}`}
       className="block"
     >
       <ScrollFadeX className="no-scrollbar max-w-full overflow-x-auto overflow-y-hidden">

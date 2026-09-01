@@ -12,12 +12,12 @@
 
 .dark {
   color-scheme: dark;
-  --background: #0b0b0b;
-  --foreground: #eeeeee;
-  --border: rgb(255 255 255 / 0.1);
-  --card: #171717;
-  --muted: #262626;
-  --ring: #a1a1a1;
+  --background: oklch(0.155 0.004 80);
+  --foreground: oklch(0.93 0.004 80);
+  --border: color-mix(in oklch, var(--foreground) 10%, transparent);
+  --card: oklch(0.205 0.005 80);
+  --muted: oklch(0.27 0.006 80);
+  --ring: oklch(0.72 0.006 80);
 }
 
 :root {

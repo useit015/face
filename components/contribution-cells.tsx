@@ -49,7 +49,7 @@ export function ContributionCells({
 
   return (
     <>
-      <div className="grid grid-flow-col grid-rows-7 gap-[2px]">
+      <div aria-hidden="true" className="grid grid-flow-col grid-rows-7 gap-[2px]">
         {weeks.flatMap((week, wi) =>
           week.map((day, di) => {
             if (!day) {
@@ -66,14 +66,9 @@ export function ContributionCells({
             return (
               <div
                 key={day.date}
-                role="img"
-                aria-label={tooltipText(day)}
-                tabIndex={0}
                 onMouseEnter={show}
-                onFocus={show}
                 onMouseLeave={() => setTip(null)}
-                onBlur={() => setTip(null)}
-                className={`size-[10px] rounded-[2px] squircle ${LEVEL_CLASS[day.level]} transition-[box-shadow] duration-100 hover:ring-1 hover:ring-foreground/50 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none`}
+                className={`size-[10px] rounded-[2px] squircle ${LEVEL_CLASS[day.level]} transition-[box-shadow] duration-100 hover:ring-1 hover:ring-foreground/50`}
               />
             );
           }),

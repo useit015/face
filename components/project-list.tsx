@@ -3,9 +3,15 @@ import { Reveal } from "@/components/reveal";
 import { ProjectIcon } from "@/components/icons";
 import { projects, type Project } from "@/lib/content";
 
-function ProjectRow({ project, stars }: { project: Project; stars?: number }) {  const href = project.repo?.url ?? project.url;
+function ProjectRow({ project, stars }: { project: Project; stars?: number }) {
+  const href = project.repo?.url ?? project.url;
+  const interactive = Boolean(href);
   const body = (
-    <div className="group/row relative flex min-w-0 items-center gap-3 before:absolute before:-inset-x-3 before:-inset-y-2.5 before:squircle before:rounded-xl before:content-[''] before:transition-colors before:duration-200 hover:before:bg-timeline-hover [&>*]:relative">
+    <div
+      className={`group/row relative flex min-w-0 items-center gap-3 before:absolute before:-inset-x-3 before:-inset-y-2.5 before:squircle before:rounded-xl before:content-[''] before:transition-colors before:duration-200 [&>*]:relative ${
+        interactive ? "hover:before:bg-timeline-hover" : ""
+      }`}
+    >
       <div className="squircle flex size-8 shrink-0 items-center justify-center rounded-lg border border-border bg-card">
         <ProjectIcon name={project.icon} className="size-4 text-foreground-secondary" />
       </div>

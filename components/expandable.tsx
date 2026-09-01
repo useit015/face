@@ -47,7 +47,7 @@ export function Expandable({
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
-          className="group/see inline-flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2 -mr-2 text-[0.8rem] font-medium text-foreground-secondary transition-[background-color,color,transform] duration-200 outline-none select-none squircle hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-[0.97]"
+          className="group/see relative inline-flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2 -mr-2 text-[0.8rem] font-medium text-foreground-secondary transition-[background-color,color,transform] duration-200 outline-none select-none squircle before:absolute before:-inset-y-1.5 before:-inset-x-1 before:content-[''] hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-[0.97]"
         >
           {open ? "See less" : label}
           <ChevronsUpDown className="size-3" />
@@ -61,10 +61,11 @@ export function Expandable({
       >
         <div
           ref={longRef}
-          className={`transition-opacity ease-[cubic-bezier(0.4,0,0.2,1)] ${
+          inert={!open}
+          className={`${
             open
-              ? "relative opacity-100 duration-[225ms]"
-              : "pointer-events-none absolute inset-x-0 top-0 opacity-0 duration-[400ms]"
+              ? "relative opacity-100 transition-opacity duration-[225ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+              : "pointer-events-none absolute inset-x-0 top-0 opacity-0"
           }`}
         >
           {children}
@@ -72,10 +73,11 @@ export function Expandable({
         {collapsed != null && (
           <div
             ref={shortRef}
-            className={`transition-opacity ease-[cubic-bezier(0.4,0,0.2,1)] ${
+            inert={open}
+            className={`${
               open
-                ? "pointer-events-none absolute inset-x-0 top-0 opacity-0 duration-[400ms]"
-                : "relative opacity-100 duration-[225ms]"
+                ? "pointer-events-none absolute inset-x-0 top-0 opacity-0"
+                : "relative opacity-100 transition-opacity duration-[225ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
             }`}
           >
             {collapsed}

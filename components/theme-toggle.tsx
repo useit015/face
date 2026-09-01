@@ -3,7 +3,7 @@
 import { useSyncExternalStore } from "react";
 import { Moon, Sun } from "lucide-react";
 
-const themeColors = { light: "#faf8f2", dark: "#0b0b0b" } as const;
+const themeColors = { light: "#f9f7f4", dark: "#0d0c0a" } as const;
 
 function subscribe(callback: () => void) {
   window.addEventListener("themechange", callback);
@@ -29,6 +29,8 @@ export function ThemeToggle() {
     document
       .querySelector('meta[name="theme-color"]')
       ?.setAttribute("content", next ? themeColors.dark : themeColors.light);
+    const icon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+    if (icon) icon.href = next ? "/favicon-dark.svg" : "/favicon.svg";
     window.dispatchEvent(new Event("themechange"));
   }
 
@@ -38,7 +40,7 @@ export function ThemeToggle() {
       onClick={toggle}
       aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
       title="Toggle theme"
-      className="squircle flex size-7 cursor-pointer items-center justify-center rounded-md text-foreground-secondary transition-colors duration-200 outline-none select-none hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-[0.97]"
+      className="relative squircle flex size-7 cursor-pointer items-center justify-center rounded-md text-foreground-secondary transition-colors duration-200 outline-none select-none before:absolute before:-inset-1.5 before:content-[''] hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-[0.97]"
     >
       <span aria-hidden="true" className="relative flex size-3.5 items-center justify-center">
         <Moon
