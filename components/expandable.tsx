@@ -6,10 +6,14 @@ import { ChevronsUpDown } from "lucide-react";
 export function Expandable({
   header,
   children,
+  collapsed,
+  always,
   label = "See more",
 }: {
   header: ReactNode;
   children: ReactNode;
+  collapsed?: ReactNode;
+  always?: ReactNode;
   label?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -28,6 +32,21 @@ export function Expandable({
           <ChevronsUpDown className="size-3" />
         </button>
       </div>
+      {always}
+      {collapsed != null && (
+        <div
+          className="grid transition-[grid-template-rows] duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+          style={{ gridTemplateRows: open ? "0fr" : "1fr" }}
+          aria-hidden={open}
+        >
+          <div
+            className="overflow-hidden transition-opacity duration-[225ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+            style={{ opacity: open ? 0 : 1 }}
+          >
+            {collapsed}
+          </div>
+        </div>
+      )}
       <div
         className="grid transition-[grid-template-rows] duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
         style={{ gridTemplateRows: open ? "1fr" : "0fr" }}

@@ -39,6 +39,7 @@ export const timeline = [
 export type Role = {
   company: string;
   url?: string;
+  icon: string;
   title: string;
   period: string;
   summary: string;
@@ -49,7 +50,7 @@ export const experience: Role[] = [
   {
     company: "Independent",
     title: "AI Builder & Consultant",
-    period: "Oct 2024 – present",
+    period: "Oct 24 – Now", icon: "terminal",
     summary: "Building AI developer tools and taking selective client work.",
     bullets: [
       "Built whichmodel, an open-source TypeScript CLI that recommends AI models across OpenRouter, FAL, and Replicate.",
@@ -61,7 +62,7 @@ export const experience: Role[] = [
     company: "Acurai",
     url: "https://acur.ai/",
     title: "Senior Software Engineer",
-    period: "Jan 2025 – Jun 2025",
+    period: "Jan 25 – Jun 25", icon: "cloud",
     summary: "AI startup focused on reducing hallucinations in large language models.",
     bullets: [
       "Shipped the front-end product surface across Chat, Wiki, and Brain Builder.",
@@ -72,7 +73,7 @@ export const experience: Role[] = [
     company: "LendStack",
     url: "https://www.linkedin.com/company/lendstack",
     title: "Co-Founder & CTO",
-    period: "Oct 2023 – May 2024",
+    period: "Oct 23 – May 24", icon: "building",
     summary: "Microfinance operating system for lending startups.",
     bullets: [
       "Led a 9-person engineering team inside a 14-person startup.",
@@ -84,7 +85,7 @@ export const experience: Role[] = [
     company: "Toptal",
     url: "https://www.toptal.com/",
     title: "Senior Software Engineer",
-    period: "Apr 2022 – Oct 2024",
+    period: "Apr 22 – Oct 24", icon: "globe",
     summary: "8 engagements across 7 clients over 30 months, delivered in parallel with startup work.",
     bullets: [
       "Delivered senior full-stack work across React, Node.js, TypeScript, MongoDB, AWS, and data visualization.",
@@ -95,7 +96,7 @@ export const experience: Role[] = [
     company: "Axion Ray",
     url: "https://www.axion.com/",
     title: "Senior Software Engineer",
-    period: "May 2024 – Oct 2024",
+    period: "May 24 – Oct 24", icon: "radar",
     summary: "AI-powered SaaS for industrial data operations.",
     bullets: [
       "Built AI-powered SaaS configuration tooling for the data-operations module.",
@@ -106,7 +107,7 @@ export const experience: Role[] = [
     company: "What's Next Media",
     url: "https://www.pymnts.com/",
     title: "Senior Software Engineer",
-    period: "Sep 2023 – Jan 2024",
+    period: "Sep 23 – Jan 24", icon: "activity",
     summary: "Interactive data products for payments reporting.",
     bullets: [
       "Built interactive data-visualization components in React for connected-economy reporting.",
@@ -117,7 +118,7 @@ export const experience: Role[] = [
     company: "Blue River Technology",
     url: "https://www.bluerivertechnology.com/",
     title: "Senior Software Engineer",
-    period: "Apr 2022 – Aug 2022",
+    period: "Apr 22 – Aug 22", icon: "sprout",
     summary: "See & Spray computer vision, acquired by John Deere for $300M.",
     bullets: [
       "Solo-built Clicky Clicky, a web labeling tool for See & Spray boom-height ground-truth collection.",
@@ -128,7 +129,7 @@ export const experience: Role[] = [
     company: "VO2 Group",
     url: "https://www.vo2-group.com/",
     title: "Senior Software Engineer",
-    period: "Jan 2021 – Jan 2022",
+    period: "Jan 21 – Jan 22", icon: "heart-pulse",
     summary: "Healthcare and health-tech products.",
     bullets: [
       "Solo-built the Radiometer Course Creator on React, Node.js, TypeScript, AWS SAM, and PostgreSQL as part of a six-figure enterprise deal.",
@@ -139,7 +140,7 @@ export const experience: Role[] = [
   {
     company: "Spotbills",
     title: "Full-Stack Developer",
-    period: "Sep 2020 – Dec 2020",
+    period: "Sep 20 – Dec 20", icon: "message",
     summary: "Real-time communication infrastructure.",
     bullets: [
       "Built the signaling server for Peer, a hybrid mobile chat and calling app, with NestJS, TypeScript, Redis, MongoDB, Socket.IO, and WebRTC.",
@@ -149,7 +150,7 @@ export const experience: Role[] = [
     company: "Caronae Systems",
     url: "https://caronae.com/",
     title: "Senior Software Engineer",
-    period: "Apr 2020 – Sep 2020",
+    period: "Apr 20 – Sep 20", icon: "shield-check",
     summary: "No-code KYC journey builder.",
     bullets: [
       "Led a 3-engineer front-end team building journey-authoring workflows.",
@@ -160,7 +161,7 @@ export const experience: Role[] = [
     company: "SQLI Digital Experience",
     url: "https://www.sqli.com/",
     title: "Software Engineer",
-    period: "Feb 2020 – Jul 2020",
+    period: "Feb 20 – Jul 20", icon: "shopping-bag",
     summary: "Global Nespresso eCommerce platform.",
     bullets: [
       "Implemented a guest checkout flow on the global Nespresso eCommerce platform.",
@@ -170,7 +171,7 @@ export const experience: Role[] = [
   {
     company: "Independent / Freelance",
     title: "Full-Stack Developer",
-    period: "May 2016 – Dec 2019",
+    period: "May 16 – Dec 19", icon: "briefcase",
     summary: "Client web projects, end to end.",
     bullets: [
       "Built websites, landing pages, WordPress builds, Shopify storefronts, web portals, and internal tools.",
@@ -290,6 +291,48 @@ export const skillGroups = [
       { name: "Three.js", icon: "threejs" },
       { name: "WebRTC", icon: "radio" },
       { name: "Unix/Linux", icon: "terminal-square" },
+    ],
+  },
+] as const;
+
+export const moreSkillGroups = [
+  {
+    label: "Data & storage",
+    skills: [
+      { name: "MySQL", icon: "mysql" },
+      { name: "Supabase", icon: "supabase" },
+      { name: "SQLite", icon: "sqlite" },
+      { name: "DynamoDB", icon: "database" },
+      { name: "Amazon S3", icon: "database" },
+      { name: "Cloudflare R2", icon: "cloudflare" },
+    ],
+  },
+  {
+    label: "Realtime",
+    skills: [
+      { name: "Socket.IO", icon: "socketio" },
+      { name: "Twilio API", icon: "phone" },
+      { name: "Signaling servers", icon: "radio-tower" },
+    ],
+  },
+  {
+    label: "Testing",
+    skills: [
+      { name: "Jest", icon: "jest" },
+      { name: "Enzyme", icon: "flask" },
+      { name: "Karma", icon: "flask" },
+      { name: "Playwright", icon: "app-window" },
+    ],
+  },
+  {
+    label: "Also shipped with",
+    skills: [
+      { name: "Vue", icon: "vue" },
+      { name: "AngularJS", icon: "angular" },
+      { name: "Flutter", icon: "flutter" },
+      { name: "PHP", icon: "php" },
+      { name: "Solidity", icon: "solidity" },
+      { name: "GraphQL", icon: "graphql" },
     ],
   },
 ] as const;
