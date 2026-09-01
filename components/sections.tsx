@@ -25,7 +25,7 @@ function TimelineDot({ active }: { active?: boolean }) {
 
 function RoleDetail({ role }: { role: Role }) {
   return (
-    <div className="group/role relative flex min-w-0 gap-3 before:absolute before:-inset-x-3 before:-inset-y-2.5 before:squircle before:rounded-xl before:content-[''] hover:before:bg-timeline-hover [&>*]:relative">
+    <div className="group/role relative flex min-w-0 gap-3 before:absolute before:-inset-x-3 before:-inset-y-2.5 before:squircle before:rounded-xl before:content-[''] before:transition-colors before:duration-200 hover:before:bg-timeline-hover [&>*]:relative">
       <span className="squircle mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg border border-border bg-card">
         <SkillIcon name={role.icon} className="size-4 text-foreground-secondary" />
       </span>
@@ -63,6 +63,25 @@ function RoleDetail({ role }: { role: Role }) {
   );
 }
 
+function SkillChips({
+  skills,
+}: {
+  skills: readonly { readonly name: string; readonly icon: string }[];
+}) {
+  return (
+    <>
+      {skills.map((skill) => (
+        <li key={skill.name} className="shrink-0">
+          <span className="inline-flex items-center gap-1.5 text-[13px] text-foreground-secondary">
+            <SkillIcon name={skill.icon} className="size-3.5 shrink-0 text-foreground-tertiary" />
+            {skill.name}
+          </span>
+        </li>
+      ))}
+    </>
+  );
+}
+
 function SkillRow({
   label,
   skills,
@@ -77,18 +96,17 @@ function SkillRow({
   return (
     <div className="grid grid-cols-[7rem_minmax(0,1fr)] items-start gap-x-3 min-[480px]:grid-cols-[8rem_minmax(0,1fr)]">
       <h3 className="pt-0.5 text-[13px] text-muted-foreground">{label}</h3>
-      <ul className="flex flex-wrap gap-x-3 gap-y-1.5">
-        {skills.map((skill) => (
-          <li key={skill.name}>
-            <span className="inline-flex items-center gap-1.5 text-[13px] text-foreground-secondary">
-              <SkillIcon name={skill.icon} className="size-3.5 shrink-0 text-foreground-tertiary" />
-              {skill.name}
-            </span>
-          </li>
-        ))}
+      <ul
+        className={
+          expanded
+            ? "flex flex-wrap gap-x-3 gap-y-1.5"
+            : "no-scrollbar scroll-fade-x flex flex-nowrap gap-x-3 overflow-x-auto"
+        }
+      >
+        <SkillChips skills={skills} />
         {expanded &&
           more?.map((skill, i) => (
-            <li key={skill.name} className="chip-in" style={{ "--i": i } as CSSProperties}>
+            <li key={skill.name} className="chip-in shrink-0" style={{ "--i": i } as CSSProperties}>
               <span className="inline-flex items-center gap-1.5 text-[13px] text-foreground-secondary">
                 <SkillIcon name={skill.icon} className="size-3.5 shrink-0 text-foreground-tertiary" />
                 {skill.name}
@@ -113,10 +131,10 @@ export function ExperienceSection() {
             </h2>
           }
           collapsed={
-            <div className="relative mt-5 pt-1">
-              <div className="absolute left-[3px] right-0 top-[3px] h-px bg-timeline-line" />
+            <div className="relative pt-6">
+              <div className="absolute left-[3px] right-0 top-[23px] h-px bg-timeline-line" />
               <div
-                className="absolute left-[3px] top-[3px] h-px w-[calc(25%-3px)]"
+                className="absolute left-[3px] top-[23px] h-px w-[calc(25%-3px)]"
                 style={{
                   backgroundImage:
                     "linear-gradient(to right, var(--foreground) 0%, var(--timeline-line) 70%, var(--timeline-line) 100%)",

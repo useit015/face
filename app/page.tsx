@@ -59,7 +59,7 @@ export default async function Home() {
                   {...(social.href.startsWith("http")
                     ? { target: "_blank", rel: "noreferrer" }
                     : {})}
-                  className="squircle flex size-7 items-center justify-center rounded-md text-foreground-secondary transition-colors outline-none select-none hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-[0.97]"
+                  className="squircle flex size-7 items-center justify-center rounded-md text-foreground-secondary transition-colors duration-200 outline-none select-none hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-[0.97]"
                 >
                   <SocialIcon name={social.icon} className="size-3.5" />
                 </a>
@@ -72,7 +72,7 @@ export default async function Home() {
             {hero.bioLead}{" "}
             <a
               href={`mailto:${contact.email}`}
-              className="underline decoration-foreground-decoration underline-offset-3 hover:decoration-foreground-decoration-hover"
+              className="underline decoration-foreground-decoration underline-offset-3 transition-[text-decoration-color] duration-200 hover:decoration-foreground-decoration-hover"
             >
               Email me
             </a>{" "}
@@ -81,7 +81,7 @@ export default async function Home() {
               href={contact.toptal}
               target="_blank"
               rel="noreferrer"
-              className="underline decoration-foreground-decoration underline-offset-3 hover:decoration-foreground-decoration-hover"
+                className="underline decoration-foreground-decoration underline-offset-3 transition-[text-decoration-color] duration-200 hover:decoration-foreground-decoration-hover"
             >
               Toptal
             </a>
@@ -97,7 +97,7 @@ export default async function Home() {
               <OpenToWorkAnnotation />
               <a
                 href={`mailto:${contact.email}`}
-                className="squircle inline-flex h-8 items-center rounded-lg bg-foreground px-2.5 text-sm font-medium text-background transition-[background-color,transform] outline-none select-none hover:bg-foreground/80 active:scale-[0.97] focus-visible:ring-3 focus-visible:ring-ring/50"
+                className="squircle inline-flex h-8 items-center rounded-lg bg-foreground px-2.5 text-sm font-medium text-background transition-[background-color,transform] duration-200 outline-none select-none hover:bg-foreground/80 active:scale-[0.97] focus-visible:ring-3 focus-visible:ring-ring/50"
               >
                 Email me
               </a>
@@ -106,7 +106,7 @@ export default async function Home() {
               href={contact.linkedin}
               target="_blank"
               rel="noreferrer"
-              className="squircle inline-flex h-8 items-center gap-1.5 rounded-lg border border-border px-2.5 text-sm font-medium text-foreground-secondary transition-colors transition-transform outline-none select-none hover:bg-muted hover:text-foreground active:scale-[0.97] focus-visible:ring-3 focus-visible:ring-ring/50"
+                className="squircle inline-flex h-8 items-center gap-1.5 rounded-lg border border-border px-2.5 text-sm font-medium text-foreground-secondary transition-[background-color,color] duration-200 outline-none select-none hover:bg-muted hover:text-foreground active:scale-[0.97] focus-visible:ring-3 focus-visible:ring-ring/50"
             >
               Message on LinkedIn
               <ArrowUpRight className="size-3.5" />
@@ -145,7 +145,7 @@ export default async function Home() {
         <p>© {new Date().getFullYear()} Oussama Nahiz</p>
         <a
           href={`mailto:${contact.email}`}
-          className="underline decoration-foreground-quaternary underline-offset-3 transition-colors hover:text-foreground-secondary"
+          className="underline decoration-foreground-quaternary underline-offset-3 transition-colors duration-200 hover:text-foreground-secondary"
         >
           {contact.email}
         </a>

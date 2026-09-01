@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  useLayoutEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
+import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { motion } from "motion/react";
 import { ChevronsUpDown } from "lucide-react";
 
@@ -25,10 +20,9 @@ export function Expandable({
   const [open, setOpen] = useState(false);
   const longRef = useRef<HTMLDivElement | null>(null);
   const shortRef = useRef<HTMLDivElement | null>(null);
-  const [heights, setHeights] = useState<{
-    long: number;
-    short: number;
-  } | null>(null);
+  const [heights, setHeights] = useState<{ long: number; short: number } | null>(
+    null,
+  );
 
   useLayoutEffect(() => {
     const measure = () => {
@@ -53,7 +47,7 @@ export function Expandable({
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
-          className="group/see inline-flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2 -mr-2 text-[0.8rem] font-medium text-foreground-secondary transition-transform outline-none select-none squircle hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-[0.97]"
+          className="group/see inline-flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2 -mr-2 text-[0.8rem] font-medium text-foreground-secondary transition-[background-color,color,transform] duration-200 outline-none select-none squircle hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-[0.97]"
         >
           {open ? "See less" : label}
           <ChevronsUpDown className="size-3" />

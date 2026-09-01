@@ -25,7 +25,7 @@ const LEVEL_CLASS = [
 async function getContributions(): Promise<ContributionsResponse | null> {
   try {
     const res = await fetch(
-      "https://github-contributions-api.jogruber.de/v4/useit015?y=last",
+      `https://github-contributions-api.jogruber.de/v4/useit015?y=${new Date().getFullYear()}`,
       { next: { revalidate: 3600 } },
     );
     if (!res.ok) return null;
@@ -40,7 +40,7 @@ export async function ContributionGraph() {
   if (!data) return null;
 
   const days = data.contributions;
-  const total = data.total["lastYear"] ?? data.total["last year"] ?? 0;
+  const total = days.reduce((sum, day) => sum + day.count, 0);
 
   const weeks: (ContributionDay | null)[][] = [];
   let currentWeek: (ContributionDay | null)[] = [];
@@ -107,7 +107,7 @@ export async function ContributionGraph() {
         </div>
       </div>
       <p className="mt-1.5 text-[12px] text-muted-foreground">
-        {total.toLocaleString("en-US")} last year
+        {total.toLocaleString("en-US")} in {new Date().getFullYear()}
       </p>
     </div>
   );
