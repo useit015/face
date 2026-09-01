@@ -5,6 +5,7 @@ import { ExperienceSection, SkillsSection } from "@/components/sections";
 import { ProjectList } from "@/components/project-list";
 import { SocialIcon } from "@/components/icons";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { CursorAvatar } from "@/components/cursor-avatar";
 import { contact, hero, socials } from "@/lib/content";
 import { getStars } from "@/lib/stars";
 
@@ -15,13 +16,14 @@ export default async function Home() {
   ]);
 
   return (
-    <main className="mx-auto flex min-h-svh w-full max-w-page flex-col gap-section px-5 pt-8 pb-16 sm:px-8 md:pt-14">
+    <main className="mx-auto flex min-h-svh w-full max-w-page flex-col gap-section px-5 pt-12 pb-16 sm:px-8 md:pt-14">
       <section className="flex flex-col gap-5">
-        <Reveal variant="rise" className="flex items-start justify-between gap-4">
-          <div>
-            <h1 className="text-base font-medium tracking-tight">{hero.name}</h1>
-            <p className="mt-0.5 text-sm text-foreground-secondary">{hero.role}</p>
-          </div>
+        <Reveal
+          variant="rise"
+          className="flex items-baseline justify-between gap-2"
+        >
+          <h1 className="text-base font-medium tracking-tight">{hero.name}</h1>
+
           <ul className="flex items-center gap-1 pt-0.5">
             {socials.map((social) => (
               <li key={social.label}>
@@ -44,28 +46,38 @@ export default async function Home() {
           </ul>
         </Reveal>
         <Reveal variant="rise" delay={75}>
-          <p className="text-sm leading-relaxed text-foreground-secondary">
-            {hero.bioLead}{" "}
-            <a
-              href={`mailto:${contact.email}`}
-              className="underline decoration-foreground-decoration underline-offset-3 transition-[text-decoration-color] duration-200 hover:decoration-foreground-decoration-hover"
-            >
-              Email me
-            </a>{" "}
-            for the full story, or find my references on{" "}
-            <a
-              href={contact.toptal}
-              target="_blank"
-              rel="noreferrer"
-                className="underline decoration-foreground-decoration underline-offset-3 transition-[text-decoration-color] duration-200 hover:decoration-foreground-decoration-hover"
-            >
-              Toptal
-            </a>
-            .
-          </p>
-          <p className="mt-3 text-sm leading-relaxed text-foreground-secondary">
-            {hero.bioProof}
-          </p>
+          <div className="grid gap-y-8 sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-x-8 items-center mb-2">
+            <div className="min-w-0">
+              <p className="text-sm leading-relaxed text-foreground-secondary">
+                {hero.bioLead}{" "}
+                <a
+                  href={`mailto:${contact.email}`}
+                  className="underline decoration-foreground-decoration underline-offset-3 transition-[text-decoration-color] duration-200 hover:decoration-foreground-decoration-hover"
+                >
+                  Email me
+                </a>{" "}
+                for the full story, or find my references on{" "}
+                <a
+                  href={contact.toptal}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline decoration-foreground-decoration underline-offset-3 transition-[text-decoration-color] duration-200 hover:decoration-foreground-decoration-hover"
+                >
+                  Toptal
+                </a>
+                .
+              </p>
+              <p className="mt-3 text-sm leading-relaxed text-foreground-secondary">
+                {hero.bioProof}
+              </p>
+            </div>
+            <div className="squircle size-32 overflow-hidden rounded-3xl ring-0 -mt-2">
+              <CursorAvatar
+                size={128}
+                label="Portrait of Oussama Nahiz, following your cursor"
+              />
+            </div>
+          </div>
         </Reveal>
         <Reveal variant="fade" delay={150}>
           <div className="flex items-center gap-2">
@@ -79,7 +91,7 @@ export default async function Home() {
               href={contact.linkedin}
               target="_blank"
               rel="noreferrer"
-                className="squircle inline-flex h-8 items-center gap-1.5 rounded-lg border border-border px-2.5 text-sm font-medium text-foreground-secondary transition-[background-color,color] duration-200 outline-none select-none hover:bg-muted hover:text-foreground active:scale-[0.97] focus-visible:ring-3 focus-visible:ring-ring/50"
+              className="squircle inline-flex h-8 items-center gap-1.5 rounded-lg border border-border px-2.5 text-sm font-medium text-foreground-secondary transition-[background-color,color] duration-200 outline-none select-none hover:bg-muted hover:text-foreground active:scale-[0.97] focus-visible:ring-3 focus-visible:ring-ring/50"
             >
               Message on LinkedIn
               <ArrowUpRight className="size-3.5" />
@@ -92,7 +104,10 @@ export default async function Home() {
 
       <SkillsSection />
 
-      <section aria-labelledby="performance-heading" className="flex flex-col gap-5">
+      <section
+        aria-labelledby="performance-heading"
+        className="flex flex-col gap-5"
+      >
         <Reveal variant="fade">
           <h2 className="text-sm font-medium tracking-tight">
             <span id="performance-heading">Performance</span>
@@ -103,7 +118,10 @@ export default async function Home() {
         </Reveal>
       </section>
 
-      <section aria-labelledby="projects-heading" className="flex flex-col gap-5">
+      <section
+        aria-labelledby="projects-heading"
+        className="flex flex-col gap-5"
+      >
         <Reveal variant="fade">
           <h2 className="text-sm font-medium tracking-tight">
             <span id="projects-heading">Projects</span>

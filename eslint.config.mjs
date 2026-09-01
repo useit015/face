@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Vendored, prebuilt web component — not source of this app.
+    "public/**",
   ]),
 ]);
 
