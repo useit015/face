@@ -7,34 +7,6 @@ import { SocialIcon } from "@/components/icons";
 import { contact, hero, socials } from "@/lib/content";
 import { getStars } from "@/lib/stars";
 
-function OpenToWorkAnnotation() {
-  return (
-    <span className="pointer-events-none absolute right-full top-1/2 mr-2 hidden -translate-y-1/2 select-none items-center gap-1.5 min-[1150px]:flex">
-      <span
-        aria-hidden="true"
-        className="whitespace-nowrap text-lg leading-none text-foreground-secondary"
-        style={{ fontFamily: "var(--font-hand)" }}
-      >
-        open to work
-      </span>
-      <svg
-        aria-hidden="true"
-        viewBox="0 0 40 28"
-        fill="none"
-        className="h-6 w-8 text-foreground-tertiary"
-      >
-        <path
-          d="M2 4c10 3 20 9 30 19m0 0-8-4m8 4-2-9"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </span>
-  );
-}
-
 export default async function Home() {
   const repoStars = await getStars([
     { owner: "useit015", name: "whichmodel" },
@@ -93,15 +65,12 @@ export default async function Home() {
         </Reveal>
         <Reveal variant="fade" delay={150}>
           <div className="flex items-center gap-2">
-            <span className="relative inline-flex">
-              <OpenToWorkAnnotation />
-              <a
-                href={`mailto:${contact.email}`}
-                className="squircle inline-flex h-8 items-center rounded-lg bg-foreground px-2.5 text-sm font-medium text-background transition-[background-color,transform] duration-200 outline-none select-none hover:bg-foreground/80 active:scale-[0.97] focus-visible:ring-3 focus-visible:ring-ring/50"
-              >
-                Email me
-              </a>
-            </span>
+            <a
+              href={`mailto:${contact.email}`}
+              className="squircle inline-flex h-8 items-center rounded-lg bg-foreground px-2.5 text-sm font-medium text-background transition-[background-color,transform] duration-200 outline-none select-none hover:bg-foreground/80 active:scale-[0.97] focus-visible:ring-3 focus-visible:ring-ring/50"
+            >
+              Email me
+            </a>
             <a
               href={contact.linkedin}
               target="_blank"
@@ -115,6 +84,10 @@ export default async function Home() {
         </Reveal>
       </section>
 
+      <ExperienceSection />
+
+      <SkillsSection />
+
       <section aria-labelledby="performance-heading" className="flex flex-col gap-5">
         <Reveal variant="fade">
           <h2 className="text-sm font-medium tracking-tight">
@@ -125,10 +98,6 @@ export default async function Home() {
           <ContributionGraph />
         </Reveal>
       </section>
-
-      <ExperienceSection />
-
-      <SkillsSection />
 
       <section aria-labelledby="projects-heading" className="flex flex-col gap-5">
         <Reveal variant="fade">
