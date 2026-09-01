@@ -102,44 +102,15 @@
 
 @utility scroll-fade-x {
   --scroll-fade-size: 1.75rem;
+  --scroll-fade-s: 0px;
+  --scroll-fade-e: 0px;
   mask-image: linear-gradient(
     to right,
     transparent 0,
-    #000 var(--scroll-fade-s, 0px),
-    #000 calc(100% - var(--scroll-fade-e, 0px)),
+    #000 var(--scroll-fade-s),
+    #000 calc(100% - var(--scroll-fade-e)),
     transparent 100%
   );
-  animation: scroll-fade-reveal-s 1ms ease-in-out, scroll-fade-reveal-e 1ms ease-in-out;
-  animation-timeline: scroll(self inline), scroll(self inline);
-  animation-range: 0 6rem, calc(100% - 6rem) 100%;
-  animation-fill-mode: both;
-}
-
-@property --scroll-fade-s {
-  syntax: "<length>";
-  inherits: false;
-  initial-value: 0px;
-}
-
-@property --scroll-fade-e {
-  syntax: "<length>";
-  inherits: false;
-  initial-value: 0px;
-}
-
-@keyframes scroll-fade-reveal-s {
-  to {
-    --scroll-fade-s: var(--scroll-fade-size);
-  }
-}
-
-@keyframes scroll-fade-reveal-e {
-  from {
-    --scroll-fade-e: var(--scroll-fade-size);
-  }
-  to {
-    --scroll-fade-e: 0px;
-  }
 }
 
 @keyframes reveal-fade-in {

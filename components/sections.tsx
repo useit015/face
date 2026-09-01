@@ -2,6 +2,7 @@ import { ArrowUpRight } from "lucide-react";
 import type { CSSProperties } from "react";
 import { Reveal } from "@/components/reveal";
 import { Expandable } from "@/components/expandable";
+import { ScrollFadeX } from "@/components/scroll-fade-x";
 import { SkillIcon } from "@/components/icons";
 import { experience, skillGroups, type Role } from "@/lib/content";
 
@@ -113,24 +114,26 @@ function SkillRow({
       style={staggerIndex != null ? ({ "--i": staggerIndex } as CSSProperties) : undefined}
     >
       <h3 className="pt-0.5 text-[13px] text-muted-foreground">{label}</h3>
-      <ul
-        className={
-          expanded
-            ? "flex flex-wrap gap-x-3 gap-y-1.5"
-            : "no-scrollbar scroll-fade-x flex flex-nowrap gap-x-3 overflow-x-auto"
-        }
-      >
-        <SkillChips skills={skills} />
-          {expanded &&
-            more?.map((skill, i) => (
-              <li key={skill.name} className="chip-in shrink-0" style={{ "--i": i } as CSSProperties}>
-                <a href={skill.url} target="_blank" rel="noopener noreferrer" className={skillChipClass}>
-                  <SkillIcon name={skill.icon} className="size-3.5 shrink-0 text-foreground-tertiary" />
-                  {skill.name}
-                </a>
-              </li>
-            ))}
-      </ul>
+      {expanded ? (
+        <ul className="flex flex-wrap gap-x-3 gap-y-1.5">
+          <SkillChips skills={skills} />
+          {more?.map((skill, i) => (
+            <li key={skill.name} className="chip-in shrink-0" style={{ "--i": i } as CSSProperties}>
+              <a href={skill.url} target="_blank" rel="noopener noreferrer" className={skillChipClass}>
+                <SkillIcon name={skill.icon} className="size-3.5 shrink-0 text-foreground-tertiary" />
+                {skill.name}
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <ScrollFadeX
+          as="ul"
+          className="no-scrollbar flex flex-nowrap gap-x-3 overflow-x-auto"
+        >
+          <SkillChips skills={skills} />
+        </ScrollFadeX>
+      )}
     </div>
   );
 }

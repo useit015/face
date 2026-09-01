@@ -1,5 +1,6 @@
 import { contact } from "@/lib/content";
 import { ContributionCells } from "@/components/contribution-cells";
+import { ScrollFadeX } from "@/components/scroll-fade-x";
 
 type ContributionDay = {
   date: string;
@@ -77,7 +78,7 @@ export async function ContributionGraph() {
       title="View GitHub profile"
       className="block"
     >
-      <div className="no-scrollbar scroll-fade-x max-w-full overflow-x-auto overflow-y-hidden">
+      <ScrollFadeX className="no-scrollbar max-w-full overflow-x-auto overflow-y-hidden">
         <div className="w-max">
           <div className="relative mb-1.5 h-3 text-[12px] leading-none text-muted-foreground">
             {monthLabels.map(({ index, label }) => (
@@ -92,7 +93,7 @@ export async function ContributionGraph() {
           </div>
           <ContributionCells weeks={weeks} />
         </div>
-      </div>
+      </ScrollFadeX>
       <p className="mt-1.5 text-[12px] text-muted-foreground">
         {total.toLocaleString("en-US")} in {new Date().getFullYear()}
       </p>
