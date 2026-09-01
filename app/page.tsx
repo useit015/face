@@ -132,19 +132,8 @@ export default async function Home() {
         </Reveal>
       </section>
 
-      <footer className="mt-auto flex flex-col gap-1.5 pt-8 text-[12px] text-foreground-quaternary">
-        <div className="flex items-center justify-between">
-          <p>© {new Date().getFullYear()} Oussama Nahiz</p>
-          <a
-            href={`mailto:${contact.email}`}
-            className="underline decoration-foreground-quaternary underline-offset-3 transition-colors duration-200 hover:text-foreground-secondary"
-          >
-            {contact.email}
-          </a>
-        </div>
-        <p className="text-foreground-quaternary/80">
-          Hand-built, no template. Go on, view source.
-        </p>
+      <footer className="mt-auto pt-8 text-[12px] text-foreground-quaternary">
+        <p>© {new Date().getFullYear()} Oussama Nahiz</p>
       </footer>
     </main>
   );
