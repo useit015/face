@@ -5,7 +5,7 @@ import { projects, type Project } from "@/lib/content";
 
 function ProjectRow({ project, stars }: { project: Project; stars?: number }) {  const href = project.repo?.url ?? project.url;
   const body = (
-    <div className="relative flex min-w-0 items-center gap-3 before:absolute before:-inset-x-3 before:-inset-y-2.5 before:squircle before:rounded-xl before:content-[''] before:transition-colors before:duration-200 hover:before:bg-timeline-hover [&>*]:relative">
+    <div className="group/row relative flex min-w-0 items-center gap-3 before:absolute before:-inset-x-3 before:-inset-y-2.5 before:squircle before:rounded-xl before:content-[''] before:transition-colors before:duration-200 hover:before:bg-timeline-hover [&>*]:relative">
       <div className="squircle flex size-8 shrink-0 items-center justify-center rounded-lg border border-border bg-card">
         <ProjectIcon name={project.icon} className="size-4 text-foreground-secondary" />
       </div>
@@ -18,7 +18,7 @@ function ProjectRow({ project, stars }: { project: Project; stars?: number }) { 
       <div className="flex shrink-0 items-center gap-1 text-[13px] tabular-nums text-foreground-tertiary">
         {typeof stars === "number" && stars > 0 ? (
           <>
-            <Star className="size-3" />
+            <Star className="size-3 transition-transform duration-200 group-hover/row:fill-current group-hover/row:scale-110 motion-reduce:transition-none" />
             {stars.toLocaleString("en-US")}
           </>
         ) : project.note ? (

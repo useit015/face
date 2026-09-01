@@ -40,7 +40,18 @@ export function ThemeToggle() {
       title="Toggle theme"
       className="squircle flex size-7 cursor-pointer items-center justify-center rounded-md text-foreground-secondary transition-colors duration-200 outline-none select-none hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-[0.97]"
     >
-      {dark ? <Sun className="size-3.5" /> : <Moon className="size-3.5" />}
+      <span aria-hidden="true" className="relative flex size-3.5 items-center justify-center">
+        <Moon
+          className={`absolute size-3.5 transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none ${
+            dark ? "-rotate-90 scale-50 opacity-0" : "rotate-0 scale-100 opacity-100"
+          }`}
+        />
+        <Sun
+          className={`absolute size-3.5 transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none ${
+            dark ? "rotate-0 scale-100 opacity-100" : "rotate-90 scale-50 opacity-0"
+          }`}
+        />
+      </span>
     </button>
   );
 }
