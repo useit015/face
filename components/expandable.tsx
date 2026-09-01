@@ -1,22 +1,65 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import {
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { ChevronsUpDown } from "lucide-react";
+
+type Phase = "closed" | "opening" | "open" | "closing";
 
 export function Expandable({
   header,
   children,
   collapsed,
-  always,
   label = "See more",
 }: {
   header: ReactNode;
   children: ReactNode;
   collapsed?: ReactNode;
-  always?: ReactNode;
   label?: string;
 }) {
-  const [open, setOpen] = useState(false);
+  const [phase, setPhase] = useState<Phase>("closed");
+  const boxRef = useRef<HTMLDivElement | null>(null);
+  const shortRef = useRef<HTMLDivElement | null>(null);
+  const longRef = useRef<HTMLDivElement | null>(null);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const open = phase === "opening" || phase === "open";
+
+  useLayoutEffect(() => {
+    if (phase !== "opening" && phase !== "closing") return;
+    const box = boxRef.current;
+    const target = phase === "opening" ? longRef.current : shortRef.current;
+    if (!box || !target) return;
+    const from = box.offsetHeight;
+    const to = target.offsetHeight;
+    box.style.height = from + "px";
+    void box.offsetHeight;
+    box.style.transition = "height 400ms cubic-bezier(0.4, 0, 0.2, 1)";
+    box.style.height = to + "px";
+    timer.current = setTimeout(() => {
+      box.style.transition = "";
+      box.style.height = "";
+      setPhase(phase === "opening" ? "open" : "closed");
+    }, 420);
+    return () => {
+      if (timer.current) clearTimeout(timer.current);
+    };
+  }, [phase]);
+
+  const toggle = () => {
+    if (timer.current) {
+      clearTimeout(timer.current);
+      timer.current = null;
+    }
+    if (phase === "closed") setPhase("opening");
+    else if (phase === "open") setPhase("closing");
+    else if (phase === "opening") setPhase("closing");
+    else setPhase("opening");
+  };
 
   return (
     <div className="expander" data-open={open}>
@@ -24,7 +67,7 @@ export function Expandable({
         {header}
         <button
           type="button"
-          onClick={() => setOpen((v) => !v)}
+          onClick={toggle}
           aria-expanded={open}
           className="group/see inline-flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2 -mr-2 text-[0.8rem] font-medium text-foreground-secondary transition-transform outline-none select-none squircle hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-[0.97]"
         >
@@ -32,26 +75,34 @@ export function Expandable({
           <ChevronsUpDown className="size-3" />
         </button>
       </div>
-      {always}
-      {collapsed != null && (
-        <div
-          className="grid transition-[grid-template-rows] duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
-          style={{ gridTemplateRows: open ? "0fr" : "1fr" }}
-          aria-hidden={open}
-        >
+      <div ref={boxRef} className="relative overflow-hidden">
+        {collapsed != null && phase !== "open" && (
           <div
-            className="overflow-hidden transition-opacity duration-[225ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
-            style={{ opacity: open ? 0 : 1 }}
+            ref={shortRef}
+            className={`transition-opacity duration-[225ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
+              phase === "closed" ? "relative" : "absolute inset-x-0 top-0"
+            } ${phase === "opening" ? "opacity-0" : "opacity-100"}`}
           >
             {collapsed}
           </div>
-        </div>
-      )}
-      <div
-        className="grid transition-[grid-template-rows] duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
-        style={{ gridTemplateRows: open ? "1fr" : "0fr" }}
-      >
-        <div className="overflow-hidden">{children}</div>
+        )}
+        {phase !== "open" && (
+          <div
+            ref={longRef}
+            className={`transition-opacity duration-[225ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
+              phase === "closed"
+                ? "hidden"
+                : "absolute inset-x-0 top-0"
+            } ${phase === "closing" ? "opacity-0" : "opacity-100"}`}
+          >
+            {children}
+          </div>
+        )}
+        {phase === "open" && (
+          <div ref={longRef} className="relative">
+            {children}
+          </div>
+        )}
       </div>
     </div>
   );
