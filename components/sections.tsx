@@ -181,7 +181,7 @@ export function ExperienceSection() {
                         <span className="truncate text-[13px] font-medium">{entry.company}</span>
                       )}
                     </div>
-                    <p className="text-[12px] whitespace-nowrap text-foreground-tertiary tabular-nums">
+                    <p className="truncate text-[12px] text-foreground-tertiary tabular-nums">
                       {entry.period}
                     </p>
                   </div>
