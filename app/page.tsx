@@ -80,10 +80,10 @@ export default async function Home() {
           </div>
         </Reveal>
         <Reveal variant="fade" delay={150}>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <a
               href={`mailto:${contact.email}`}
-              className="squircle inline-flex h-8 items-center rounded-lg bg-foreground px-2.5 text-sm font-medium text-background transition-[background-color,transform] duration-200 outline-none select-none hover:bg-foreground/80 active:scale-[0.97] focus-visible:ring-3 focus-visible:ring-ring/50"
+              className="squircle inline-flex h-8 shrink-0 items-center whitespace-nowrap rounded-lg bg-foreground px-2.5 text-sm font-medium text-background transition-[background-color,transform] duration-200 outline-none select-none hover:bg-foreground/80 active:scale-[0.97] focus-visible:ring-3 focus-visible:ring-ring/50"
             >
               Email me
             </a>
@@ -91,7 +91,7 @@ export default async function Home() {
               href={contact.linkedin}
               target="_blank"
               rel="noreferrer"
-              className="squircle inline-flex h-8 items-center gap-1.5 rounded-lg border border-border px-2.5 text-sm font-medium text-foreground-secondary transition-[background-color,color] duration-200 outline-none select-none hover:bg-muted hover:text-foreground active:scale-[0.97] focus-visible:ring-3 focus-visible:ring-ring/50"
+              className="squircle inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-border px-2.5 text-sm font-medium text-foreground-secondary transition-[background-color,color] duration-200 outline-none select-none hover:bg-muted hover:text-foreground active:scale-[0.97] focus-visible:ring-3 focus-visible:ring-ring/50"
             >
               Message on LinkedIn
               <ArrowUpRight className="size-3.5" />
