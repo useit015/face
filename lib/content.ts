@@ -29,13 +29,6 @@ export const stats = [
   { value: "1", label: "six-figure enterprise build, solo" },
 ];
 
-export const timeline = [
-  { label: "Open to work", period: "Jun 26 – Now", icon: "search" },
-  { label: "Acurai", period: "Jan 25 – Jun 25", icon: "cloud" },
-  { label: "LendStack", period: "Oct 23 – May 24", icon: "building" },
-  { label: "Toptal", period: "Apr 22 – Oct 24", icon: "globe" },
-] as const;
-
 export type Role = {
   company: string;
   url?: string;
@@ -47,17 +40,6 @@ export type Role = {
 };
 
 export const experience: Role[] = [
-  {
-    company: "Independent",
-    title: "AI Builder & Consultant",
-    period: "Oct 24 – Now", icon: "terminal",
-    summary: "Building AI developer tools and taking selective client work.",
-    bullets: [
-      "Built whichmodel, an open-source TypeScript CLI that recommends AI models across OpenRouter, FAL, and Replicate.",
-      "Building Sigil, a creator studio converting video and images into shareable ASCII previews.",
-      "Delivered front-end product work at Acurai across Chat, Wiki, and Brain Builder surfaces.",
-    ],
-  },
   {
     company: "Acurai",
     url: "https://acur.ai/",
@@ -252,6 +234,7 @@ export const skillGroups = [
       { name: "Node.js", icon: "nodejs" },
       { name: "HTML/CSS", icon: "html5" },
     ],
+    more: [{ name: "SQL", icon: "database" }, { name: "SCSS/Sass", icon: "sass" }, { name: "Vite", icon: "vite" }, { name: "Redux", icon: "redux" }, { name: "Vue", icon: "vue" }, { name: "AngularJS", icon: "angular" }],
   },
   {
     label: "Backend & data",
@@ -263,6 +246,7 @@ export const skillGroups = [
       { name: "Redis", icon: "redis" },
       { name: "REST APIs", icon: "braces" },
     ],
+    more: [{ name: "MySQL", icon: "mysql" }, { name: "Supabase", icon: "supabase" }, { name: "SQLite", icon: "sqlite" }, { name: "DynamoDB", icon: "database" }, { name: "Amazon S3", icon: "database" }, { name: "GraphQL", icon: "graphql" }],
   },
   {
     label: "Cloud & delivery",
@@ -272,6 +256,7 @@ export const skillGroups = [
       { name: "Docker", icon: "docker" },
       { name: "CI/CD", icon: "workflow" },
     ],
+    more: [{ name: "Serverless Framework", icon: "serverless" }, { name: "Docker Compose", icon: "docker" }, { name: "Jenkins", icon: "jenkins" }, { name: "GitLab CI", icon: "gitlab" }, { name: "Bitbucket Pipelines", icon: "bitbucket" }, { name: "Cloudflare Workers", icon: "cloudflare" }],
   },
   {
     label: "AI",
@@ -282,6 +267,7 @@ export const skillGroups = [
       { name: "Agentic AI", icon: "bot" },
       { name: "LLM integration", icon: "sparkles" },
     ],
+    more: [{ name: "fal.ai", icon: "sparkles" }, { name: "Agentic harnesses", icon: "bot" }, { name: "Prompt evals", icon: "list-checks" }, { name: "Model routing", icon: "route" }, { name: "OCR / KYC", icon: "scan-face" }, { name: "CV annotation", icon: "scan-eye" }],
   },
   {
     label: "Breadth",
@@ -292,47 +278,7 @@ export const skillGroups = [
       { name: "WebRTC", icon: "radio" },
       { name: "Unix/Linux", icon: "terminal-square" },
     ],
+    more: [{ name: "Flutter", icon: "flutter" }, { name: "Solidity", icon: "solidity" }, { name: "Socket.IO", icon: "socketio" }, { name: "Twilio API", icon: "phone" }, { name: "Playwright", icon: "app-window" }, { name: "WordPress", icon: "wordpress" }],
   },
 ] as const;
 
-export const moreSkillGroups = [
-  {
-    label: "Data & storage",
-    skills: [
-      { name: "MySQL", icon: "mysql" },
-      { name: "Supabase", icon: "supabase" },
-      { name: "SQLite", icon: "sqlite" },
-      { name: "DynamoDB", icon: "database" },
-      { name: "Amazon S3", icon: "database" },
-      { name: "Cloudflare R2", icon: "cloudflare" },
-    ],
-  },
-  {
-    label: "Realtime",
-    skills: [
-      { name: "Socket.IO", icon: "socketio" },
-      { name: "Twilio API", icon: "phone" },
-      { name: "Signaling servers", icon: "radio-tower" },
-    ],
-  },
-  {
-    label: "Testing",
-    skills: [
-      { name: "Jest", icon: "jest" },
-      { name: "Enzyme", icon: "flask" },
-      { name: "Karma", icon: "flask" },
-      { name: "Playwright", icon: "app-window" },
-    ],
-  },
-  {
-    label: "Also shipped with",
-    skills: [
-      { name: "Vue", icon: "vue" },
-      { name: "AngularJS", icon: "angular" },
-      { name: "Flutter", icon: "flutter" },
-      { name: "PHP", icon: "php" },
-      { name: "Solidity", icon: "solidity" },
-      { name: "GraphQL", icon: "graphql" },
-    ],
-  },
-] as const;

@@ -27,6 +27,13 @@ import {
   SiPhp,
   SiSolidity,
   SiGraphql,
+  SiSass,
+  SiVite,
+  SiRedux,
+  SiServerless,
+  SiJenkins,
+  SiGitlab,
+  SiBitbucket,
 } from "react-icons/si";
 import {
   Braces,
@@ -53,6 +60,7 @@ import {
   FlaskConical,
   AppWindow,
   Database,
+  Route,
 } from "lucide-react";
 import type { ComponentType } from "react";
 
@@ -86,6 +94,13 @@ const brandIcons: Record<string, ComponentType<{ className?: string }>> = {
   php: SiPhp,
   solidity: SiSolidity,
   graphql: SiGraphql,
+  sass: SiSass,
+  vite: SiVite,
+  redux: SiRedux,
+  serverless: SiServerless,
+  jenkins: SiJenkins,
+  gitlab: SiGitlab,
+  bitbucket: SiBitbucket,
 };
 
 function ZapIcon({ className }: { className?: string }) {
@@ -182,6 +197,8 @@ const lucideIcons: Record<string, ComponentType<{ className?: string }>> = {
   flask: FlaskConical,
   "app-window": AppWindow,
   database: Database,
+  route: Route,
+  wordpress: Globe,
 };
 
 export function SkillIcon({ name, className }: { name: string; className?: string }) {

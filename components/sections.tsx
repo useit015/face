@@ -1,8 +1,9 @@
 import { ArrowUpRight } from "lucide-react";
+import type { CSSProperties } from "react";
 import { Reveal } from "@/components/reveal";
 import { Expandable } from "@/components/expandable";
 import { SkillIcon } from "@/components/icons";
-import { experience, moreSkillGroups, skillGroups, timeline, type Role } from "@/lib/content";
+import { experience, skillGroups, type Role } from "@/lib/content";
 
 function TimelineDot({ active }: { active?: boolean }) {
   return (
@@ -41,20 +42,22 @@ function RoleDetail({ role }: { role: Role }) {
           </p>
         </div>
         <p className="mt-0.5 text-[13px] text-foreground-secondary">{role.title}</p>
-        <ul className="mt-2.5 flex flex-col gap-1">
-          {role.bullets.map((bullet) => (
-            <li
-              key={bullet}
-              className="flex gap-2 text-[13px] leading-relaxed text-foreground-tertiary"
-            >
-              <span
-                aria-hidden="true"
-                className="mt-[0.45em] size-1 shrink-0 rounded-full bg-foreground-quaternary"
-              />
-              {bullet}
-            </li>
-          ))}
-        </ul>
+        {role.bullets.length > 0 && (
+          <ul className="mt-2.5 flex flex-col gap-1">
+            {role.bullets.map((bullet) => (
+              <li
+                key={bullet}
+                className="flex gap-2 text-[13px] leading-relaxed text-foreground-tertiary"
+              >
+                <span
+                  aria-hidden="true"
+                  className="mt-[0.45em] size-1 shrink-0 rounded-full bg-foreground-quaternary"
+                />
+                {bullet}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );
@@ -63,9 +66,13 @@ function RoleDetail({ role }: { role: Role }) {
 function SkillRow({
   label,
   skills,
+  more,
+  expanded,
 }: {
   label: string;
   skills: readonly { readonly name: string; readonly icon: string }[];
+  more?: readonly { readonly name: string; readonly icon: string }[];
+  expanded?: boolean;
 }) {
   return (
     <div className="grid grid-cols-[7rem_minmax(0,1fr)] items-start gap-x-3 min-[480px]:grid-cols-[8rem_minmax(0,1fr)]">
@@ -79,12 +86,22 @@ function SkillRow({
             </span>
           </li>
         ))}
+        {expanded &&
+          more?.map((skill, i) => (
+            <li key={skill.name} className="chip-in" style={{ "--i": i } as CSSProperties}>
+              <span className="inline-flex items-center gap-1.5 text-[13px] text-foreground-secondary">
+                <SkillIcon name={skill.icon} className="size-3.5 shrink-0 text-foreground-tertiary" />
+                {skill.name}
+              </span>
+            </li>
+          ))}
       </ul>
     </div>
   );
 }
 
 export function ExperienceSection() {
+  const strip = experience.slice(0, 4);
   return (
     <section aria-labelledby="experience-heading" className="flex flex-col gap-5">
       <Reveal variant="fade">
@@ -99,21 +116,21 @@ export function ExperienceSection() {
             <div className="relative mt-5 pt-1">
               <div className="absolute left-[3px] right-0 top-[3px] h-px bg-timeline-line" />
               <div
-                className="absolute left-[3px] top-[3px] h-px -translate-y-0 w-[calc(25%-3px)]"
+                className="absolute left-[3px] top-[3px] h-px w-[calc(25%-3px)]"
                 style={{
                   backgroundImage:
                     "linear-gradient(to right, var(--foreground) 0%, var(--timeline-line) 70%, var(--timeline-line) 100%)",
                 }}
               />
               <div className="grid grid-cols-4">
-                {timeline.map((entry, i) => (
-                  <div key={entry.label} className="flex min-w-0 flex-col gap-2.5">
+                {strip.map((entry, i) => (
+                  <div key={entry.company} className="flex min-w-0 flex-col gap-2.5">
                     <TimelineDot active={i === 0} />
                     <div className="flex items-center gap-1.5">
                       <span className="squircle flex size-6 shrink-0 items-center justify-center rounded-md border border-border bg-card">
                         <SkillIcon name={entry.icon} className="size-3.5 text-foreground-secondary" />
                       </span>
-                      <span className="truncate text-[13px] font-medium">{entry.label}</span>
+                      <span className="truncate text-[13px] font-medium">{entry.company}</span>
                     </div>
                     <p className="text-[12px] whitespace-nowrap text-foreground-tertiary tabular-nums">
                       {entry.period}
@@ -126,7 +143,11 @@ export function ExperienceSection() {
         >
           <ol className="flex flex-col gap-y-2 pt-5">
             {experience.map((role, i) => (
-              <li key={`${role.company}-${role.period}`} className={i === 0 ? "relative" : "relative pt-6"}>
+              <li
+                key={`${role.company}-${role.period}`}
+                className={`stagger-in relative ${i === 0 ? "" : "pt-6"}`}
+                style={{ "--i": i } as CSSProperties}
+              >
                 <RoleDetail role={role} />
               </li>
             ))}
@@ -148,7 +169,7 @@ export function SkillsSection() {
               <span id="skills-heading">Skills</span>
             </h2>
           }
-          always={
+          collapsed={
             <div className="flex flex-col gap-3 pt-5">
               {skillGroups.map((group) => (
                 <SkillRow key={group.label} label={group.label} skills={group.skills} />
@@ -156,9 +177,15 @@ export function SkillsSection() {
             </div>
           }
         >
-          <div className="flex flex-col gap-3 pt-3">
-            {moreSkillGroups.map((group) => (
-              <SkillRow key={group.label} label={group.label} skills={group.skills} />
+          <div className="flex flex-col gap-3 pt-5">
+            {skillGroups.map((group) => (
+              <SkillRow
+                key={group.label}
+                label={group.label}
+                skills={group.skills}
+                more={group.more}
+                expanded
+              />
             ))}
           </div>
         </Expandable>
