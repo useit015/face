@@ -61,10 +61,10 @@ export function Expandable({
       >
         <div
           ref={longRef}
-          className={`transition-opacity duration-[225ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
+          className={`transition-opacity ease-[cubic-bezier(0.4,0,0.2,1)] ${
             open
-              ? "relative opacity-100"
-              : "pointer-events-none absolute inset-x-0 top-0 opacity-0"
+              ? "relative opacity-100 duration-[225ms]"
+              : "pointer-events-none absolute inset-x-0 top-0 opacity-0 duration-[400ms]"
           }`}
         >
           {children}
@@ -72,10 +72,10 @@ export function Expandable({
         {collapsed != null && (
           <div
             ref={shortRef}
-            className={`transition-opacity duration-[225ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
+            className={`transition-opacity ease-[cubic-bezier(0.4,0,0.2,1)] ${
               open
-                ? "pointer-events-none absolute inset-x-0 top-0 opacity-0"
-                : "relative opacity-100"
+                ? "pointer-events-none absolute inset-x-0 top-0 opacity-0 duration-[400ms]"
+                : "relative opacity-100 duration-[225ms]"
             }`}
           >
             {collapsed}
