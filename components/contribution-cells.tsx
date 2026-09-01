@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import type { CSSProperties } from "react";
 
 export type ContributionDay = {
@@ -60,7 +61,7 @@ export function ContributionCells({
                 Math.max(r.left + r.width / 2, 90),
                 window.innerWidth - 90,
               );
-              setTip({ x, y: r.top, text: tooltipText(day) });
+              setTip({ x, y: Math.max(8, r.top), text: tooltipText(day) });
             };
             return (
               <div
@@ -78,15 +79,17 @@ export function ContributionCells({
           }),
         )}
       </div>
-      {tip && (
-        <div
-          aria-hidden="true"
-          className="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-[calc(100%+6px)] rounded-md bg-foreground px-2 py-1 text-[11px] whitespace-nowrap text-background shadow-lg"
-          style={{ left: tip.x, top: tip.y } as CSSProperties}
-        >
-          {tip.text}
-        </div>
-      )}
+      {tip &&
+        createPortal(
+          <div
+            aria-hidden="true"
+            className="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-[calc(100%+6px)] rounded-md bg-foreground px-2 py-1 text-[11px] whitespace-nowrap text-background shadow-lg"
+            style={{ left: tip.x, top: tip.y } as CSSProperties}
+          >
+            {tip.text}
+          </div>,
+          document.body,
+        )}
     </>
   );
 }
