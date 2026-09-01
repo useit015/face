@@ -54,7 +54,7 @@ export function Expandable({
         </button>
       </div>
       <motion.div
-        className="relative overflow-hidden"
+        className="relative -mx-3 overflow-hidden px-3"
         initial={false}
         animate={{ height }}
         transition={{ duration: 0.4, ease }}
