@@ -97,7 +97,7 @@ export default async function Home() {
               <OpenToWorkAnnotation />
               <a
                 href={`mailto:${contact.email}`}
-                className="squircle inline-flex h-8 items-center rounded-lg bg-foreground px-2.5 text-sm font-medium text-background transition-transform outline-none select-none active:scale-[0.97] focus-visible:ring-3 focus-visible:ring-ring/50"
+                className="squircle inline-flex h-8 items-center rounded-lg bg-foreground px-2.5 text-sm font-medium text-background transition-[background-color,transform] outline-none select-none hover:bg-foreground/80 active:scale-[0.97] focus-visible:ring-3 focus-visible:ring-ring/50"
               >
                 Email me
               </a>

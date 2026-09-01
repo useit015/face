@@ -16,6 +16,7 @@
   --ring: #a1a1a1;
   --timeline-line: color-mix(in oklch, var(--foreground) 17.5%, var(--background));
   --timeline-hover: color-mix(in oklch, var(--foreground) 4%, var(--background));
+  --timeline-halo: color-mix(in oklch, var(--foreground) 28%, transparent);
   --contrib-0: color-mix(in oklch, var(--foreground) 7%, var(--background));
   --contrib-1: color-mix(in oklch, var(--foreground) 18%, var(--background));
   --contrib-2: color-mix(in oklch, var(--foreground) 35%, var(--background));
@@ -49,6 +50,7 @@
   --color-ring: var(--ring);
   --color-timeline-line: var(--timeline-line);
   --color-timeline-hover: var(--timeline-hover);
+  --color-timeline-halo: var(--timeline-halo);
   --color-contrib-0: var(--contrib-0);
   --color-contrib-1: var(--contrib-1);
   --color-contrib-2: var(--contrib-2);
@@ -69,6 +71,10 @@
 
 @utility gap-section {
   gap: var(--section-gap);
+}
+
+@utility timeline-status-halo {
+  background: radial-gradient(circle, var(--timeline-halo) 0%, transparent 80%);
 }
 
 @utility no-scrollbar {
@@ -122,14 +128,12 @@
   }
 }
 
-@keyframes reveal-rise {
+@keyframes reveal-fade-in {
   from {
     opacity: 0;
-    transform: translateY(6px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -157,7 +161,7 @@ body {
 }
 
 .js [data-reveal="rise"].is-inview {
-  animation: reveal-rise 400ms cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation: reveal-fade-in 400ms cubic-bezier(0.4, 0, 0.2, 1) both;
   animation-delay: var(--reveal-delay, 0ms);
 }
 

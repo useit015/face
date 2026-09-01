@@ -6,17 +6,25 @@ import { experience, moreSkillGroups, skillGroups, timeline, type Role } from "@
 
 function TimelineDot({ active }: { active?: boolean }) {
   return (
-    <span
-      className={`relative z-10 -mt-1 inline-block size-[7px] rounded-full squircle ${
-        active ? "bg-foreground" : "bg-foreground-quaternary"
-      }`}
-    />
+    <span className="relative -mt-1 inline-flex size-[7px] items-center justify-center">
+      {active && (
+        <span
+          aria-hidden="true"
+          className="timeline-status-halo absolute size-6 rounded-full"
+        />
+      )}
+      <span
+        className={`relative z-10 inline-block size-[7px] rounded-full squircle ${
+          active ? "bg-foreground" : "bg-foreground-quaternary"
+        }`}
+      />
+    </span>
   );
 }
 
 function RoleDetail({ role }: { role: Role }) {
   return (
-    <div className="flex min-w-0 gap-3 before:absolute before:-inset-x-3 before:-inset-y-2.5 before:squircle before:rounded-xl before:content-[''] relative hover:before:bg-timeline-hover [&>*]:relative">
+    <div className="group/role relative flex min-w-0 gap-3 before:absolute before:-inset-x-3 before:-inset-y-2.5 before:squircle before:rounded-xl before:content-[''] hover:before:bg-timeline-hover [&>*]:relative">
       <span className="squircle mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg border border-border bg-card">
         <SkillIcon name={role.icon} className="size-4 text-foreground-secondary" />
       </span>
@@ -90,13 +98,20 @@ export function ExperienceSection() {
           collapsed={
             <div className="relative mt-5 pt-1">
               <div className="absolute left-[3px] right-0 top-[3px] h-px bg-timeline-line" />
-              <div className="grid grid-flow-col auto-cols-max justify-between gap-x-6">
+              <div
+                className="absolute left-[3px] top-[3px] h-px -translate-y-0 w-[calc(25%-3px)]"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(to right, var(--foreground) 0%, var(--timeline-line) 70%, var(--timeline-line) 100%)",
+                }}
+              />
+              <div className="grid grid-cols-4">
                 {timeline.map((entry, i) => (
                   <div key={entry.label} className="flex min-w-0 flex-col gap-2.5">
                     <TimelineDot active={i === 0} />
                     <div className="flex items-center gap-1.5">
-                      <span className="squircle flex size-5 shrink-0 items-center justify-center rounded-md border border-border bg-card">
-                        <SkillIcon name={entry.icon} className="size-3 text-foreground-secondary" />
+                      <span className="squircle flex size-6 shrink-0 items-center justify-center rounded-md border border-border bg-card">
+                        <SkillIcon name={entry.icon} className="size-3.5 text-foreground-secondary" />
                       </span>
                       <span className="truncate text-[13px] font-medium">{entry.label}</span>
                     </div>
@@ -109,9 +124,9 @@ export function ExperienceSection() {
             </div>
           }
         >
-          <ol className="flex flex-col gap-6 pt-5">
-            {experience.map((role) => (
-              <li key={`${role.company}-${role.period}`} className="relative">
+          <ol className="flex flex-col gap-y-2 pt-5">
+            {experience.map((role, i) => (
+              <li key={`${role.company}-${role.period}`} className={i === 0 ? "relative" : "relative pt-6"}>
                 <RoleDetail role={role} />
               </li>
             ))}

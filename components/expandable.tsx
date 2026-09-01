@@ -51,7 +51,14 @@ export function Expandable({
         className="grid transition-[grid-template-rows] duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
         style={{ gridTemplateRows: open ? "1fr" : "0fr" }}
       >
-        <div className="overflow-hidden">{children}</div>
+        <div className="overflow-hidden">
+          <div
+            className="transition-opacity duration-[225ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+            style={{ opacity: open ? 1 : 0 }}
+          >
+            {children}
+          </div>
+        </div>
       </div>
     </div>
   );
