@@ -165,32 +165,11 @@ export type Project = {
 
 export const projects: Project[] = [
   {
-    name: "Radiometer Course Creator",
-    icon: "heart-pulse",
-    description: "Course-authoring platform for Radiometer's AQURE healthcare ecosystem.",
-    stack: ["React", "Node.js", "TypeScript", "AWS SAM", "PostgreSQL"],
-    url: contact.toptal,
-  },
-  {
-    name: "Clicky Clicky",
-    icon: "scan-eye",
-    description: "See & Spray ground-truth labeling tool and dashboard at Blue River Technology.",
-    stack: ["React", "NestJS", "MongoDB", "Docker", "Leaflet", "AWS"],
-    url: contact.toptal,
-  },
-  {
     name: "whichmodel",
     icon: "terminal",
     description: "TypeScript CLI that recommends the right AI model for a task.",
     stack: ["TypeScript", "Node.js", "OpenRouter", "FAL"],
     repo: { owner: "useit015", name: "whichmodel", url: "https://github.com/useit015/whichmodel" },
-  },
-  {
-    name: "Open Design",
-    icon: "pen-tool",
-    description: "Design-agent product connecting coding-agent CLIs and design systems.",
-    stack: ["TypeScript", "Local daemon", "SQLite"],
-    repo: { owner: "nexu-io", name: "open-design", url: "https://github.com/nexu-io/open-design" },
   },
   {
     name: "Sigil",
