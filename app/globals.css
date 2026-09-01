@@ -1,19 +1,33 @@
 @import "tailwindcss";
 
 :root {
+  color-scheme: light;
+  --background: oklch(0.977 0.005 85);
+  --foreground: oklch(0.24 0.009 70);
+  --border: oklch(0.24 0.009 70 / 0.12);
+  --card: oklch(0.993 0.003 85);
+  --muted: oklch(0.945 0.007 85);
+  --ring: oklch(0.55 0.012 70);
+}
+
+.dark {
+  color-scheme: dark;
   --background: #0b0b0b;
   --foreground: #eeeeee;
+  --border: rgb(255 255 255 / 0.1);
+  --card: #171717;
+  --muted: #262626;
+  --ring: #a1a1a1;
+}
+
+:root {
   --foreground-secondary: color-mix(in oklch, var(--foreground) 75%, var(--background));
-  --foreground-tertiary: color-mix(in oklch, var(--foreground) 55%, var(--background));
+  --foreground-tertiary: color-mix(in oklch, var(--foreground) 62%, var(--background));
   --foreground-quaternary: color-mix(in oklch, var(--foreground) 30%, var(--background));
   --foreground-decoration: color-mix(in oklch, var(--foreground-secondary) 44%, var(--background));
   --foreground-decoration-hover: color-mix(in oklch, var(--foreground-secondary) 60%, var(--background));
   --foreground-watermark: color-mix(in oklch, var(--foreground) 2.2%, var(--background));
-  --border: rgb(255 255 255 / 0.1);
-  --card: #171717;
-  --muted: #262626;
-  --muted-foreground: color-mix(in oklch, var(--foreground) 55%, var(--background));
-  --ring: #a1a1a1;
+  --muted-foreground: color-mix(in oklch, var(--foreground) 62%, var(--background));
   --timeline-line: color-mix(in oklch, var(--foreground) 17.5%, var(--background));
   --timeline-hover: color-mix(in oklch, var(--foreground) 4%, var(--background));
   --timeline-halo: color-mix(in oklch, var(--foreground) 28%, transparent);
@@ -137,6 +151,17 @@
   }
 }
 
+@keyframes reveal-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -144,10 +169,11 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
+  transition: background-color 200ms ease, color 200ms ease;
 }
 
 ::selection {
-  background: color-mix(in oklch, var(--foreground) 20%, var(--background));
+  background: color-mix(in oklch, var(--foreground) 22%, var(--background));
 }
 
 .js [data-reveal="fade"] {
@@ -161,18 +187,39 @@ body {
 }
 
 .js [data-reveal="rise"].is-inview {
-  animation: reveal-fade-in 400ms cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation: reveal-rise-in 500ms cubic-bezier(0.16, 1, 0.3, 1) both;
   animation-delay: var(--reveal-delay, 0ms);
 }
 
+.js [data-reveal="stagger"] > * {
+  opacity: 0;
+}
+
+.js [data-reveal="stagger"].is-inview > * {
+  animation: reveal-rise-in 500ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.js [data-reveal="stagger"].is-inview > *:nth-child(1) { animation-delay: 0ms; }
+.js [data-reveal="stagger"].is-inview > *:nth-child(2) { animation-delay: 45ms; }
+.js [data-reveal="stagger"].is-inview > *:nth-child(3) { animation-delay: 90ms; }
+.js [data-reveal="stagger"].is-inview > *:nth-child(4) { animation-delay: 135ms; }
+.js [data-reveal="stagger"].is-inview > *:nth-child(5) { animation-delay: 180ms; }
+.js [data-reveal="stagger"].is-inview > *:nth-child(6) { animation-delay: 225ms; }
+.js [data-reveal="stagger"].is-inview > *:nth-child(7) { animation-delay: 270ms; }
+.js [data-reveal="stagger"].is-inview > *:nth-child(8) { animation-delay: 315ms; }
+.js [data-reveal="stagger"].is-inview > *:nth-child(9) { animation-delay: 360ms; }
+.js [data-reveal="stagger"].is-inview > *:nth-child(10) { animation-delay: 405ms; }
+.js [data-reveal="stagger"].is-inview > *:nth-child(11) { animation-delay: 450ms; }
+.js [data-reveal="stagger"].is-inview > *:nth-child(n+12) { animation-delay: 495ms; }
+
 .expander[data-open="true"] .stagger-in {
-  animation: reveal-fade-in 400ms cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation: reveal-rise-in 450ms cubic-bezier(0.16, 1, 0.3, 1) both;
   animation-delay: calc(var(--i, 0) * 50ms);
 }
 
 .expander[data-open="true"] .chip-in {
-  animation: reveal-fade-in 225ms cubic-bezier(0.4, 0, 0.2, 1) both;
-  animation-delay: calc(200ms + var(--i, 0) * 30ms);
+  animation: reveal-rise-in 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(220ms + var(--i, 0) * 30ms);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -181,6 +228,7 @@ body {
   }
 
   .js [data-reveal],
+  .js [data-reveal="stagger"] > *,
   .expander .stagger-in,
   .expander .chip-in {
     opacity: 1;

@@ -3,7 +3,7 @@ import { Reveal } from "@/components/reveal";
 import { ProjectIcon } from "@/components/icons";
 import { projects, type Project } from "@/lib/content";
 
-function ProjectRow({ project, stars, index }: { project: Project; stars?: number; index: number }) {  const href = project.repo?.url ?? project.url;
+function ProjectRow({ project, stars }: { project: Project; stars?: number }) {  const href = project.repo?.url ?? project.url;
   const body = (
     <div className="relative flex min-w-0 items-center gap-3 before:absolute before:-inset-x-3 before:-inset-y-2.5 before:squircle before:rounded-xl before:content-[''] before:transition-colors before:duration-200 hover:before:bg-timeline-hover [&>*]:relative">
       <div className="squircle flex size-8 shrink-0 items-center justify-center rounded-lg border border-border bg-card">
@@ -30,35 +30,32 @@ function ProjectRow({ project, stars, index }: { project: Project; stars?: numbe
 
   return (
     <li className="relative">
-      <Reveal variant="fade" delay={Math.min(index * 40, 160)}>
-        {href ? (
-          <a
-            href={href}
-            target="_blank"
-            rel="noreferrer"
-            className="block rounded-xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-          >
-            {body}
-          </a>
-        ) : (
-          body
-        )}
-      </Reveal>
+      {href ? (
+        <a
+          href={href}
+          target="_blank"
+          rel="noreferrer"
+          className="block rounded-xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+        >
+          {body}
+        </a>
+      ) : (
+        body
+      )}
     </li>
   );
 }
 
 export function ProjectList({ stars }: { stars: Record<string, number> }) {
   return (
-    <ul className="flex flex-col gap-2.5">
-      {projects.map((project, i) => (
+    <Reveal variant="stagger" as="ul" className="flex flex-col gap-2.5">
+      {projects.map((project) => (
         <ProjectRow
           key={project.name}
           project={project}
-          index={i}
           stars={project.repo ? stars[`${project.repo.owner}/${project.repo.name}`] : undefined}
         />
       ))}
-    </ul>
+    </Reveal>
   );
 }

@@ -4,6 +4,7 @@ import { ContributionGraph } from "@/components/contribution-graph";
 import { ExperienceSection, SkillsSection } from "@/components/sections";
 import { ProjectList } from "@/components/project-list";
 import { SocialIcon } from "@/components/icons";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { contact, hero, socials } from "@/lib/content";
 import { getStars } from "@/lib/stars";
 
@@ -37,6 +38,9 @@ export default async function Home() {
                 </a>
               </li>
             ))}
+            <li>
+              <ThemeToggle />
+            </li>
           </ul>
         </Reveal>
         <Reveal variant="rise" delay={75}>

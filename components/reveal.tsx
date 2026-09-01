@@ -10,7 +10,7 @@ import {
 
 type RevealProps = {
   children: ReactNode;
-  variant?: "fade" | "rise";
+  variant?: "fade" | "rise" | "stagger";
   delay?: number;
   className?: string;
   as?: ElementType;

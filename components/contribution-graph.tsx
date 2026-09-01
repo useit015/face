@@ -1,3 +1,6 @@
+import { contact } from "@/lib/content";
+import { ContributionCells } from "@/components/contribution-cells";
+
 type ContributionDay = {
   date: string;
   count: number;
@@ -13,14 +16,6 @@ const MONTHS = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 ];
-
-const LEVEL_CLASS = [
-  "bg-contrib-0",
-  "bg-contrib-1",
-  "bg-contrib-2",
-  "bg-contrib-3",
-  "bg-contrib-4",
-] as const;
 
 async function getContributions(): Promise<ContributionsResponse | null> {
   try {
@@ -75,7 +70,13 @@ export async function ContributionGraph() {
   });
 
   return (
-    <div>
+    <a
+      href={contact.github}
+      target="_blank"
+      rel="noreferrer"
+      title="View GitHub profile"
+      className="block"
+    >
       <div className="no-scrollbar scroll-fade-x max-w-full overflow-x-auto overflow-y-hidden">
         <div className="w-max">
           <div className="relative mb-1.5 h-3 text-[12px] leading-none text-muted-foreground">
@@ -89,26 +90,12 @@ export async function ContributionGraph() {
               </span>
             ))}
           </div>
-          <div className="grid grid-flow-col grid-rows-7 gap-[2px]">
-            {weeks.flatMap((week, wi) =>
-              week.map((day, di) =>
-                day ? (
-                  <div
-                    key={day.date}
-                    className={`size-[10px] rounded-[2px] squircle ${LEVEL_CLASS[day.level]}`}
-                    title={`${day.count} contributions on ${day.date}`}
-                  />
-                ) : (
-                  <div key={`${wi}-${di}`} className="size-[10px]" />
-                ),
-              ),
-            )}
-          </div>
+          <ContributionCells weeks={weeks} />
         </div>
       </div>
       <p className="mt-1.5 text-[12px] text-muted-foreground">
         {total.toLocaleString("en-US")} in {new Date().getFullYear()}
       </p>
-    </div>
+    </a>
   );
 }

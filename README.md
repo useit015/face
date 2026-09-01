@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# face
 
-## Getting Started
+Personal portfolio site for Oussama Nahiz, built with Next.js App Router.
 
-First, run the development server:
+## Stack
+
+- Next.js 16 (App Router)
+- React 19
+- Motion
+- Tailwind CSS 4
+- TypeScript
+- ESLint 9
+- Icons from lucide-react and react-icons
+
+## Development
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open http://localhost:3000. pnpm is required
+(`packageManager: pnpm@11.8.0`); other package managers are not supported.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Verification and production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+pnpm exec eslint .     # lint
+pnpm exec tsc --noEmit # typecheck (no typecheck script exists)
+pnpm build             # production build
+pnpm start             # serve the production build
+```
 
-## Learn More
+## Data sources
 
-To learn more about Next.js, take a look at the following resources:
+Star counts come from the GitHub REST API, and the contribution graph comes
+from the jogruber.de contributions API. Both are cached for 1 hour via
+Next.js ISR and degrade silently to empty values if unavailable.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `app/` — routes, layout, global styles (Tailwind theme tokens live in `app/globals.css`)
+- `components/` — UI components (server components where possible; `"use client"` only where interactivity is needed)
+- `lib/` — site content (`content.ts`) and data helpers (`stars.ts`)
+- `plans/` — improvement plans

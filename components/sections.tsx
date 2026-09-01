@@ -25,16 +25,25 @@ function TimelineDot({ active }: { active?: boolean }) {
 
 function RoleDetail({ role }: { role: Role }) {
   return (
-    <div className="group/role relative flex min-w-0 gap-3 before:absolute before:-inset-x-3 before:-inset-y-2.5 before:squircle before:rounded-xl before:content-[''] before:transition-colors before:duration-200 hover:before:bg-timeline-hover [&>*]:relative">
+    <div className="relative flex min-w-0 gap-3">
       <span className="squircle mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg border border-border bg-card">
         <SkillIcon name={role.icon} className="size-4 text-foreground-secondary" />
       </span>
       <div className="min-w-0 flex-1">
         <div className="flex min-w-0 items-baseline justify-between gap-3">
           <h3 className="flex min-w-0 items-center gap-1.5 text-sm font-medium tracking-tight">
-            {role.company}
-            {role.url && (
-              <ArrowUpRight className="size-3 shrink-0 text-foreground-tertiary" />
+            {role.url ? (
+              <a
+                href={role.url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex min-w-0 items-center gap-1.5 underline-offset-3 decoration-foreground-decoration transition-[text-decoration-color,color] duration-200 hover:text-foreground hover:underline"
+              >
+                <span className="truncate">{role.company}</span>
+                <ArrowUpRight className="size-3 shrink-0 text-foreground-tertiary" />
+              </a>
+            ) : (
+              role.company
             )}
           </h3>
           <p className="shrink-0 text-[12px] text-foreground-tertiary tabular-nums">
@@ -63,19 +72,22 @@ function RoleDetail({ role }: { role: Role }) {
   );
 }
 
+const skillChipClass =
+  "inline-flex items-center gap-1.5 text-[13px] text-foreground-secondary transition-colors hover:text-foreground";
+
 function SkillChips({
   skills,
 }: {
-  skills: readonly { readonly name: string; readonly icon: string }[];
+  skills: readonly { readonly name: string; readonly icon: string; readonly url: string }[];
 }) {
   return (
     <>
       {skills.map((skill) => (
         <li key={skill.name} className="shrink-0">
-          <span className="inline-flex items-center gap-1.5 text-[13px] text-foreground-secondary">
+          <a href={skill.url} target="_blank" rel="noopener noreferrer" className={skillChipClass}>
             <SkillIcon name={skill.icon} className="size-3.5 shrink-0 text-foreground-tertiary" />
             {skill.name}
-          </span>
+          </a>
         </li>
       ))}
     </>
@@ -87,14 +99,19 @@ function SkillRow({
   skills,
   more,
   expanded,
+  staggerIndex,
 }: {
   label: string;
-  skills: readonly { readonly name: string; readonly icon: string }[];
-  more?: readonly { readonly name: string; readonly icon: string }[];
+  skills: readonly { readonly name: string; readonly icon: string; readonly url: string }[];
+  more?: readonly { readonly name: string; readonly icon: string; readonly url: string }[];
   expanded?: boolean;
+  staggerIndex?: number;
 }) {
   return (
-    <div className="grid grid-cols-[7rem_minmax(0,1fr)] items-start gap-x-3 min-[480px]:grid-cols-[8rem_minmax(0,1fr)]">
+    <div
+      className={`grid grid-cols-[7rem_minmax(0,1fr)] items-start gap-x-3 min-[480px]:grid-cols-[8rem_minmax(0,1fr)] ${expanded ? "stagger-in" : ""}`}
+      style={staggerIndex != null ? ({ "--i": staggerIndex } as CSSProperties) : undefined}
+    >
       <h3 className="pt-0.5 text-[13px] text-muted-foreground">{label}</h3>
       <ul
         className={
@@ -104,15 +121,15 @@ function SkillRow({
         }
       >
         <SkillChips skills={skills} />
-        {expanded &&
-          more?.map((skill, i) => (
-            <li key={skill.name} className="chip-in shrink-0" style={{ "--i": i } as CSSProperties}>
-              <span className="inline-flex items-center gap-1.5 text-[13px] text-foreground-secondary">
-                <SkillIcon name={skill.icon} className="size-3.5 shrink-0 text-foreground-tertiary" />
-                {skill.name}
-              </span>
-            </li>
-          ))}
+          {expanded &&
+            more?.map((skill, i) => (
+              <li key={skill.name} className="chip-in shrink-0" style={{ "--i": i } as CSSProperties}>
+                <a href={skill.url} target="_blank" rel="noopener noreferrer" className={skillChipClass}>
+                  <SkillIcon name={skill.icon} className="size-3.5 shrink-0 text-foreground-tertiary" />
+                  {skill.name}
+                </a>
+              </li>
+            ))}
       </ul>
     </div>
   );
@@ -140,22 +157,33 @@ export function ExperienceSection() {
                     "linear-gradient(to right, var(--foreground) 0%, var(--timeline-line) 70%, var(--timeline-line) 100%)",
                 }}
               />
-              <div className="grid grid-cols-4">
+              <Reveal variant="stagger" className="grid grid-cols-4">
                 {strip.map((entry, i) => (
                   <div key={entry.company} className="flex min-w-0 flex-col gap-2.5">
                     <TimelineDot active={i === 0} />
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex min-w-0 items-center gap-1.5">
                       <span className="squircle flex size-6 shrink-0 items-center justify-center rounded-md border border-border bg-card">
                         <SkillIcon name={entry.icon} className="size-3.5 text-foreground-secondary" />
                       </span>
-                      <span className="truncate text-[13px] font-medium">{entry.company}</span>
+                      {entry.url ? (
+                        <a
+                          href={entry.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="truncate text-[13px] font-medium underline-offset-3 decoration-foreground-decoration transition-[text-decoration-color,color] duration-200 hover:text-foreground hover:underline"
+                        >
+                          {entry.company}
+                        </a>
+                      ) : (
+                        <span className="truncate text-[13px] font-medium">{entry.company}</span>
+                      )}
                     </div>
                     <p className="text-[12px] whitespace-nowrap text-foreground-tertiary tabular-nums">
                       {entry.period}
                     </p>
                   </div>
                 ))}
-              </div>
+              </Reveal>
             </div>
           }
         >
@@ -188,21 +216,22 @@ export function SkillsSection() {
             </h2>
           }
           collapsed={
-            <div className="flex flex-col gap-3 pt-5">
+            <Reveal variant="stagger" className="flex flex-col gap-3 pt-5">
               {skillGroups.map((group) => (
                 <SkillRow key={group.label} label={group.label} skills={group.skills} />
               ))}
-            </div>
+            </Reveal>
           }
         >
           <div className="flex flex-col gap-3 pt-5">
-            {skillGroups.map((group) => (
+            {skillGroups.map((group, i) => (
               <SkillRow
                 key={group.label}
                 label={group.label}
                 skills={group.skills}
                 more={group.more}
                 expanded
+                staggerIndex={i}
               />
             ))}
           </div>
