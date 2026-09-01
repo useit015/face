@@ -1,0 +1,166 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0b0b0b;
+  --foreground: #eeeeee;
+  --foreground-secondary: color-mix(in oklch, var(--foreground) 75%, var(--background));
+  --foreground-tertiary: color-mix(in oklch, var(--foreground) 55%, var(--background));
+  --foreground-quaternary: color-mix(in oklch, var(--foreground) 30%, var(--background));
+  --foreground-decoration: color-mix(in oklch, var(--foreground-secondary) 44%, var(--background));
+  --foreground-decoration-hover: color-mix(in oklch, var(--foreground-secondary) 60%, var(--background));
+  --foreground-watermark: color-mix(in oklch, var(--foreground) 2.2%, var(--background));
+  --border: rgb(255 255 255 / 0.1);
+  --card: #171717;
+  --muted: #262626;
+  --muted-foreground: color-mix(in oklch, var(--foreground) 55%, var(--background));
+  --ring: #a1a1a1;
+  --timeline-line: color-mix(in oklch, var(--foreground) 17.5%, var(--background));
+  --timeline-hover: color-mix(in oklch, var(--foreground) 4%, var(--background));
+  --contrib-0: color-mix(in oklch, var(--foreground) 7%, var(--background));
+  --contrib-1: color-mix(in oklch, var(--foreground) 18%, var(--background));
+  --contrib-2: color-mix(in oklch, var(--foreground) 35%, var(--background));
+  --contrib-3: color-mix(in oklch, var(--foreground) 60%, var(--background));
+  --contrib-4: color-mix(in oklch, var(--foreground) 92%, var(--background));
+  --corner-scale: 0.6;
+  --radius: calc(0.625rem * var(--corner-scale));
+  --radius-md: calc(var(--radius) * 0.8);
+  --section-gap: 2.5rem;
+}
+
+@supports (corner-shape: squircle) {
+  :root {
+    --corner-scale: 1;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-foreground-secondary: var(--foreground-secondary);
+  --color-foreground-tertiary: var(--foreground-tertiary);
+  --color-foreground-quaternary: var(--foreground-quaternary);
+  --color-foreground-decoration: var(--foreground-decoration);
+  --color-foreground-decoration-hover: var(--foreground-decoration-hover);
+  --color-foreground-watermark: var(--foreground-watermark);
+  --color-border: var(--border);
+  --color-card: var(--card);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-ring: var(--ring);
+  --color-timeline-line: var(--timeline-line);
+  --color-timeline-hover: var(--timeline-hover);
+  --color-contrib-0: var(--contrib-0);
+  --color-contrib-1: var(--contrib-1);
+  --color-contrib-2: var(--contrib-2);
+  --color-contrib-3: var(--contrib-3);
+  --color-contrib-4: var(--contrib-4);
+  --radius-md: var(--radius-md);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --breakpoint-page: 43.75rem;
+}
+
+@utility squircle {
+  corner-shape: squircle;
+}
+
+@utility no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility scroll-fade-x {
+  --scroll-fade-size: 1.75rem;
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--scroll-fade-s, 0px),
+    #000 calc(100% - var(--scroll-fade-e, 0px)),
+    transparent 100%
+  );
+  animation: scroll-fade-reveal-s 1ms ease-in-out, scroll-fade-reveal-e 1ms ease-in-out;
+  animation-timeline: scroll(self inline), scroll(self inline);
+  animation-range: 0 6rem, calc(100% - 6rem) 100%;
+  animation-fill-mode: both;
+}
+
+@property --scroll-fade-s {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --scroll-fade-e {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@keyframes scroll-fade-reveal-s {
+  to {
+    --scroll-fade-s: var(--scroll-fade-size);
+  }
+}
+
+@keyframes scroll-fade-reveal-e {
+  from {
+    --scroll-fade-e: var(--scroll-fade-size);
+  }
+  to {
+    --scroll-fade-e: 0px;
+  }
+}
+
+@keyframes reveal-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+::selection {
+  background: color-mix(in oklch, var(--foreground) 20%, var(--background));
+}
+
+.js [data-reveal="fade"] {
+  opacity: 0;
+  transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.js [data-reveal="fade"].is-inview {
+  opacity: 1;
+}
+
+.js [data-reveal="rise"].is-inview {
+  animation: reveal-rise 400ms cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation-delay: var(--reveal-delay, 0ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .js [data-reveal] {
+    opacity: 1;
+    animation: none;
+  }
+}
