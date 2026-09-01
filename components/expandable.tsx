@@ -1,0 +1,39 @@
+"use client";
+
+import { useState, type ReactNode } from "react";
+import { ChevronsUpDown } from "lucide-react";
+
+export function Expandable({
+  header,
+  children,
+  label = "See more",
+}: {
+  header: ReactNode;
+  children: ReactNode;
+  label?: string;
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div>
+      <div className="flex items-center justify-between gap-3">
+        {header}
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          className="group/see inline-flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2 -mr-2 text-[0.8rem] font-medium text-foreground-secondary transition-transform outline-none select-none squircle hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-[0.97]"
+        >
+          {open ? "See less" : label}
+          <ChevronsUpDown className="size-3" />
+        </button>
+      </div>
+      <div
+        className="grid transition-[grid-template-rows] duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+        style={{ gridTemplateRows: open ? "1fr" : "0fr" }}
+      >
+        <div className="overflow-hidden">{children}</div>
+      </div>
+    </div>
+  );
+}

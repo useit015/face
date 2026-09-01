@@ -35,7 +35,7 @@ async function getContributions(): Promise<ContributionsResponse | null> {
   }
 }
 
-export async function ContributionGraph({ username }: { username: string }) {
+export async function ContributionGraph() {
   const data = await getContributions();
   if (!data) return null;
 
@@ -76,17 +76,6 @@ export async function ContributionGraph({ username }: { username: string }) {
 
   return (
     <div>
-      <div className="mb-1.5 flex items-center justify-between text-[13px] text-muted-foreground">
-        <p>{total.toLocaleString("en-US")} contributions last year</p>
-        <a
-          href={`https://github.com/${username}`}
-          target="_blank"
-          rel="noreferrer"
-          className="underline decoration-foreground-decoration underline-offset-3 hover:decoration-foreground-decoration-hover"
-        >
-          @{username}
-        </a>
-      </div>
       <div className="no-scrollbar scroll-fade-x max-w-full overflow-x-auto overflow-y-hidden">
         <div className="w-max">
           <div className="relative mb-1.5 h-3 text-[12px] leading-none text-muted-foreground">
@@ -117,6 +106,9 @@ export async function ContributionGraph({ username }: { username: string }) {
           </div>
         </div>
       </div>
+      <p className="mt-1.5 text-[12px] text-muted-foreground">
+        {total.toLocaleString("en-US")} last year
+      </p>
     </div>
   );
 }

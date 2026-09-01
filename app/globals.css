@@ -57,11 +57,18 @@
   --radius-md: var(--radius-md);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --breakpoint-page: 43.75rem;
 }
 
 @utility squircle {
   corner-shape: squircle;
+}
+
+@utility max-w-page {
+  max-width: 43.75rem;
+}
+
+@utility gap-section {
+  gap: var(--section-gap);
 }
 
 @utility no-scrollbar {

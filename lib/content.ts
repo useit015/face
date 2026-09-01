@@ -1,17 +1,26 @@
 export const contact = {
   email: "useit015@gmail.com",
   github: "https://github.com/useit015",
+  githubUser: "useit015",
   linkedin: "https://linkedin.com/in/useit015",
   toptal: "https://www.toptal.com/developers/resume/oussama-nahiz",
-  githubUser: "useit015",
 };
 
 export const hero = {
   name: "Oussama Nahiz",
-  headline: "Senior Full-Stack Engineer",
-  focus: "React, Node.js, TypeScript — AI product engineering",
-  bio: "Senior full-stack engineer and 42-grad with 9+ years building production software across React, Node.js, TypeScript, and AI. I ship products end to end, from architecture to deployment. I previously co-founded a fintech startup as CTO and now focus on AI tools, product engineering, and selective client work.",
+  role: "Senior Full-Stack Engineer",
+  bioLead:
+    "Senior full-stack engineer and 42-grad with 9+ years shipping production software across React, Node.js, TypeScript, and AI.",
+  bioProof:
+    "I solo-built a six-figure enterprise healthcare platform, led 9 engineers as co-founder & CTO, and delivered 8 Toptal engagements across 7 clients.",
 };
+
+export const socials = [
+  { label: "GitHub", href: contact.github, icon: "github" },
+  { label: "LinkedIn", href: contact.linkedin, icon: "linkedin" },
+  { label: "Toptal", href: contact.toptal, icon: "toptal" },
+  { label: "Email", href: `mailto:${contact.email}`, icon: "email" },
+] as const;
 
 export const stats = [
   { value: "9+", label: "years shipping product software" },
@@ -19,6 +28,13 @@ export const stats = [
   { value: "9", label: "engineers led as co-founder & CTO" },
   { value: "1", label: "six-figure enterprise build, solo" },
 ];
+
+export const timeline = [
+  { label: "Open to work", period: "Jun 26 – Now", icon: "search" },
+  { label: "Acurai", period: "Jan 25 – Jun 25", icon: "cloud" },
+  { label: "LendStack", period: "Oct 23 – May 24", icon: "building" },
+  { label: "Toptal", period: "Apr 22 – Oct 24", icon: "globe" },
+] as const;
 
 export type Role = {
   company: string;
@@ -165,96 +181,115 @@ export const experience: Role[] = [
 
 export type Project = {
   name: string;
-  category: string;
+  icon: string;
   description: string;
   stack: string[];
   url?: string;
-  repo?: string;
+  repo?: { owner: string; name: string; url: string };
   note?: string;
 };
 
 export const projects: Project[] = [
   {
     name: "Radiometer Course Creator",
-    category: "enterprise health-tech",
-    description:
-      "Course-authoring platform for Radiometer's AQURE healthcare ecosystem, solo-built end to end as part of a six-figure enterprise deal.",
+    icon: "heart-pulse",
+    description: "Course-authoring platform for Radiometer's AQURE healthcare ecosystem.",
     stack: ["React", "Node.js", "TypeScript", "AWS SAM", "PostgreSQL"],
     url: contact.toptal,
   },
   {
     name: "Clicky Clicky",
-    category: "computer vision ops",
-    description:
-      "Labeling tool and dashboard for Blue River Technology's See & Spray boom-height ground-truth workflow, solo-built.",
+    icon: "scan-eye",
+    description: "See & Spray ground-truth labeling tool and dashboard at Blue River Technology.",
     stack: ["React", "NestJS", "MongoDB", "Docker", "Leaflet", "AWS"],
     url: contact.toptal,
   },
   {
     name: "whichmodel",
-    category: "open source",
-    description:
-      "TypeScript CLI that recommends the right AI model for a task across OpenRouter, FAL, and Replicate.",
-    stack: ["TypeScript", "Node.js", "OpenRouter", "Replicate", "FAL"],
-    repo: "https://github.com/useit015/whichmodel",
+    icon: "terminal",
+    description: "TypeScript CLI that recommends the right AI model for a task.",
+    stack: ["TypeScript", "Node.js", "OpenRouter", "FAL"],
+    repo: { owner: "useit015", name: "whichmodel", url: "https://github.com/useit015/whichmodel" },
   },
   {
     name: "Open Design",
-    category: "ai design tooling",
-    description:
-      "Local-first design-agent product connecting coding-agent CLIs, design systems, and sandboxed previews into a deployable workflow.",
-    stack: ["TypeScript", "Local daemon", "Web app", "SQLite"],
-    repo: "https://github.com/nexu-io/open-design",
+    icon: "pen-tool",
+    description: "Design-agent product connecting coding-agent CLIs and design systems.",
+    stack: ["TypeScript", "Local daemon", "SQLite"],
+    repo: { owner: "nexu-io", name: "open-design", url: "https://github.com/nexu-io/open-design" },
   },
   {
     name: "Sigil",
-    category: "creator tools",
-    description:
-      "Creator studio converting video and images into shareable ASCII previews, with a studio UI, player packages, and Rust conversion tooling.",
-    stack: ["Next.js", "React", "TypeScript", "Rust", "Supabase"],
-    note: "329+ commits across studio, player, CLI, and conversion layers",
+    icon: "wand",
+    description: "Creator studio converting video and images into shareable ASCII previews.",
+    stack: ["Next.js", "React", "Rust", "Supabase"],
+    note: "329+ commits",
   },
   {
     name: "Asset Forge",
-    category: "ai game assets",
-    description:
-      "Full-stack asset-generation tool for game and character assets, with auth, storage, fal.ai generation, and quality-analysis workflows.",
-    stack: ["React", "Vite", "Express", "TypeScript", "Supabase", "Cloudflare R2"],
+    icon: "boxes",
+    description: "Asset-generation platform for game and character assets, with fal.ai.",
+    stack: ["React", "Express", "Supabase", "Cloudflare R2"],
   },
   {
     name: "souk-fighter",
-    category: "game-tech",
-    description:
-      "KOF-style browser fighting game with a custom .sfpack bundle format, character tooling, and a fixed-timestep engine.",
-    stack: ["React 19", "Pixi.js 8", "Tailwind CSS 4", "IndexedDB"],
-    repo: "https://github.com/useit015/souk-fighter",
+    icon: "swords",
+    description: "KOF-style browser fighting game with a custom .sfpack bundle format.",
+    stack: ["React 19", "Pixi.js 8", "IndexedDB"],
+    repo: { owner: "useit015", name: "souk-fighter", url: "https://github.com/useit015/souk-fighter" },
   },
 ];
 
 export const skillGroups = [
   {
-    name: "Core stack",
-    description: "The product surface users see and the application layer that keeps it maintainable.",
-    skills: ["TypeScript", "JavaScript", "React", "Next.js", "Node.js", "HTML/CSS"],
+    label: "Core stack",
+    skills: [
+      { name: "TypeScript", icon: "typescript" },
+      { name: "JavaScript", icon: "javascript" },
+      { name: "React", icon: "react" },
+      { name: "Next.js", icon: "nextjs" },
+      { name: "Node.js", icon: "nodejs" },
+      { name: "HTML/CSS", icon: "html5" },
+    ],
   },
   {
-    name: "Backend and data",
-    description: "APIs, services, and storage for product workflows that survive real usage.",
-    skills: ["NestJS", "Express", "PostgreSQL", "MongoDB", "Redis", "REST APIs"],
+    label: "Backend & data",
+    skills: [
+      { name: "NestJS", icon: "nestjs" },
+      { name: "Express", icon: "express" },
+      { name: "PostgreSQL", icon: "postgresql" },
+      { name: "MongoDB", icon: "mongodb" },
+      { name: "Redis", icon: "redis" },
+      { name: "REST APIs", icon: "braces" },
+    ],
   },
   {
-    name: "Cloud and delivery",
-    description: "The deployment path: serverless infrastructure, containers, and release plumbing.",
-    skills: ["AWS SAM", "Lambda", "API Gateway", "S3", "Docker", "CI/CD"],
+    label: "Cloud & delivery",
+    skills: [
+      { name: "AWS SAM", icon: "aws" },
+      { name: "Lambda", icon: "lambda" },
+      { name: "Docker", icon: "docker" },
+      { name: "CI/CD", icon: "workflow" },
+    ],
   },
   {
-    name: "AI and ML-adjacent",
-    description: "LLM integrations, model selection, AI media tooling, OCR/KYC, and annotation systems in real products.",
-    skills: ["OpenAI APIs", "OpenRouter", "Replicate", "FAL", "Agentic AI", "LLM integration"],
+    label: "AI",
+    skills: [
+      { name: "OpenAI APIs", icon: "openai" },
+      { name: "OpenRouter", icon: "openrouter" },
+      { name: "Replicate", icon: "replicate" },
+      { name: "Agentic AI", icon: "bot" },
+      { name: "LLM integration", icon: "sparkles" },
+    ],
   },
   {
-    name: "Breadth signals",
-    description: "Mobile, game-tech, real-time, graphics, and systems breadth for unusual product surfaces.",
-    skills: ["React Native", "Pixi.js 8", "Three.js", "WebRTC", "Web3.js", "Unix/Linux"],
+    label: "Breadth",
+    skills: [
+      { name: "React Native", icon: "react" },
+      { name: "Pixi.js 8", icon: "sparkles" },
+      { name: "Three.js", icon: "threejs" },
+      { name: "WebRTC", icon: "radio" },
+      { name: "Unix/Linux", icon: "terminal-square" },
+    ],
   },
-];
+] as const;
