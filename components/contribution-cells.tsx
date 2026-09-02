@@ -78,7 +78,7 @@ export function ContributionCells({
         createPortal(
           <div
             aria-hidden="true"
-            className="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-[calc(100%+6px)] rounded-md bg-foreground px-2 py-1 text-[11px] whitespace-nowrap text-background shadow-lg"
+            className="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-[calc(100%+6px)] rounded-md bg-foreground px-2 py-1 text-meta whitespace-nowrap text-background shadow-lg"
             style={{ left: tip.x, top: tip.y } as CSSProperties}
           >
             {tip.text}

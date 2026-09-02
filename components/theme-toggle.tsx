@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { Moon, Sun } from "lucide-react";
 
 const themeColors = { light: "#f9f7f4", dark: "#0d0c0a" } as const;
@@ -18,19 +18,44 @@ function isDarkOnServer() {
   return false;
 }
 
+function syncThemeChrome(dark: boolean) {
+  document
+    .querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')
+    .forEach((meta) =>
+      meta.setAttribute(
+        "content",
+        dark ? themeColors.dark : themeColors.light,
+      ),
+    );
+  document.querySelectorAll<HTMLLinkElement>('link[rel="icon"]').forEach((icon) => {
+    icon.href = dark ? "/favicon-dark.svg" : "/favicon.svg";
+  });
+}
+
 export function ThemeToggle() {
   const dark = useSyncExternalStore(subscribe, isDark, isDarkOnServer);
+
+  useEffect(() => {
+    const apply = () =>
+      syncThemeChrome(document.documentElement.classList.contains("dark"));
+    apply();
+    window.dispatchEvent(new Event("themechange"));
+    window.addEventListener("themechange", apply);
+    // React re-inserts its metadata-rendered icon link whenever the current
+    // href diverges from what it rendered, so keep re-syncing anything new.
+    const observer = new MutationObserver(apply);
+    observer.observe(document.head, { childList: true });
+    return () => {
+      window.removeEventListener("themechange", apply);
+      observer.disconnect();
+    };
+  }, []);
 
   function toggle() {
     const next = document.documentElement.classList.toggle("dark");
     try {
       localStorage.setItem("theme", next ? "dark" : "light");
     } catch {}
-    document
-      .querySelector('meta[name="theme-color"]')
-      ?.setAttribute("content", next ? themeColors.dark : themeColors.light);
-    const icon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
-    if (icon) icon.href = next ? "/favicon-dark.svg" : "/favicon.svg";
     window.dispatchEvent(new Event("themechange"));
   }
 

@@ -11,8 +11,11 @@ Three words: precise, assured, understated.
 
 ### Aesthetic Direction
 Warm minimal editorial. Tinted neutrals (oklch, warm hue ~70–85), monochrome
-foreground-driven palette, squircle corners, Geist Sans/Mono, generous whitespace,
-small type with tight tracking. Light and dark themes, both first-class.
+foreground-driven palette, squircle corners, Familjen Grotesk (body/headings)
+paired with Martian Mono (labels, metadata, machine-voice details), generous
+whitespace, committed 1.333+ modular type scale (meta 11 / body 16 / heading 24,
+semantic tokens `text-meta` / `text-body` / `text-heading`), tight tracking.
+Light and dark themes, both first-class.
 Anti-references: glassmorphism, gradient text, neon-on-dark, rounded-card grids,
 anything that reads "AI-generated landing page".
 

@@ -81,7 +81,7 @@ export async function ContributionGraph() {
     >
       <ScrollFadeX className="no-scrollbar max-w-full overflow-x-auto overflow-y-hidden">
         <div className="w-max">
-          <div className="relative mb-1.5 h-3 text-[12px] leading-none text-muted-foreground">
+          <div className="relative mb-1.5 h-3 font-mono text-meta leading-none text-muted-foreground">
             {monthLabels.map(({ index, label }) => (
               <span
                 key={`${index}-${label}`}
@@ -95,7 +95,7 @@ export async function ContributionGraph() {
           <ContributionCells weeks={weeks} />
         </div>
       </ScrollFadeX>
-      <p className="mt-1.5 text-[12px] text-muted-foreground">
+      <p className="mt-1.5 font-mono text-meta text-muted-foreground">
         {total.toLocaleString("en-US")} in {new Date().getFullYear()}
       </p>
     </a>

@@ -71,8 +71,14 @@
   --color-contrib-3: var(--contrib-3);
   --color-contrib-4: var(--contrib-4);
   --radius-md: var(--radius-md);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-familjen);
+  --font-mono: var(--font-martian);
+  --text-meta: 0.6875rem;
+  --text-meta--line-height: 1.5;
+  --text-body: 1rem;
+  --text-body--line-height: 1.6;
+  --text-heading: 1.5rem;
+  --text-heading--line-height: 1.25;
 }
 
 @utility squircle {
@@ -140,6 +146,8 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
+  font-size: 1rem;
+  line-height: 1.6;
   transition: background-color 200ms ease, color 200ms ease;
 }
 

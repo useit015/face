@@ -16,12 +16,12 @@ function ProjectRow({ project, stars }: { project: Project; stars?: number }) {
         <ProjectIcon name={project.icon} className="size-4 text-foreground-secondary" />
       </div>
       <div className="min-w-0 flex-1">
-        <h3 className="text-sm font-medium tracking-tight">{project.name}</h3>
-        <p className="truncate text-[13px] text-foreground-secondary">
+        <h3 className="text-body font-medium tracking-tight">{project.name}</h3>
+        <p className="truncate text-body text-foreground-secondary">
           {project.description}
         </p>
       </div>
-      <div className="flex shrink-0 items-center gap-1 text-[13px] tabular-nums text-foreground-tertiary">
+      <div className="flex shrink-0 items-center gap-1 font-mono text-meta text-foreground-tertiary">
         {typeof stars === "number" && stars > 0 ? (
           <>
             <Star className="size-3 transition-transform duration-200 group-hover/row:fill-current group-hover/row:scale-110 motion-reduce:transition-none" />

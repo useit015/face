@@ -1,29 +1,29 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Familjen_Grotesk, Martian_Mono } from "next/font/google";
 import { MotionProvider } from "@/components/motion-provider";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const familjenGrotesk = Familjen_Grotesk({
+  variable: "--font-familjen",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const martianMono = Martian_Mono({
+  variable: "--font-martian",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
   title: "Oussama Nahiz – Senior Full-Stack Engineer",
   description:
-    "Senior full-stack engineer and 42-grad with 9+ years shipping production software across React, Node.js, TypeScript, and AI. I ship products end to end, from architecture to deployment.",
+    "Senior full-stack engineer and 42-grad with 9+ years shipping production software across React, Node.js, TypeScript, and AI. I build products end to end, from architecture to deployment.",
   icons: {
     icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
   },
   openGraph: {
     title: "Oussama Nahiz – Senior Full-Stack Engineer",
     description:
-      "9+ years shipping production software across React, Node.js, TypeScript, and AI. Architecture to deployment, end to end.",
+      "9+ years shipping production software across React, Node.js, TypeScript, and AI. Architecture to deployment.",
     type: "website",
   },
 };
@@ -34,21 +34,24 @@ export const viewport: Viewport = {
 
 const jsClassScript = `document.documentElement.classList.add("js")`;
 
-const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d=t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches;document.documentElement.classList.toggle("dark",d);var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",d?"#0d0c0a":"#f9f7f4");var i=document.querySelector('link[rel="icon"]');if(i&&d)i.href="/favicon-dark.svg"}catch(e){}})()`;
+const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d=t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches;document.documentElement.classList.toggle("dark",d)}catch(e){}})()`;
 
 const consoleScript = `try{console.log("%cViewing source? Good instinct. It's how I'd vet this page too.","font-weight:600;font-size:13px");console.log("%cIf the code passes inspection, the engineer might too — useit015@gmail.com","color:#8a8578")}catch(e){}`;
+
+const whisperScript = `(function(){try{var t=document.title,w=["Still here.","The avatar noticed.","The other tab is slower."],i=Math.floor(Math.random()*w.length);document.addEventListener("visibilitychange",function(){document.title=document.hidden?w[i++%w.length]:t})}catch(e){}})()`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${familjenGrotesk.variable} ${martianMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: jsClassScript }} />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <script dangerouslySetInnerHTML={{ __html: consoleScript }} />
+        <script dangerouslySetInnerHTML={{ __html: whisperScript }} />
       </head>
       <body className="min-h-full flex flex-col">
         <MotionProvider>{children}</MotionProvider>

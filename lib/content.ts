@@ -1,5 +1,6 @@
 export const contact = {
   email: "useit015@gmail.com",
+  cal: "https://cal.com/useit015/15min",
   github: "https://github.com/useit015",
   githubUser: "useit015",
   linkedin: "https://linkedin.com/in/useit015",
@@ -40,7 +41,7 @@ export const experience: Role[] = [
     summary: "AI startup focused on reducing hallucinations in large language models.",
     bullets: [
       "Shipped the front-end product surface across Chat, Wiki, and Brain Builder.",
-      "Worked across TypeScript, Next.js, Node.js, and OpenAI-integrated workflows.",
+      "Worked with TypeScript, Next.js, Node.js, and OpenAI-integrated workflows.",
     ],
   },
   {
@@ -52,7 +53,7 @@ export const experience: Role[] = [
     bullets: [
       "Led a 9-person engineering team inside a 14-person startup.",
       "Shipped to 2 live pilot clients in Zambia with 12 prospects in the pipeline.",
-      "Owned architecture across Next.js, Node.js microservices, KYC, OCR, and AI-assisted workflows.",
+      "Owned architecture for Next.js, Node.js microservices, KYC, OCR, and AI-assisted workflows.",
     ],
   },
   {
@@ -73,7 +74,7 @@ export const experience: Role[] = [
     period: "May 24 – Oct 24", icon: "radar",
     summary: "AI-powered SaaS for industrial data operations.",
     bullets: [
-      "Built AI-powered SaaS configuration tooling for the data-operations module.",
+      "Built AI configuration tooling for the data-operations module.",
       "Wired backend integrations into a React front end on Node.js and MongoDB.",
     ],
   },
@@ -84,7 +85,7 @@ export const experience: Role[] = [
     period: "Sep 23 – Jan 24", icon: "activity",
     summary: "Interactive data products for payments reporting.",
     bullets: [
-      "Built interactive data-visualization components in React for connected-economy reporting.",
+      "Built data-visualization components in React for connected-economy reporting.",
       "Implemented server-side Node.js work with SQL, MongoDB, and third-party APIs.",
     ],
   },
@@ -139,7 +140,7 @@ export const experience: Role[] = [
     period: "Feb 20 – Jul 20", icon: "shopping-bag",
     summary: "Global Nespresso eCommerce platform.",
     bullets: [
-      "Implemented a guest checkout flow on the global Nespresso eCommerce platform.",
+      "Implemented a guest checkout flow for the Nespresso storefront.",
       "Wrote Jest and Enzyme tests and modernized legacy AngularJS and jQuery code.",
     ],
   },
@@ -173,7 +174,7 @@ export const projects: Project[] = [
   {
     name: "Asset Forge",
     icon: "boxes",
-    description: "Asset-generation platform for game and character assets, with fal.ai.",
+    description: "Asset-generation platform for game and character art, with fal.ai.",
     stack: ["React", "Express", "Supabase", "Cloudflare R2"],
   },
   {

@@ -5,6 +5,7 @@ import { ExperienceSection, SkillsSection } from "@/components/sections";
 import { ProjectList } from "@/components/project-list";
 import { SocialIcon } from "@/components/icons";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { CopyEmail } from "@/components/copy-email";
 import { CursorAvatar } from "@/components/cursor-avatar";
 import { contact, hero, socials } from "@/lib/content";
 import { getStars } from "@/lib/stars";
@@ -22,7 +23,7 @@ export default async function Home() {
           variant="rise"
           className="flex items-baseline justify-between gap-2"
         >
-          <h1 className="text-base font-medium tracking-tight">{hero.name}</h1>
+          <h1 className="text-heading font-medium tracking-tight">{hero.name}</h1>
 
           <ul className="flex items-center gap-2 pt-0.5">
             {socials.map((social) => (
@@ -47,14 +48,16 @@ export default async function Home() {
         </Reveal>
         <Reveal variant="rise" delay={75}>
           <div className="grid gap-y-8 sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-x-8 items-center mb-2">
-            <div className="min-w-0">
-              <p className="text-sm leading-relaxed text-foreground-secondary">
+            <div className="min-w-0 max-w-[65ch]">
+              <p className="text-body text-foreground-secondary">
                 {hero.bioLead}{" "}
                 <a
-                  href={`mailto:${contact.email}`}
+                  href={contact.cal}
+                  target="_blank"
+                  rel="noreferrer"
                   className="underline decoration-foreground-decoration underline-offset-3 transition-[text-decoration-color] duration-200 hover:decoration-foreground-decoration-hover"
                 >
-                  Email me
+                  Book a call
                 </a>{" "}
                 for the full story, or find my references on{" "}
                 <a
@@ -67,7 +70,7 @@ export default async function Home() {
                 </a>
                 .
               </p>
-              <p className="mt-3 text-sm leading-relaxed text-foreground-secondary">
+              <p className="mt-3 text-body text-foreground-secondary">
                 {hero.bioProof}
               </p>
             </div>
@@ -75,6 +78,7 @@ export default async function Home() {
               <CursorAvatar
                 size={128}
                 label="Portrait of Oussama Nahiz, following your cursor"
+                className="cursor-pointer select-none"
               />
             </div>
           </div>
@@ -82,20 +86,15 @@ export default async function Home() {
         <Reveal variant="fade" delay={150}>
           <div className="flex flex-wrap items-center gap-2">
             <a
-              href={`mailto:${contact.email}`}
-              className="squircle inline-flex h-8 shrink-0 items-center whitespace-nowrap rounded-lg bg-foreground px-2.5 text-sm font-medium text-background transition-[background-color,transform] duration-200 outline-none select-none hover:bg-foreground/80 active:scale-[0.97] focus-visible:ring-3 focus-visible:ring-ring/50"
-            >
-              Email me
-            </a>
-            <a
-              href={contact.linkedin}
+              href={contact.cal}
               target="_blank"
               rel="noreferrer"
-              className="squircle inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-border px-2.5 text-sm font-medium text-foreground-secondary transition-[background-color,color] duration-200 outline-none select-none hover:bg-muted hover:text-foreground active:scale-[0.97] focus-visible:ring-3 focus-visible:ring-ring/50"
+              className="squircle inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg bg-foreground px-2.5 text-body font-medium text-background transition-[background-color,transform] duration-200 outline-none select-none hover:bg-foreground/80 active:scale-[0.97] focus-visible:ring-3 focus-visible:ring-ring/50"
             >
-              Message on LinkedIn
+              Book a call
               <ArrowUpRight className="size-3.5" />
             </a>
+            <CopyEmail email={contact.email} />
           </div>
         </Reveal>
       </section>
@@ -109,7 +108,7 @@ export default async function Home() {
         className="flex flex-col gap-5"
       >
         <Reveal variant="fade">
-          <h2 className="text-sm font-medium tracking-tight">
+          <h2 className="font-mono text-meta font-medium uppercase tracking-[0.14em] text-foreground-tertiary">
             <span id="performance-heading">Performance</span>
           </h2>
         </Reveal>
@@ -123,7 +122,7 @@ export default async function Home() {
         className="flex flex-col gap-5"
       >
         <Reveal variant="fade">
-          <h2 className="text-sm font-medium tracking-tight">
+          <h2 className="font-mono text-meta font-medium uppercase tracking-[0.14em] text-foreground-tertiary">
             <span id="projects-heading">Projects</span>
           </h2>
         </Reveal>
@@ -132,7 +131,7 @@ export default async function Home() {
         </Reveal>
       </section>
 
-      <footer className="mt-auto pt-8 text-[12px] text-foreground-quaternary">
+      <footer className="mt-auto pt-8 font-mono text-meta text-foreground-quaternary">
         <p>© {new Date().getFullYear()} Oussama Nahiz</p>
       </footer>
     </main>
