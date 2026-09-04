@@ -1,7 +1,8 @@
 import { ArrowUpRight } from "lucide-react";
 import { Reveal } from "@/components/reveal";
 import { ContributionGraph } from "@/components/contribution-graph";
-import { ExperienceSection, SkillsSection } from "@/components/sections";
+import { SkillsSection } from "@/components/sections";
+import { ExperienceSection } from "@/components/experience-section";
 import { ProjectList } from "@/components/project-list";
 import { SocialIcon } from "@/components/icons";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -17,7 +18,7 @@ export default async function Home() {
   ]);
 
   return (
-    <main className="mx-auto flex min-h-svh w-full max-w-page flex-col gap-section px-5 pt-12 pb-16 sm:px-8 md:pt-14">
+    <main id="main" className="mx-auto flex min-h-svh w-full max-w-page flex-col gap-section px-5 pt-12 pb-16 sm:px-8 md:pt-14">
       <section className="flex flex-col gap-5">
         <Reveal
           variant="rise"
@@ -35,7 +36,7 @@ export default async function Home() {
                   {...(social.href.startsWith("http")
                     ? { target: "_blank", rel: "noreferrer" }
                     : {})}
-                  className="relative squircle flex size-7 items-center justify-center rounded-md text-foreground-secondary transition-colors duration-200 outline-none select-none before:absolute before:-inset-1.5 before:content-[''] hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-[0.97]"
+                  className="relative squircle flex size-7 items-center justify-center rounded-md text-foreground-secondary transition-colors duration-200 outline-none select-none before:absolute before:-inset-2 before:content-[''] hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-[0.97]"
                 >
                   <SocialIcon name={social.icon} className="size-3.5" />
                 </a>
@@ -55,7 +56,7 @@ export default async function Home() {
                   href={contact.cal}
                   target="_blank"
                   rel="noreferrer"
-                  className="underline decoration-foreground-decoration underline-offset-3 transition-[text-decoration-color] duration-200 hover:decoration-foreground-decoration-hover"
+                  className="rounded-sm underline decoration-foreground-decoration underline-offset-3 outline-none transition-[text-decoration-color] duration-200 hover:decoration-foreground-decoration-hover focus-visible:ring-3 focus-visible:ring-ring/50"
                 >
                   Book a call
                 </a>{" "}
@@ -64,7 +65,7 @@ export default async function Home() {
                   href={contact.toptal}
                   target="_blank"
                   rel="noreferrer"
-                  className="underline decoration-foreground-decoration underline-offset-3 transition-[text-decoration-color] duration-200 hover:decoration-foreground-decoration-hover"
+                  className="rounded-sm underline decoration-foreground-decoration underline-offset-3 outline-none transition-[text-decoration-color] duration-200 hover:decoration-foreground-decoration-hover focus-visible:ring-3 focus-visible:ring-ring/50"
                 >
                   Toptal
                 </a>
@@ -89,7 +90,7 @@ export default async function Home() {
               href={contact.cal}
               target="_blank"
               rel="noreferrer"
-              className="squircle inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg bg-foreground px-2.5 text-body font-medium text-background transition-[background-color,transform] duration-200 outline-none select-none hover:bg-foreground/80 active:scale-[0.97] focus-visible:ring-3 focus-visible:ring-ring/50"
+              className="squircle relative inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg bg-foreground px-2.5 text-body font-medium whitespace-nowrap text-background outline-none select-none before:absolute before:-inset-y-[6px] before:-inset-x-1 before:content-[''] focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-[0.97] hover:bg-foreground/80 transition-[background-color,transform] duration-200"
             >
               Book a call
               <ArrowUpRight className="size-3.5" />
@@ -103,27 +104,18 @@ export default async function Home() {
 
       <SkillsSection />
 
-      <section
-        aria-labelledby="performance-heading"
-        className="flex flex-col gap-5"
-      >
-        <Reveal variant="fade">
-          <h2 className="font-mono text-meta font-medium uppercase tracking-[0.14em] text-foreground-tertiary">
-            <span id="performance-heading">Performance</span>
-          </h2>
-        </Reveal>
-        <Reveal variant="fade" delay={75}>
-          <ContributionGraph />
-        </Reveal>
-      </section>
+      <ContributionGraph />
 
       <section
         aria-labelledby="projects-heading"
         className="flex flex-col gap-5"
       >
         <Reveal variant="fade">
-          <h2 className="font-mono text-meta font-medium uppercase tracking-[0.14em] text-foreground-tertiary">
-            <span id="projects-heading">Projects</span>
+          <h2
+            id="projects-heading"
+            className="font-mono text-meta font-medium uppercase tracking-[0.14em] text-foreground-tertiary"
+          >
+            Projects
           </h2>
         </Reveal>
         <Reveal variant="fade" delay={75}>
@@ -131,7 +123,7 @@ export default async function Home() {
         </Reveal>
       </section>
 
-      <footer className="mt-auto pt-8 font-mono text-meta text-foreground-quaternary">
+      <footer className="mt-auto pt-8 font-mono text-meta text-foreground-tertiary">
         <p>© {new Date().getFullYear()} Oussama Nahiz</p>
       </footer>
     </main>

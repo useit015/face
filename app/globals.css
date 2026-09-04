@@ -95,6 +95,7 @@
 
 @utility timeline-status-halo {
   background: radial-gradient(circle, var(--timeline-halo) 0%, transparent 80%);
+  animation: halo-breathe 3.2s ease-in-out infinite;
 }
 
 @utility no-scrollbar {
@@ -117,6 +118,16 @@
     #000 calc(100% - var(--scroll-fade-e)),
     transparent 100%
   );
+}
+
+@keyframes halo-breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 @keyframes reveal-fade-in {
@@ -204,6 +215,10 @@ body {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  .timeline-status-halo {
+    animation: none;
   }
 
   .js [data-reveal],

@@ -1,6 +1,7 @@
 import { contact } from "@/lib/content";
 import { ContributionCells } from "@/components/contribution-cells";
 import { ScrollFadeX } from "@/components/scroll-fade-x";
+import { Reveal } from "@/components/reveal";
 
 type ContributionDay = {
   date: string;
@@ -33,6 +34,7 @@ async function getContributions(): Promise<ContributionsResponse | null> {
 
 export async function ContributionGraph() {
   const data = await getContributions();
+  // Silent degrade: no orphan "Performance" heading when the API is down.
   if (!data) return null;
 
   const days = data.contributions;
@@ -71,33 +73,48 @@ export async function ContributionGraph() {
   });
 
   return (
-    <a
-      href={contact.github}
-      target="_blank"
-      rel="noreferrer"
-      title="View GitHub profile"
-      aria-label={`${total.toLocaleString("en-US")} GitHub contributions in ${new Date().getFullYear()}`}
-      className="block"
+    <section
+      aria-labelledby="performance-heading"
+      className="flex flex-col gap-5"
     >
-      <ScrollFadeX className="no-scrollbar max-w-full overflow-x-auto overflow-y-hidden">
-        <div className="w-max">
-          <div className="relative mb-1.5 h-3 font-mono text-meta leading-none text-muted-foreground">
-            {monthLabels.map(({ index, label }) => (
-              <span
-                key={`${index}-${label}`}
-                className="absolute top-0"
-                style={{ left: `${index * 0.75}rem` }}
-              >
-                {label}
-              </span>
-            ))}
-          </div>
-          <ContributionCells weeks={weeks} />
-        </div>
-      </ScrollFadeX>
-      <p className="mt-1.5 font-mono text-meta text-muted-foreground">
-        {total.toLocaleString("en-US")} in {new Date().getFullYear()}
-      </p>
-    </a>
+      <Reveal variant="fade">
+        <h2
+          id="performance-heading"
+          className="font-mono text-meta font-medium uppercase tracking-[0.14em] text-foreground-tertiary"
+        >
+          Performance
+        </h2>
+      </Reveal>
+      <Reveal variant="fade" delay={75}>
+        <a
+          href={contact.github}
+          target="_blank"
+          rel="noreferrer"
+          title="View GitHub profile"
+          aria-label={`${total.toLocaleString("en-US")} GitHub contributions in ${new Date().getFullYear()}`}
+          className="block rounded-xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+        >
+          <ScrollFadeX className="no-scrollbar max-w-full overflow-x-auto overflow-y-hidden">
+            <div className="w-max">
+              <div className="relative mb-1.5 h-3 font-mono text-meta leading-none text-muted-foreground">
+                {monthLabels.map(({ index, label }) => (
+                  <span
+                    key={`${index}-${label}`}
+                    className="absolute top-0"
+                    style={{ left: `${index * 0.75}rem` }}
+                  >
+                    {label}
+                  </span>
+                ))}
+              </div>
+              <ContributionCells weeks={weeks} />
+            </div>
+          </ScrollFadeX>
+          <p className="mt-1.5 font-mono text-meta text-muted-foreground">
+            {total.toLocaleString("en-US")} in {new Date().getFullYear()}
+          </p>
+        </a>
+      </Reveal>
+    </section>
   );
 }

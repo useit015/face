@@ -32,6 +32,11 @@ export function CursorAvatar({ size = 240, label, className }: CursorAvatarProps
       const follower = (el as HTMLElement & { follower?: AvatarFollower | null })
         .follower;
       if (!follower || walking) return;
+      // Respect reduced motion: skip the playful full-ring walk.
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        follower.face("center");
+        return;
+      }
       walking = true;
       direction = -direction;
 

@@ -29,7 +29,11 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f9f7f4",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f9f7f4" },
+    { media: "(prefers-color-scheme: dark)", color: "#0d0c0a" },
+  ],
+  colorScheme: "light dark",
 };
 
 const jsClassScript = `document.documentElement.classList.add("js")`;
@@ -54,6 +58,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: whisperScript }} />
       </head>
       <body className="min-h-full flex flex-col">
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-foreground focus:px-3 focus:py-1.5 focus:font-mono focus:text-meta focus:text-background focus:outline-none"
+        >
+          Skip to content
+        </a>
         <MotionProvider>{children}</MotionProvider>
       </body>
     </html>
