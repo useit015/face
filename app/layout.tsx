@@ -1,6 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import { Familjen_Grotesk, Martian_Mono } from "next/font/google";
 import { MotionProvider } from "@/components/motion-provider";
+import {
+  personJsonLd,
+  siteDescription,
+  siteName,
+  siteSocialDescription,
+  siteTitle,
+  siteUrl,
+} from "@/lib/seo";
 import "./globals.css";
 
 const familjenGrotesk = Familjen_Grotesk({
@@ -14,17 +22,44 @@ const martianMono = Martian_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Oussama Nahiz – Senior Full-Stack Engineer",
-  description:
-    "Senior full-stack engineer and 42-grad with 9+ years shipping production software across React, Node.js, TypeScript, and AI. I build products end to end, from architecture to deployment.",
+  metadataBase: new URL(siteUrl),
+  title: siteTitle,
+  description: siteDescription,
+  applicationName: siteName,
+  authors: [{ name: siteName, url: siteUrl }],
+  creator: siteName,
+  alternates: {
+    canonical: "/",
+    types: {
+      "text/plain": "/llms.txt",
+    },
+  },
   icons: {
     icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
   },
   openGraph: {
-    title: "Oussama Nahiz – Senior Full-Stack Engineer",
-    description:
-      "9+ years shipping production software across React, Node.js, TypeScript, and AI. Architecture to deployment.",
     type: "website",
+    url: siteUrl,
+    siteName,
+    title: siteTitle,
+    description: siteSocialDescription,
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteTitle,
+    description: siteSocialDescription,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
   },
 };
 
@@ -44,6 +79,8 @@ const consoleScript = `try{console.log("%cViewing source? Good instinct. It's ho
 
 const whisperScript = `(function(){try{var t=document.title,w=["Still here.","The avatar noticed.","The other tab is slower."],i=Math.floor(Math.random()*w.length);document.addEventListener("visibilitychange",function(){document.title=document.hidden?w[i++%w.length]:t})}catch(e){}})()`;
 
+const jsonLdScript = JSON.stringify(personJsonLd).replaceAll("<", "\\u003c");
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
@@ -56,6 +93,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <script dangerouslySetInnerHTML={{ __html: consoleScript }} />
         <script dangerouslySetInnerHTML={{ __html: whisperScript }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLdScript }}
+        />
       </head>
       <body className="min-h-full flex flex-col">
         <a
