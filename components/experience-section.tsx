@@ -2,24 +2,62 @@
 
 import { ArrowUpRight, ChevronsUpDown } from "lucide-react";
 import {
+  useEffect,
   useLayoutEffect,
   useRef,
   useState,
   type RefObject,
 } from "react";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { Reveal } from "@/components/reveal";
 import { SkillIcon } from "@/components/icons";
 import { experience, type Role } from "@/lib/content";
 
+const heightEase = [0.16, 1, 0.3, 1] as const;
 const ease = [0.4, 0, 0.2, 1] as const;
 const flyEase = [0.16, 1, 0.3, 1] as const;
+// The relocation rows settle at this point; the rest of the tree only enters
+// once they are fully animated.
+const FLIGHT_S = 0.8;
 
 type Point = { x: number; y: number };
 
-const hiddenTreeClass =
-  "pointer-events-none invisible absolute inset-x-0 top-0 h-0 overflow-hidden opacity-0";
-const visibleTreeClass = "relative opacity-100";
+type PaneState = "flow" | "overlay" | "hidden";
+
+// The two trees swap roles around the height animation:
+// - flow: in flow — defines the container's resting height
+// - overlay: painted in place at natural height while the height animates;
+//   clipped only by the container's overflow-hidden so flying rows can travel
+//   outside the tree's own box
+// - hidden: fully out of the way once the animation has settled
+const PANE_CLASS: Record<PaneState, string> = {
+  flow: "relative",
+  // left-3/right-3 (not inset-x-0) so the overlay spans the container's
+  // content box — same position the tree occupies in flow. The container is
+  // -mx-3 px-3, so inset-x-0 would sit 12px left and jump on every swap.
+  overlay: "absolute left-3 right-3 top-0",
+  hidden:
+    "pointer-events-none invisible absolute left-3 right-3 top-0 h-0 overflow-hidden",
+};
+
+const PANE_FADE =
+  "transition-opacity duration-[250ms] ease-out motion-reduce:transition-none";
+
+function paneClasses(state: PaneState, target: boolean) {
+  // Asymmetric crossfade: the entering tree is fully visible from frame one
+  // so its flights read as relocation, not a fade; only the leaving tree
+  // crossfades away.
+  const leaving = state === "flow" && !target; // only possible mid-animation
+  const opacity = leaving || state === "hidden" ? "opacity-0" : "opacity-100";
+  return `${PANE_CLASS[state]} ${opacity} ${leaving ? PANE_FADE : ""}`;
+}
+
+// Mid-animation the leaving tree stays in flow while the entering one
+// overlays it; on completion they settle into their resting roles.
+function paneStateFor(target: boolean, animating: boolean): PaneState {
+  if (!animating) return target ? "flow" : "hidden";
+  return target ? "overlay" : "flow";
+}
 
 function TimelineDot({ active }: { active?: boolean }) {
   return (
@@ -39,7 +77,15 @@ function TimelineDot({ active }: { active?: boolean }) {
   );
 }
 
-function RoleDetail({ role }: { role: Role }) {
+type BodyPhase = "static" | "reveal" | "conceal";
+
+function RoleDetail({
+  role,
+  bodyPhase = "static",
+}: {
+  role: Role;
+  bodyPhase?: BodyPhase;
+}) {
   return (
     <div className="relative flex min-w-0 gap-3">
       <span className="squircle mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg border border-border bg-card">
@@ -69,51 +115,86 @@ function RoleDetail({ role }: { role: Role }) {
             {role.period}
           </p>
         </div>
-        <p className="mt-0.5 text-body text-foreground-secondary">
-          {role.title}
-        </p>
-        {role.bullets.length > 0 && (
-          <ul className="mt-2.5 flex max-w-[65ch] flex-col gap-1">
-            {role.bullets.map((bullet) => (
-              <li
-                key={bullet}
-                className="flex gap-2 text-body text-foreground-tertiary"
-              >
-                <span
-                  aria-hidden="true"
-                  className="mt-[0.45em] size-1 shrink-0 rounded-full bg-foreground-quaternary"
-                />
-                {bullet}
-              </li>
-            ))}
-          </ul>
-        )}
+        {/* While flying, only the header travels (it mirrors the strip card);
+            title + bullets unfurl once the row nears its resting spot. */}
+        <motion.div
+          initial={
+            bodyPhase === "reveal"
+              ? { opacity: 0 }
+              : bodyPhase === "conceal"
+                ? { opacity: 1 }
+                : false
+          }
+          animate={{ opacity: bodyPhase === "conceal" ? 0 : 1 }}
+          transition={
+            bodyPhase === "reveal"
+              ? { delay: 0.3, duration: 0.35, ease }
+              : bodyPhase === "conceal"
+                ? { duration: 0.15, ease }
+                : { duration: 0 }
+          }
+        >
+          <p className="mt-0.5 text-body text-foreground-secondary">
+            {role.title}
+          </p>
+          {role.bullets.length > 0 && (
+            <ul className="mt-2.5 flex max-w-[65ch] flex-col gap-1">
+              {role.bullets.map((bullet) => (
+                <li
+                  key={bullet}
+                  className="flex gap-2 text-body text-foreground-tertiary"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="mt-[0.45em] size-1 shrink-0 rounded-full bg-foreground-quaternary"
+                  />
+                  {bullet}
+                </li>
+              ))}
+            </ul>
+          )}
+        </motion.div>
       </div>
     </div>
   );
 }
 
 function DetailTree({
-  hidden,
+  pane,
+  target,
+  restRevealed,
+  rootRef,
   deltas,
   flip,
   rowRefs,
 }: {
-  hidden: boolean;
+  pane: PaneState;
+  target: boolean;
+  restRevealed: boolean;
+  rootRef: RefObject<HTMLOListElement | null>;
   deltas: Record<string, Point> | null;
   flip: number;
   rowRefs: RefObject<Map<string, HTMLDivElement>>;
 }) {
+  // Under reduced motion there is no flight, so the body belongs to the row's
+  // own fade instead of unfurling on a delay.
+  const reduce = useReducedMotion() ?? false;
   return (
     <ol
-      inert={hidden}
-      className={`flex flex-col gap-y-2 pt-5 ${
-        hidden ? hiddenTreeClass : visibleTreeClass
-      }`}
+      ref={rootRef}
+      inert={!target}
+      className={`flex flex-col gap-y-2 pt-5 ${paneClasses(pane, target)}`}
     >
       {experience.map((role, i) => {
-        const d = !hidden ? deltas?.[role.company] : undefined;
+        const d = target ? deltas?.[role.company] : undefined;
         const flying = i < 4 && d != null;
+        const bodyPhase: BodyPhase = reduce
+          ? "static"
+          : !target
+            ? "conceal"
+            : flying
+              ? "reveal"
+              : "static";
         return (
           <li
             key={role.company}
@@ -121,22 +202,39 @@ function DetailTree({
           >
             <motion.div
               key={`${role.company}-${flip}`}
+              // Flying rows travel fully opaque — the relocation IS the
+              // animation. While hidden, skip the mount animation entirely.
               initial={
-                flying ? { x: d.x, y: d.y, opacity: 0 } : { y: 24, opacity: 0 }
+                target
+                  ? flying
+                    ? { x: d.x, y: d.y }
+                    : reduce
+                      ? false
+                      : { y: 24, opacity: 0 }
+                  : reduce || restRevealed
+                    ? false
+                    : { opacity: 0 }
               }
-              animate={{ x: 0, y: 0, opacity: 1 }}
+              // Rows whose staged entrance never ran stay at zero through the
+              // collapse instead of fading in while the tree is leaving.
+              animate={
+                flying
+                  ? { x: 0, y: 0 }
+                  : { x: 0, y: 0, opacity: !reduce && !target && !restRevealed ? 0 : 1 }
+              }
               transition={
                 flying
-                  ? {
-                      duration: 1,
-                      ease: flyEase,
-                      opacity: { duration: 0.4, ease },
-                    }
-                  : {
-                      duration: 0.9,
-                      ease: flyEase,
-                      delay: 0.15 + Math.max(0, i - 4) * 0.06,
-                    }
+                  ? { duration: FLIGHT_S, ease: flyEase }
+                  : reduce
+                    ? { duration: 0 }
+                    : target
+                      ? // The rest waits for the relocation to fully settle.
+                        {
+                          duration: 0.45,
+                          ease: flyEase,
+                          delay: FLIGHT_S + Math.max(0, i - 4) * 0.045,
+                        }
+                      : { duration: 0.45, ease: flyEase }
               }
             >
               <div
@@ -145,7 +243,7 @@ function DetailTree({
                   else rowRefs.current.delete(role.company);
                 }}
               >
-                <RoleDetail role={role} />
+                <RoleDetail role={role} bodyPhase={bodyPhase} />
               </div>
             </motion.div>
           </li>
@@ -156,12 +254,16 @@ function DetailTree({
 }
 
 function StripTree({
-  hidden,
+  pane,
+  target,
+  rootRef,
   deltas,
   flip,
   cardRefs,
 }: {
-  hidden: boolean;
+  pane: PaneState;
+  target: boolean;
+  rootRef: RefObject<HTMLDivElement | null>;
   deltas: Record<string, Point> | null;
   flip: number;
   cardRefs: RefObject<Map<string, HTMLDivElement>>;
@@ -169,8 +271,9 @@ function StripTree({
   const strip = experience.slice(0, 4);
   return (
     <div
-      inert={hidden}
-      className={`pt-6 ${hidden ? hiddenTreeClass : visibleTreeClass}`}
+      ref={rootRef}
+      inert={!target}
+      className={`pt-6 ${paneClasses(pane, target)}`}
     >
       <div className="absolute left-[3px] right-0 top-[23px] hidden h-px bg-timeline-line sm:block" />
       <div
@@ -182,18 +285,17 @@ function StripTree({
       />
       <Reveal variant="stagger" className="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-4 sm:gap-y-0">
         {strip.map((entry, i) => {
-          const d = !hidden ? deltas?.[entry.company] : undefined;
+          const d = target ? deltas?.[entry.company] : undefined;
           return (
             <div key={entry.company} className="flex min-w-0 flex-col gap-3">
+              {/* The dot stays on the timeline as the flight's destination;
+                  only the card content travels. */}
+              <TimelineDot active={i === 0} />
               <motion.div
                 key={`${entry.company}-${flip}`}
-                initial={d ? { x: d.x, y: d.y, opacity: 0 } : false}
-                animate={{ x: 0, y: 0, opacity: 1 }}
-                transition={{
-                  duration: 0.9,
-                  ease: flyEase,
-                  opacity: { duration: 0.25, ease },
-                }}
+                initial={d ? { x: d.x, y: d.y } : false}
+                animate={{ x: 0, y: 0 }}
+                transition={{ duration: 0.8, ease: flyEase }}
               >
                 <div
                   ref={(el) => {
@@ -202,7 +304,6 @@ function StripTree({
                   }}
                   className="flex min-w-0 flex-col gap-3"
                 >
-                  <TimelineDot active={i === 0} />
                   <div className="flex min-w-0 items-center gap-2">
                     <span className="squircle flex size-8 shrink-0 items-center justify-center rounded-lg border border-border bg-card">
                       <SkillIcon
@@ -240,28 +341,44 @@ function StripTree({
 
 export function ExperienceSection() {
   const [open, setOpen] = useState(false);
-  const [height, setHeight] = useState<number | "auto">("auto");
   const [animating, setAnimating] = useState(false);
   const [deltas, setDeltas] = useState<Record<string, Point> | null>(null);
   const [flip, setFlip] = useState(0);
-  const contentRef = useRef<HTMLDivElement | null>(null);
+  // Whether the rows below the flying four have been revealed in the current
+  // open cycle. Guards against them flashing in when a collapse interrupts
+  // their delayed entrance.
+  const [restRevealed, setRestRevealed] = useState(false);
+  const restTimer = useRef<number | undefined>(undefined);
+  const stripRootRef = useRef<HTMLDivElement | null>(null);
+  const detailRootRef = useRef<HTMLOListElement | null>(null);
+  const [heights, setHeights] = useState<{
+    strip: number;
+    detail: number;
+  } | null>(null);
   const stripRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const rowRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const fromRects = useRef<Record<string, Point> | null>(null);
 
+  useEffect(() => () => window.clearTimeout(restTimer.current), []);
+
   useLayoutEffect(() => {
     const measure = () => {
-      const el = contentRef.current;
-      if (el) setHeight(el.offsetHeight);
+      const s = stripRootRef.current;
+      const d = detailRootRef.current;
+      if (s && d) setHeights({ strip: s.offsetHeight, detail: d.offsetHeight });
     };
     measure();
     const ro = new ResizeObserver(measure);
-    if (contentRef.current) ro.observe(contentRef.current);
+    if (stripRootRef.current) ro.observe(stripRootRef.current);
+    if (detailRootRef.current) ro.observe(detailRootRef.current);
     return () => ro.disconnect();
   }, []);
 
-  // Runs after a visibility swap, before paint: the entering tree is in flow
-  // with un-transformed children, so its rects are the exact flight targets.
+  const height = heights ? (open ? heights.detail : heights.strip) : "auto";
+
+  // Runs after a visibility swap, before paint: the entering tree is at its
+  // final position with un-transformed children, so its rects are the exact
+  // flight targets.
   useLayoutEffect(() => {
     const from = fromRects.current;
     if (!from) return;
@@ -279,6 +396,7 @@ export function ExperienceSection() {
   }, [open]);
 
   const toggle = () => {
+    window.clearTimeout(restTimer.current);
     const rects: Record<string, Point> = {};
     const refs = open ? rowRefs.current : stripRefs.current;
     refs.forEach((el, company) => {
@@ -287,7 +405,19 @@ export function ExperienceSection() {
     });
     fromRects.current = rects;
     setDeltas(null);
+    if (open) {
+      // Collapsing: keep restRevealed as-is so rows that were already shown
+      // fade out with the tree instead of popping.
+    } else {
+      // Expanding: the rest enters only after the flights fully settle.
+      setRestRevealed(false);
+      restTimer.current = window.setTimeout(
+        () => setRestRevealed(true),
+        FLIGHT_S * 1000,
+      );
+    }
     setOpen((v) => !v);
+    if (heights && heights.strip !== heights.detail) setAnimating(true);
   };
 
   return (
@@ -311,31 +441,37 @@ export function ExperienceSection() {
               className="group/see relative inline-flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2 -mr-2 font-mono text-meta font-medium text-foreground-secondary transition-[background-color,color,transform] duration-200 outline-none select-none squircle before:absolute before:-inset-y-2 before:-inset-x-1 before:content-[''] hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-[0.97]"
             >
               {open ? "See less" : `See ${experience.length - 4} more`}
-              <ChevronsUpDown className="size-3" />
+              <ChevronsUpDown
+                className={`size-3 transition-transform duration-300 motion-reduce:transition-none ${
+                  open ? "rotate-180" : ""
+                }`}
+              />
             </button>
           </div>
           <motion.div
             className={`relative -mx-3 px-3 ${animating ? "overflow-hidden" : ""}`}
             initial={false}
             animate={{ height }}
-            transition={{ duration: 0.45, ease }}
-            onAnimationStart={() => setAnimating(true)}
+            transition={{ duration: heights ? 0.65 : 0, ease: heightEase }}
             onAnimationComplete={() => setAnimating(false)}
           >
-            <div ref={contentRef}>
-              <StripTree
-                hidden={open}
-                deltas={deltas}
-                flip={flip}
-                cardRefs={stripRefs}
-              />
-              <DetailTree
-                hidden={!open}
-                deltas={deltas}
-                flip={flip}
-                rowRefs={rowRefs}
-              />
-            </div>
+            <StripTree
+              pane={paneStateFor(!open, animating)}
+              target={!open}
+              rootRef={stripRootRef}
+              deltas={deltas}
+              flip={flip}
+              cardRefs={stripRefs}
+            />
+            <DetailTree
+              pane={paneStateFor(open, animating)}
+              target={open}
+              restRevealed={restRevealed}
+              rootRef={detailRootRef}
+              deltas={deltas}
+              flip={flip}
+              rowRefs={rowRefs}
+            />
           </motion.div>
         </div>
       </Reveal>

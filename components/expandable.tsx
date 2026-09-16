@@ -4,7 +4,32 @@ import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { motion } from "motion/react";
 import { ChevronsUpDown } from "lucide-react";
 
-const ease = [0.4, 0, 0.2, 1] as const;
+const heightEase = [0.16, 1, 0.3, 1] as const;
+
+type PaneState = "flow" | "overlay" | "hidden";
+
+// The two panes swap roles around the height animation:
+// - flow: in flow — defines the container's resting height
+// - overlay: painted in place at natural height so entering and leaving
+//   content crossfade while the height animates (clipped by the container's
+//   overflow-hidden) — no content pop mid-swap
+// - hidden: fully out of the way once the animation has settled
+const PANE_CLASS: Record<PaneState, string> = {
+  flow: "relative",
+  // left-3/right-3 (not inset-x-0) so the overlay spans the container's
+  // content box — same position the pane occupies in flow. The container is
+  // -mx-3 px-3, so inset-x-0 would sit 12px left and jump on every swap.
+  overlay: "absolute left-3 right-3 top-0 overflow-hidden",
+  hidden:
+    "pointer-events-none invisible absolute left-3 right-3 top-0 h-0 overflow-hidden",
+};
+
+const PANE_FADE =
+  "transition-opacity duration-[250ms] ease-out motion-reduce:transition-none";
+
+function paneClasses(state: PaneState, painted: boolean) {
+  return `${PANE_CLASS[state]} ${painted ? "opacity-100" : "opacity-0"} ${PANE_FADE}`;
+}
 
 export function Expandable({
   header,
@@ -39,6 +64,15 @@ export function Expandable({
   }, []);
 
   const height = heights ? (open ? heights.long : heights.short) : "auto";
+  // Skip animating the very first auto→px sync after measurement.
+  const measured = heights !== null;
+
+  // Mid-animation the leaving pane stays in flow while the entering one
+  // overlays it; on completion they settle into their resting roles.
+  const paneState = (isLong: boolean): PaneState => {
+    if (!animating) return open === isLong ? "flow" : "hidden";
+    return open === isLong ? "overlay" : "flow";
+  };
 
   return (
     <div className="expander relative" data-open={open}>
@@ -46,30 +80,32 @@ export function Expandable({
         {header}
         <button
           type="button"
-          onClick={() => setOpen((v) => !v)}
+          onClick={() => {
+            setOpen((v) => !v);
+            if (heights && heights.long !== heights.short) setAnimating(true);
+          }}
           aria-expanded={open}
           className="group/see relative inline-flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2 -mr-2 font-mono text-meta font-medium text-foreground-secondary transition-[background-color,color,transform] duration-200 outline-none select-none squircle before:absolute before:-inset-y-2 before:-inset-x-1 before:content-[''] hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-[0.97]"
         >
           {open ? "See less" : label}
-          <ChevronsUpDown className="size-3" />
+          <ChevronsUpDown
+            className={`size-3 transition-transform duration-300 motion-reduce:transition-none ${
+              open ? "rotate-180" : ""
+            }`}
+          />
         </button>
       </div>
       <motion.div
         className={`relative -mx-3 px-3 ${animating ? "overflow-hidden" : ""}`}
         initial={false}
         animate={{ height }}
-        transition={{ duration: 0.4, ease }}
-        onAnimationStart={() => setAnimating(true)}
+        transition={{ duration: measured ? 0.5 : 0, ease: heightEase }}
         onAnimationComplete={() => setAnimating(false)}
       >
         <div
           ref={longRef}
           inert={!open}
-          className={`${
-            open
-              ? "relative opacity-100 transition-opacity duration-[225ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
-              : "pointer-events-none invisible absolute inset-x-0 top-0 h-0 overflow-hidden opacity-0"
-          }`}
+          className={paneClasses(paneState(true), open)}
         >
           {children}
         </div>
@@ -77,11 +113,7 @@ export function Expandable({
           <div
             ref={shortRef}
             inert={open}
-            className={`${
-              open
-                ? "pointer-events-none invisible absolute inset-x-0 top-0 h-0 overflow-hidden opacity-0"
-                : "relative opacity-100 transition-opacity duration-[225ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
-            }`}
+            className={paneClasses(paneState(false), !open)}
           >
             {collapsed}
           </div>

@@ -120,6 +120,26 @@
   );
 }
 
+/* Registered as <length> so the edge fades slide in/out instead of popping.
+   Browsers without @property support fall back to the instant swap. */
+@property --scroll-fade-s {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --scroll-fade-e {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-fade-x {
+    transition: --scroll-fade-s 240ms ease, --scroll-fade-e 240ms ease;
+  }
+}
+
 @keyframes halo-breathe {
   0%,
   100% {
@@ -150,8 +170,24 @@
   }
 }
 
+@keyframes tooltip-in {
+  from {
+    opacity: 0;
+    translate: 0 3px;
+    scale: 0.97;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+}
+
 html {
   scroll-behavior: smooth;
+  /* The experience flight animates rows from off-axis strip positions;
+     clip the horizontal spillover instead of flickering a scrollbar. */
+  overflow-x: clip;
 }
 
 body {
@@ -160,6 +196,132 @@ body {
   font-size: 1rem;
   line-height: 1.6;
   transition: background-color 200ms ease, color 200ms ease;
+}
+
+/* Theme flips expand a rounded-square blob from the toggle button via the
+   View Transitions API (see theme-toggle.tsx) — in both directions, so the
+   motion always starts where the user clicked. Browsers without support and
+   reduced-motion users fall back to the instant swap. */
+
+/* The new snapshot expands on top; the old one waits beneath at full size. */
+:root[data-theme-transition]::view-transition-old(root),
+:root[data-theme-transition]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+:root[data-theme-transition]::view-transition-group(root) {
+  animation: none;
+}
+:root[data-theme-transition]::view-transition-new(root) {
+  z-index: 2;
+}
+:root[data-theme-transition]::view-transition-old(root) {
+  z-index: 1;
+}
+:root[data-theme-transition]::view-transition {
+  pointer-events: none;
+}
+
+/* Capture settled colors rather than partially blended frames. */
+:root[data-theme-transition] *,
+:root[data-theme-transition] *::before,
+:root[data-theme-transition] *::after {
+  transition: none !important;
+}
+
+@keyframes theme-squircle-open {
+  from {
+    clip-path: inset(
+      var(--theme-inset-top) var(--theme-inset-right)
+      var(--theme-inset-bottom) var(--theme-inset-left)
+      round var(--radius-md)
+    );
+  }
+  to {
+    clip-path: inset(0 0 0 0 round 0px);
+  }
+}
+
+/* Static clip states hold between snapshot capture and the animating
+   attribute, so nothing flashes in between: the new snapshot waits as the
+   button-sized shape while the old snapshot still covers everything. */
+:root[data-theme-transition]::view-transition-new(root) {
+  clip-path: inset(
+    var(--theme-inset-top) var(--theme-inset-right)
+    var(--theme-inset-bottom) var(--theme-inset-left)
+    round var(--radius-md)
+  );
+}
+:root[data-theme-transition]::view-transition-old(root) {
+  clip-path: inset(0 0 0 0 round 0px);
+}
+:root[data-theme-animating]::view-transition-new(root) {
+  animation: theme-squircle-open 680ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* True squircle reveal: a rounded square centered on the button that scales
+   uniformly from the button's size to beyond the viewport, so the shape is
+   geometrically similar at every frame and reads as one blob expanding.
+   Every coordinate is center ± factor × s, with the corner offset at
+   0.571 × s to match the button's rounded-md corners at scale one. Each
+   edge is a straight line between corner curves; every corner curve's
+   control point sits exactly on the sharp corner. Browsers without shape()
+   keep the inset() version above. */
+@supports (clip-path: shape(from 0% 0%, line to 1% 0%)) {
+  @keyframes theme-squircle-open {
+    from {
+      clip-path: shape(
+        from calc(var(--theme-cx) - var(--theme-half) * 0.429) calc(var(--theme-cy) - var(--theme-half)),
+        line to calc(var(--theme-cx) + var(--theme-half) * 0.429) calc(var(--theme-cy) - var(--theme-half)),
+        curve to calc(var(--theme-cx) + var(--theme-half)) calc(var(--theme-cy) - var(--theme-half) * 0.429)
+          with calc(var(--theme-cx) + var(--theme-half)) calc(var(--theme-cy) - var(--theme-half)),
+        line to calc(var(--theme-cx) + var(--theme-half)) calc(var(--theme-cy) + var(--theme-half) * 0.429),
+        curve to calc(var(--theme-cx) + var(--theme-half) * 0.429) calc(var(--theme-cy) + var(--theme-half))
+          with calc(var(--theme-cx) + var(--theme-half)) calc(var(--theme-cy) + var(--theme-half)),
+        line to calc(var(--theme-cx) - var(--theme-half) * 0.429) calc(var(--theme-cy) + var(--theme-half)),
+        curve to calc(var(--theme-cx) - var(--theme-half)) calc(var(--theme-cy) + var(--theme-half) * 0.429)
+          with calc(var(--theme-cx) - var(--theme-half)) calc(var(--theme-cy) + var(--theme-half)),
+        line to calc(var(--theme-cx) - var(--theme-half)) calc(var(--theme-cy) - var(--theme-half) * 0.429),
+        curve to calc(var(--theme-cx) - var(--theme-half) * 0.429) calc(var(--theme-cy) - var(--theme-half))
+          with calc(var(--theme-cx) - var(--theme-half)) calc(var(--theme-cy) - var(--theme-half))
+      );
+    }
+    to {
+      clip-path: shape(
+        from calc(var(--theme-cx) - var(--theme-reach) * 0.429) calc(var(--theme-cy) - var(--theme-reach)),
+        line to calc(var(--theme-cx) + var(--theme-reach) * 0.429) calc(var(--theme-cy) - var(--theme-reach)),
+        curve to calc(var(--theme-cx) + var(--theme-reach)) calc(var(--theme-cy) - var(--theme-reach) * 0.429)
+          with calc(var(--theme-cx) + var(--theme-reach)) calc(var(--theme-cy) - var(--theme-reach)),
+        line to calc(var(--theme-cx) + var(--theme-reach)) calc(var(--theme-cy) + var(--theme-reach) * 0.429),
+        curve to calc(var(--theme-cx) + var(--theme-reach) * 0.429) calc(var(--theme-cy) + var(--theme-reach))
+          with calc(var(--theme-cx) + var(--theme-reach)) calc(var(--theme-cy) + var(--theme-reach)),
+        line to calc(var(--theme-cx) - var(--theme-reach) * 0.429) calc(var(--theme-cy) + var(--theme-reach)),
+        curve to calc(var(--theme-cx) - var(--theme-reach)) calc(var(--theme-cy) + var(--theme-reach) * 0.429)
+          with calc(var(--theme-cx) - var(--theme-reach)) calc(var(--theme-cy) + var(--theme-reach)),
+        line to calc(var(--theme-cx) - var(--theme-reach)) calc(var(--theme-cy) - var(--theme-reach) * 0.429),
+        curve to calc(var(--theme-cx) - var(--theme-reach) * 0.429) calc(var(--theme-cy) - var(--theme-reach))
+          with calc(var(--theme-cx) - var(--theme-reach)) calc(var(--theme-cy) - var(--theme-reach))
+      );
+    }
+  }
+
+  :root[data-theme-transition]::view-transition-new(root) {
+    clip-path: shape(
+      from calc(var(--theme-cx) - var(--theme-half) * 0.429) calc(var(--theme-cy) - var(--theme-half)),
+      line to calc(var(--theme-cx) + var(--theme-half) * 0.429) calc(var(--theme-cy) - var(--theme-half)),
+      curve to calc(var(--theme-cx) + var(--theme-half)) calc(var(--theme-cy) - var(--theme-half) * 0.429)
+        with calc(var(--theme-cx) + var(--theme-half)) calc(var(--theme-cy) - var(--theme-half)),
+      line to calc(var(--theme-cx) + var(--theme-half)) calc(var(--theme-cy) + var(--theme-half) * 0.429),
+      curve to calc(var(--theme-cx) + var(--theme-half) * 0.429) calc(var(--theme-cy) + var(--theme-half))
+        with calc(var(--theme-cx) + var(--theme-half)) calc(var(--theme-cy) + var(--theme-half)),
+      line to calc(var(--theme-cx) - var(--theme-half) * 0.429) calc(var(--theme-cy) + var(--theme-half)),
+      curve to calc(var(--theme-cx) - var(--theme-half)) calc(var(--theme-cy) + var(--theme-half) * 0.429)
+        with calc(var(--theme-cx) - var(--theme-half)) calc(var(--theme-cy) + var(--theme-half)),
+      line to calc(var(--theme-cx) - var(--theme-half)) calc(var(--theme-cy) - var(--theme-half) * 0.429),
+      curve to calc(var(--theme-cx) - var(--theme-half) * 0.429) calc(var(--theme-cy) - var(--theme-half))
+        with calc(var(--theme-cx) - var(--theme-half)) calc(var(--theme-cy) - var(--theme-half))
+    );
+  }
 }
 
 ::selection {
@@ -174,6 +336,12 @@ body {
 
 .js [data-reveal="fade"].is-inview {
   opacity: 1;
+}
+
+/* Hidden up front so above-fold content never paints fully visible and then
+   blinks out when the IntersectionObserver starts the rise animation. */
+.js [data-reveal="rise"] {
+  opacity: 0;
 }
 
 .js [data-reveal="rise"].is-inview {
@@ -212,12 +380,21 @@ body {
   animation-delay: calc(220ms + var(--i, 0) * 30ms);
 }
 
+/* Pop-in for the portal-mounted contribution tooltip (recreated per hover). */
+.tooltip-in {
+  animation: tooltip-in 160ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
 
   .timeline-status-halo {
+    animation: none;
+  }
+
+  .tooltip-in {
     animation: none;
   }
 

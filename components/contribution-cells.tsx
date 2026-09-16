@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { memo, useCallback, useState } from "react";
 import { createPortal } from "react-dom";
 import type { CSSProperties } from "react";
 
@@ -40,48 +40,70 @@ function tooltipText(day: ContributionDay) {
   return `${day.count} ${day.count === 1 ? "contribution" : "contributions"} on ${date}`;
 }
 
+type CellGridProps = {
+  weeks: (ContributionDay | null)[][];
+  onEnter: (tip: { x: number; y: number; text: string }) => void;
+  onLeave: () => void;
+};
+
+// Memoized so the tooltip state changes never re-reconcile the ~365 cells.
+const CellGrid = memo(function CellGrid({ weeks, onEnter, onLeave }: CellGridProps) {
+  return (
+    <div aria-hidden="true" className="grid grid-flow-col grid-rows-7 gap-[2px]">
+      {weeks.flatMap((week, wi) =>
+        week.map((day, di) => {
+          if (!day) {
+            return <div key={`${wi}-${di}`} className="size-[10px]" />;
+          }
+          const show = (e: { currentTarget: HTMLElement }) => {
+            const r = e.currentTarget.getBoundingClientRect();
+            const x = Math.min(
+              Math.max(r.left + r.width / 2, 90),
+              window.innerWidth - 90,
+            );
+            onEnter({ x, y: Math.max(8, r.top), text: tooltipText(day) });
+          };
+          return (
+            <div
+              key={day.date}
+              onMouseEnter={show}
+              onMouseLeave={onLeave}
+              className={`size-[10px] rounded-[2px] squircle ${LEVEL_CLASS[day.level]} transition-[box-shadow] duration-100 hover:ring-1 hover:ring-foreground/50`}
+            />
+          );
+        }),
+      )}
+    </div>
+  );
+});
+
 export function ContributionCells({
   weeks,
 }: {
   weeks: (ContributionDay | null)[][];
 }) {
   const [tip, setTip] = useState<{ x: number; y: number; text: string } | null>(null);
+  const hideTip = useCallback(() => setTip(null), []);
 
   return (
     <>
-      <div aria-hidden="true" className="grid grid-flow-col grid-rows-7 gap-[2px]">
-        {weeks.flatMap((week, wi) =>
-          week.map((day, di) => {
-            if (!day) {
-              return <div key={`${wi}-${di}`} className="size-[10px]" />;
-            }
-            const show = (e: { currentTarget: HTMLElement }) => {
-              const r = e.currentTarget.getBoundingClientRect();
-              const x = Math.min(
-                Math.max(r.left + r.width / 2, 90),
-                window.innerWidth - 90,
-              );
-              setTip({ x, y: Math.max(8, r.top), text: tooltipText(day) });
-            };
-            return (
-              <div
-                key={day.date}
-                onMouseEnter={show}
-                onMouseLeave={() => setTip(null)}
-                className={`size-[10px] rounded-[2px] squircle ${LEVEL_CLASS[day.level]} transition-[box-shadow] duration-100 hover:ring-1 hover:ring-foreground/50`}
-              />
-            );
-          }),
-        )}
-      </div>
+      <CellGrid
+        weeks={weeks}
+        onEnter={setTip}
+        onLeave={hideTip}
+      />
       {tip &&
         createPortal(
+          // Position on the outer wrapper; the animated inner wrapper owns the
+          // pop-in so its translate/scale never fight the Tailwind offsets.
           <div
             aria-hidden="true"
-            className="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-[calc(100%+6px)] rounded-md bg-foreground px-2 py-1 text-meta whitespace-nowrap text-background shadow-lg"
+            className="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-[calc(100%+6px)]"
             style={{ left: tip.x, top: tip.y } as CSSProperties}
           >
-            {tip.text}
+            <div className="tooltip-in rounded-md bg-foreground px-2 py-1 text-meta whitespace-nowrap text-background shadow-lg">
+              {tip.text}
+            </div>
           </div>,
           document.body,
         )}
