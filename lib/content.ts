@@ -1,3 +1,5 @@
+import type { GlyphName, ProjectGlyphName } from "./glyphs";
+
 export const contact = {
   email: "useit015@gmail.com",
   cal: "https://cal.com/useit015/15min",
@@ -25,7 +27,7 @@ export const socials = [
 export type Role = {
   company: string;
   url?: string;
-  icon: string;
+  icon: GlyphName;
   title: string;
   period: string;
   summary: string;
@@ -37,7 +39,7 @@ export const experience: Role[] = [
     company: "Acurai",
     url: "https://acur.ai/",
     title: "Senior Software Engineer",
-    period: "Jan 25 – Jun 25", icon: "cloud",
+    period: "Jan 25 – Jun 25", icon: "co-cloud",
     summary: "AI startup focused on reducing hallucinations in large language models.",
     bullets: [
       "Shipped the front-end product surface across Chat, Wiki, and Brain Builder.",
@@ -48,7 +50,7 @@ export const experience: Role[] = [
     company: "LendStack",
     url: "https://www.linkedin.com/company/lendstack",
     title: "Co-Founder & CTO",
-    period: "Oct 23 – May 24", icon: "building",
+    period: "Oct 23 – May 24", icon: "co-building",
     summary: "Microfinance operating system for lending startups.",
     bullets: [
       "Led a 9-person engineering team inside a 14-person startup.",
@@ -60,7 +62,7 @@ export const experience: Role[] = [
     company: "Toptal",
     url: "https://www.toptal.com/",
     title: "Senior Software Engineer",
-    period: "Apr 22 – Oct 24", icon: "globe",
+    period: "Apr 22 – Oct 24", icon: "toptal",
     summary: "8 engagements across 7 clients over 30 months, delivered in parallel with startup work.",
     bullets: [
       "Delivered senior full-stack work across React, Node.js, TypeScript, MongoDB, AWS, and data visualization.",
@@ -71,7 +73,7 @@ export const experience: Role[] = [
     company: "Axion Ray",
     url: "https://www.axion.com/",
     title: "Senior Software Engineer",
-    period: "May 24 – Oct 24", icon: "radar",
+    period: "May 24 – Oct 24", icon: "co-radar",
     summary: "AI-powered SaaS for industrial data operations.",
     bullets: [
       "Built AI configuration tooling for the data-operations module.",
@@ -82,7 +84,7 @@ export const experience: Role[] = [
     company: "What's Next Media",
     url: "https://www.pymnts.com/",
     title: "Senior Software Engineer",
-    period: "Sep 23 – Jan 24", icon: "activity",
+    period: "Sep 23 – Jan 24", icon: "co-activity",
     summary: "Interactive data products for payments reporting.",
     bullets: [
       "Built data-visualization components in React for connected-economy reporting.",
@@ -93,7 +95,7 @@ export const experience: Role[] = [
     company: "Blue River Technology",
     url: "https://www.bluerivertechnology.com/",
     title: "Senior Software Engineer",
-    period: "Apr 22 – Aug 22", icon: "sprout",
+    period: "Apr 22 – Aug 22", icon: "co-sprout",
     summary: "See & Spray computer vision, acquired by John Deere for $300M.",
     bullets: [
       "Solo-built Clicky Clicky, a web labeling tool for See & Spray boom-height ground-truth collection.",
@@ -104,7 +106,7 @@ export const experience: Role[] = [
     company: "VO2 Group",
     url: "https://www.vo2-group.com/",
     title: "Senior Software Engineer",
-    period: "Jan 21 – Jan 22", icon: "heart-pulse",
+    period: "Jan 21 – Jan 22", icon: "co-heart-pulse",
     summary: "Healthcare and health-tech products.",
     bullets: [
       "Solo-built the Radiometer Course Creator on React, Node.js, TypeScript, AWS SAM, and PostgreSQL as part of a six-figure enterprise deal.",
@@ -116,7 +118,7 @@ export const experience: Role[] = [
     company: "Spotbills",
     url: "https://www.linkedin.com/company/spotbills/",
     title: "Full-Stack Developer",
-    period: "Sep 20 – Dec 20", icon: "message",
+    period: "Sep 20 – Dec 20", icon: "co-message",
     summary: "Real-time communication infrastructure.",
     bullets: [
       "Built the signaling server for Peer, a hybrid mobile chat and calling app, with NestJS, TypeScript, Redis, MongoDB, Socket.IO, and WebRTC.",
@@ -126,7 +128,7 @@ export const experience: Role[] = [
     company: "Caronae Systems",
     url: "https://caronae.com/",
     title: "Senior Software Engineer",
-    period: "Apr 20 – Sep 20", icon: "shield-check",
+    period: "Apr 20 – Sep 20", icon: "co-shield-check",
     summary: "No-code KYC journey builder.",
     bullets: [
       "Led a 3-engineer front-end team building journey-authoring workflows.",
@@ -137,7 +139,7 @@ export const experience: Role[] = [
     company: "SQLI Digital Experience",
     url: "https://www.sqli.com/",
     title: "Software Engineer",
-    period: "Feb 20 – Jul 20", icon: "shopping-bag",
+    period: "Feb 20 – Jul 20", icon: "co-shopping-bag",
     summary: "Global Nespresso eCommerce platform.",
     bullets: [
       "Implemented a guest checkout flow for the Nespresso storefront.",
@@ -148,7 +150,7 @@ export const experience: Role[] = [
 
 export type Project = {
   name: string;
-  icon: string;
+  icon: ProjectGlyphName;
   description: string;
   stack: string[];
   url?: string;
@@ -159,27 +161,27 @@ export type Project = {
 export const projects: Project[] = [
   {
     name: "whichmodel",
-    icon: "terminal",
+    icon: "whichmodel",
     description: "TypeScript CLI that recommends the right AI model for a task.",
     stack: ["TypeScript", "Node.js", "OpenRouter", "FAL"],
     repo: { owner: "useit015", name: "whichmodel", url: "https://github.com/useit015/whichmodel" },
   },
   {
     name: "Sigil",
-    icon: "wand",
+    icon: "sigil",
     description: "Creator studio converting video and images into shareable ASCII previews.",
     stack: ["Next.js", "React", "Rust", "Supabase"],
     note: "329+ commits",
   },
   {
     name: "Asset Forge",
-    icon: "boxes",
+    icon: "asset-forge",
     description: "Asset-generation platform for game and character art, with fal.ai.",
     stack: ["React", "Express", "Supabase", "Cloudflare R2"],
   },
   {
     name: "souk-fighter",
-    icon: "swords",
+    icon: "souk-fighter",
     description: "KOF-style browser fighting game with a custom .sfpack bundle format.",
     stack: ["React 19", "Pixi.js 8", "IndexedDB"],
     repo: { owner: "useit015", name: "souk-fighter", url: "https://github.com/useit015/souk-fighter" },
@@ -195,15 +197,15 @@ export const skillGroups = [
       { name: "React", icon: "react", url: "https://react.dev/" },
       { name: "Next.js", icon: "nextjs", url: "https://nextjs.org/" },
       { name: "Node.js", icon: "nodejs", url: "https://nodejs.org/" },
-      { name: "HTML/CSS", icon: "html5", url: "https://developer.mozilla.org/en-US/docs/Web" },
+      { name: "HTML/CSS", icon: "html-css", url: "https://developer.mozilla.org/en-US/docs/Web" },
     ],
     more: [
-      { name: "SQL", icon: "database", url: "https://sqlbolt.com/" },
-      { name: "SCSS/Sass", icon: "sass", url: "https://sass-lang.com/" },
+      { name: "SQL", icon: "sql", url: "https://sqlbolt.com/" },
+      { name: "SCSS/Sass", icon: "scss-sass", url: "https://sass-lang.com/" },
       { name: "Vite", icon: "vite", url: "https://vite.dev/" },
       { name: "Redux", icon: "redux", url: "https://redux.js.org/" },
       { name: "Vue", icon: "vue", url: "https://vuejs.org/" },
-      { name: "AngularJS", icon: "angular", url: "https://angularjs.org/" },
+      { name: "AngularJS", icon: "angularjs", url: "https://angularjs.org/" },
     ],
   },
   {
@@ -214,67 +216,67 @@ export const skillGroups = [
       { name: "PostgreSQL", icon: "postgresql", url: "https://www.postgresql.org/" },
       { name: "MongoDB", icon: "mongodb", url: "https://www.mongodb.com/" },
       { name: "Redis", icon: "redis", url: "https://redis.io/" },
-      { name: "REST APIs", icon: "braces", url: "https://developer.mozilla.org/en-US/docs/Web/HTTP" },
+      { name: "REST APIs", icon: "rest-apis", url: "https://developer.mozilla.org/en-US/docs/Web/HTTP" },
     ],
     more: [
       { name: "MySQL", icon: "mysql", url: "https://www.mysql.com/" },
       { name: "Supabase", icon: "supabase", url: "https://supabase.com/" },
       { name: "SQLite", icon: "sqlite", url: "https://www.sqlite.org/" },
-      { name: "DynamoDB", icon: "database", url: "https://aws.amazon.com/dynamodb/" },
-      { name: "Amazon S3", icon: "boxes", url: "https://aws.amazon.com/s3/" },
+      { name: "DynamoDB", icon: "dynamodb", url: "https://aws.amazon.com/dynamodb/" },
+      { name: "Amazon S3", icon: "amazon-s3", url: "https://aws.amazon.com/s3/" },
       { name: "GraphQL", icon: "graphql", url: "https://graphql.org/" },
     ],
   },
   {
     label: "Cloud & delivery",
     skills: [
-      { name: "AWS SAM", icon: "aws", url: "https://docs.aws.amazon.com/serverless-application-model/" },
+      { name: "AWS SAM", icon: "aws-sam", url: "https://docs.aws.amazon.com/serverless-application-model/" },
       { name: "Lambda", icon: "lambda", url: "https://aws.amazon.com/lambda/" },
       { name: "Docker", icon: "docker", url: "https://www.docker.com/" },
-      { name: "CI/CD", icon: "workflow", url: "https://docs.github.com/en/actions" },
+      { name: "CI/CD", icon: "ci-cd", url: "https://docs.github.com/en/actions" },
     ],
     more: [
-      { name: "Serverless Framework", icon: "serverless", url: "https://www.serverless.com/" },
-      { name: "Docker Compose", icon: "layers", url: "https://docs.docker.com/compose/" },
+      { name: "Serverless Framework", icon: "serverless-framework", url: "https://www.serverless.com/" },
+      { name: "Docker Compose", icon: "docker-compose", url: "https://docs.docker.com/compose/" },
       { name: "Jenkins", icon: "jenkins", url: "https://www.jenkins.io/" },
-      { name: "GitLab CI", icon: "gitlab", url: "https://docs.gitlab.com/ee/ci/" },
-      { name: "Bitbucket Pipelines", icon: "bitbucket", url: "https://bitbucket.org/product/features/pipelines" },
-      { name: "Cloudflare Workers", icon: "cloudflare", url: "https://workers.cloudflare.com/" },
+      { name: "GitLab CI", icon: "gitlab-ci", url: "https://docs.gitlab.com/ee/ci/" },
+      { name: "Bitbucket Pipelines", icon: "bitbucket-pipelines", url: "https://bitbucket.org/product/features/pipelines" },
+      { name: "Cloudflare Workers", icon: "cloudflare-workers", url: "https://workers.cloudflare.com/" },
     ],
   },
   {
     label: "AI",
     skills: [
-      { name: "OpenAI APIs", icon: "openai", url: "https://platform.openai.com/docs" },
+      { name: "OpenAI APIs", icon: "openai-apis", url: "https://platform.openai.com/docs" },
       { name: "OpenRouter", icon: "openrouter", url: "https://openrouter.ai/" },
       { name: "Replicate", icon: "replicate", url: "https://replicate.com/" },
-      { name: "Agentic AI", icon: "bot", url: "https://openai.github.io/openai-agents-python/" },
-      { name: "LLM integration", icon: "sparkles", url: "https://platform.openai.com/docs/guides/text" },
+      { name: "Agentic AI", icon: "agentic-ai", url: "https://openai.github.io/openai-agents-python/" },
+      { name: "LLM integration", icon: "llm-integration", url: "https://platform.openai.com/docs/guides/text" },
     ],
     more: [
-      { name: "fal.ai", icon: "zap", url: "https://fal.ai/" },
-      { name: "Agentic harnesses", icon: "flask", url: "https://docs.claude.com/en/docs/agents-and-tools/agent-skills" },
-      { name: "Prompt evals", icon: "list-checks", url: "https://github.com/openai/evals" },
-      { name: "Model routing", icon: "route", url: "https://openrouter.ai/docs" },
-      { name: "OCR / KYC", icon: "scan-face", url: "https://cloud.google.com/vision/docs/ocr" },
-      { name: "CV annotation", icon: "scan-eye", url: "https://www.cvat.ai/" },
+      { name: "fal.ai", icon: "fal-ai", url: "https://fal.ai/" },
+      { name: "Agentic harnesses", icon: "agentic-harnesses", url: "https://docs.claude.com/en/docs/agents-and-tools/agent-skills" },
+      { name: "Prompt evals", icon: "prompt-evals", url: "https://github.com/openai/evals" },
+      { name: "Model routing", icon: "model-routing", url: "https://openrouter.ai/docs" },
+      { name: "OCR / KYC", icon: "ocr-kyc", url: "https://cloud.google.com/vision/docs/ocr" },
+      { name: "CV annotation", icon: "cv-annotation", url: "https://www.cvat.ai/" },
     ],
   },
   {
     label: "Breadth",
     skills: [
-      { name: "React Native", icon: "react", url: "https://reactnative.dev/" },
-      { name: "Pixi.js 8", icon: "sparkles", url: "https://pixijs.com/" },
+      { name: "React Native", icon: "react-native", url: "https://reactnative.dev/" },
+      { name: "Pixi.js 8", icon: "pixijs-8", url: "https://pixijs.com/" },
       { name: "Three.js", icon: "threejs", url: "https://threejs.org/" },
-      { name: "WebRTC", icon: "radio", url: "https://webrtc.org/" },
-      { name: "Unix/Linux", icon: "terminal-square", url: "https://www.kernel.org/" },
+      { name: "WebRTC", icon: "webrtc", url: "https://webrtc.org/" },
+      { name: "Unix/Linux", icon: "unix-linux", url: "https://www.kernel.org/" },
     ],
     more: [
       { name: "Flutter", icon: "flutter", url: "https://flutter.dev/" },
       { name: "Solidity", icon: "solidity", url: "https://soliditylang.org/" },
       { name: "Socket.IO", icon: "socketio", url: "https://socket.io/" },
-      { name: "Twilio API", icon: "phone", url: "https://www.twilio.com/docs" },
-      { name: "Playwright", icon: "app-window", url: "https://playwright.dev/" },
+      { name: "Twilio API", icon: "twilio-api", url: "https://www.twilio.com/docs" },
+      { name: "Playwright", icon: "playwright", url: "https://playwright.dev/" },
       { name: "WordPress", icon: "wordpress", url: "https://wordpress.org/" },
     ],
   },
