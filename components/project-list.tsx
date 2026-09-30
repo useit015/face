@@ -1,60 +1,52 @@
-import { Star } from "lucide-react";
+import type { CSSProperties } from "react";
 import { Reveal } from "@/components/reveal";
-import { ProjectIcon } from "@/components/icons";
+import { Glyph, ProjectGlyph } from "@/components/ink/glyph";
+import { Rule } from "@/components/ink/sketch";
 import { projects, type Project } from "@/lib/content";
 
-function ProjectRow({ project, stars }: { project: Project; stars?: number }) {
-  const href = project.repo?.url ?? project.url;
-  const interactive = Boolean(href);
-  const body = (
-    <div
-      className={`relative flex min-w-0 items-center gap-3 before:absolute before:-inset-x-3 before:-inset-y-2.5 before:squircle before:rounded-xl before:content-[''] before:transition-colors before:duration-200 [&>*]:relative ${
-        interactive ? "group/row hover:before:bg-timeline-hover" : ""
-      }`}
-    >
-      <div className="squircle flex size-8 shrink-0 items-center justify-center rounded-lg border border-border bg-card">
-        <ProjectIcon name={project.icon} className="size-4 text-foreground-secondary" />
-      </div>
-      <div className="min-w-0 flex-1">
-        <h3 className="text-body font-medium tracking-tight decoration-foreground-decoration underline-offset-3 group-hover/row:underline group-focus-visible/row:underline">
-          {project.name}
-        </h3>
-        <p
-          className="truncate text-body text-foreground-secondary"
-          title={project.description}
-        >
-          {project.description}
-        </p>
-      </div>
-      <div
-        className="flex shrink-0 items-center gap-1 font-mono text-meta text-foreground-tertiary"
-        title={
-          typeof stars === "number" && stars > 0
-            ? `${stars.toLocaleString("en-US")} GitHub stars`
-            : project.note
-        }
+function Meta({ project, stars }: { project: Project; stars?: number }) {
+  if (typeof stars === "number" && stars > 0) {
+    return (
+      <span
+        className="flex shrink-0 items-center gap-1.5 text-meta font-normal text-ink-2"
+        title={`${stars.toLocaleString("en-US")} GitHub stars`}
       >
-        {typeof stars === "number" && stars > 0 ? (
-          <>
-            <Star className="size-3 transition-transform duration-200 group-hover/row:fill-current group-hover/row:scale-110 motion-reduce:transition-none" />
-            {stars.toLocaleString("en-US")}
-          </>
-        ) : project.note ? (
-          project.note
-        ) : null}
+        <span className="relative inline-flex size-6 self-center">
+          {/* A pen scribble fills the star on hover. */}
+          <span aria-hidden="true" className="star-fill absolute inset-[5px]" />
+          <Glyph name="star" className="star-glyph relative size-6" />
+        </span>
+        {stars.toLocaleString("en-US")}
+        <span className="sr-only"> stars</span>
+      </span>
+    );
+  }
+  if (project.note) return <span className="shrink-0 text-meta font-normal text-ink-3">{project.note}</span>;
+  return null;
+}
+
+function ProjectRow({ project, stars, index }: { project: Project; stars?: number; index: number }) {
+  const href = project.repo?.url ?? project.url;
+  const body = (
+    <div className="flex min-w-0 items-center gap-4 py-4">
+      <ProjectGlyph name={project.icon} className="project-glyph size-12 text-ink" />
+      <div className="min-w-0 flex-1">
+        <div className="flex items-baseline justify-between gap-4">
+          <h3 className="text-body font-bold text-ink">
+            <span className={href ? "pen-underline" : ""}>{project.name}</span>
+          </h3>
+          <Meta project={project} stars={stars} />
+        </div>
+        <p className="text-body text-ink-2">{project.description}</p>
       </div>
     </div>
   );
 
   return (
-    <li className="relative">
+    <li className="relative" style={{ "--i": index } as CSSProperties}>
+      {index > 0 && <Rule seed={`rule-${project.name}`} delay={200 + index * 120} className="-top-[2px] text-ink-3" />}
       {href ? (
-        <a
-          href={href}
-          target="_blank"
-          rel="noreferrer"
-          className="block rounded-xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-        >
+        <a href={href} target="_blank" rel="noreferrer" className="ink-hover project-row block">
           {body}
         </a>
       ) : (
@@ -66,11 +58,12 @@ function ProjectRow({ project, stars }: { project: Project; stars?: number }) {
 
 export function ProjectList({ stars }: { stars: Record<string, number> }) {
   return (
-    <Reveal variant="stagger" as="ul" className="flex flex-col gap-2.5">
-      {projects.map((project) => (
+    <Reveal variant="stagger" as="ul" className="flex flex-col">
+      {projects.map((project, i) => (
         <ProjectRow
           key={project.name}
           project={project}
+          index={i}
           stars={project.repo ? stars[`${project.repo.owner}/${project.repo.name}`] : undefined}
         />
       ))}
