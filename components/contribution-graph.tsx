@@ -1,30 +1,22 @@
 import { contact } from "@/lib/content";
 import { ContributionCells } from "@/components/contribution-cells";
+import { PITCH, type ContributionDay } from "@/lib/contributions";
 import { ScrollFadeX } from "@/components/scroll-fade-x";
 import { Reveal } from "@/components/reveal";
-
-type ContributionDay = {
-  date: string;
-  count: number;
-  level: 0 | 1 | 2 | 3 | 4;
-};
+import { SectionHeader } from "@/components/ink/heading";
 
 type ContributionsResponse = {
   total: Record<string, number>;
   contributions: ContributionDay[];
 };
 
-const MONTHS = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-];
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-async function getContributions(): Promise<ContributionsResponse | null> {
+async function getContributions(year: number): Promise<ContributionsResponse | null> {
   try {
-    const res = await fetch(
-      `https://github-contributions-api.jogruber.de/v4/useit015?y=${new Date().getFullYear()}`,
-      { next: { revalidate: 3600 } },
-    );
+    const res = await fetch(`https://github-contributions-api.jogruber.de/v4/${contact.githubUser}?y=${year}`, {
+      next: { revalidate: 3600 },
+    });
     if (!res.ok) return null;
     return (await res.json()) as ContributionsResponse;
   } catch {
@@ -33,8 +25,11 @@ async function getContributions(): Promise<ContributionsResponse | null> {
 }
 
 export async function ContributionGraph() {
-  const data = await getContributions();
-  // Silent degrade: no orphan "Performance" heading when the API is down.
+  const now = new Date();
+  const year = now.getUTCFullYear();
+  const today = now.toISOString().slice(0, 10);
+  const data = await getContributions(year);
+  // Silent degrade: no orphan heading when the API is down.
   if (!data) return null;
 
   const days = data.contributions;
@@ -42,10 +37,8 @@ export async function ContributionGraph() {
 
   const weeks: (ContributionDay | null)[][] = [];
   let currentWeek: (ContributionDay | null)[] = [];
-
   const firstDay = days[0] ? new Date(days[0].date).getUTCDay() : 0;
   for (let i = 0; i < firstDay; i++) currentWeek.push(null);
-
   for (const day of days) {
     currentWeek.push(day);
     if (currentWeek.length === 7) {
@@ -67,51 +60,37 @@ export async function ContributionGraph() {
     if (month === lastMonth) return;
     lastMonth = month;
     const last = monthLabels[monthLabels.length - 1];
-    if (!last || i - last.index >= 3) {
-      monthLabels.push({ index: i, label: MONTHS[month] });
-    }
+    if (!last || i - last.index >= 3) monthLabels.push({ index: i, label: MONTHS[month] });
   });
 
+  const totalLabel = total.toLocaleString("en-US");
+
   return (
-    <section
-      aria-labelledby="performance-heading"
-      className="flex flex-col gap-5"
-    >
-      <Reveal variant="fade">
-        <h2
-          id="performance-heading"
-          className="font-mono text-meta font-medium uppercase tracking-[0.14em] text-foreground-tertiary"
-        >
-          Performance
-        </h2>
-      </Reveal>
-      <Reveal variant="fade" delay={75}>
+    <section aria-labelledby="performance-heading" className="relative flex flex-col gap-6">
+      <SectionHeader id="performance-heading" title="Performance" />
+      <Reveal variant="plain">
         <a
           href={contact.github}
           target="_blank"
           rel="noreferrer"
           title="View GitHub profile"
-          aria-label={`${total.toLocaleString("en-US")} GitHub contributions in ${new Date().getFullYear()}`}
-          className="block rounded-xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          aria-label={`${totalLabel} GitHub contributions in ${year}`}
+          className="ink-hover block"
         >
-          <ScrollFadeX className="no-scrollbar max-w-full overflow-x-auto overflow-y-hidden">
+          <ScrollFadeX startAtEnd className="no-scrollbar -mx-1 max-w-[calc(100%+0.5rem)] overflow-x-auto overflow-y-hidden px-1 pt-1 pb-2">
             <div className="w-max">
-              <div className="relative mb-1.5 h-3 font-mono text-meta leading-none text-muted-foreground">
+              <div className="relative mb-2 h-4 text-meta leading-none font-normal text-ink-3">
                 {monthLabels.map(({ index, label }) => (
-                  <span
-                    key={`${index}-${label}`}
-                    className="absolute top-0"
-                    style={{ left: `${index * 0.75}rem` }}
-                  >
+                  <span key={`${index}-${label}`} className="absolute top-0" style={{ left: index * PITCH }}>
                     {label}
                   </span>
                 ))}
               </div>
-              <ContributionCells weeks={weeks} />
+              <ContributionCells weeks={weeks} today={today} />
             </div>
           </ScrollFadeX>
-          <p className="mt-1.5 font-mono text-meta text-muted-foreground">
-            {total.toLocaleString("en-US")} in {new Date().getFullYear()}
+          <p className="mt-1 text-meta font-normal text-ink-3">
+            <span className="pen-underline font-bold text-ink">{totalLabel}</span> in {year}
           </p>
         </a>
       </Reveal>
