@@ -1,8 +1,9 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { motion } from "motion/react";
-import { ChevronsUpDown } from "lucide-react";
+import { SeeMore } from "@/components/ink/see-more";
+import { SectionHeader } from "@/components/ink/heading";
 
 const heightEase = [0.16, 1, 0.3, 1] as const;
 
@@ -11,44 +12,52 @@ type PaneState = "flow" | "overlay" | "hidden";
 // The two panes swap roles around the height animation:
 // - flow: in flow — defines the container's resting height
 // - overlay: painted in place at natural height so entering and leaving
-//   content crossfade while the height animates (clipped by the container's
-//   overflow-hidden) — no content pop mid-swap
+//   content crossfade while the height animates (clipped by the container)
 // - hidden: fully out of the way once the animation has settled
 const PANE_CLASS: Record<PaneState, string> = {
   flow: "relative",
-  // left-3/right-3 (not inset-x-0) so the overlay spans the container's
-  // content box — same position the pane occupies in flow. The container is
-  // -mx-3 px-3, so inset-x-0 would sit 12px left and jump on every swap.
-  overlay: "absolute left-3 right-3 top-0 overflow-hidden",
-  hidden:
-    "pointer-events-none invisible absolute left-3 right-3 top-0 h-0 overflow-hidden",
+  // left-3/right-3 (not inset-x-0): the container is -mx-3 px-3, so this
+  // keeps the overlay exactly where the pane sits in flow.
+  overlay: "absolute left-3 right-3 top-0",
+  hidden: "pointer-events-none invisible absolute left-3 right-3 top-0 h-0 overflow-hidden",
 };
 
 const PANE_FADE =
-  "transition-opacity duration-[250ms] ease-out motion-reduce:transition-none";
+  "transition-opacity duration-[260ms] ease-[cubic-bezier(0,0,0.2,1)] motion-reduce:transition-none";
 
 function paneClasses(state: PaneState, painted: boolean) {
   return `${PANE_CLASS[state]} ${painted ? "opacity-100" : "opacity-0"} ${PANE_FADE}`;
 }
 
+/**
+ * A section whose body swaps between a compact and a full version. Height is
+ * measured and animated; the panes crossfade; `.open-in` and `.close-in`
+ * children replay their entrances on every toggle.
+ */
 export function Expandable({
-  header,
+  headingId,
+  title,
   children,
   collapsed,
   label = "See more",
+  duration = 0.55,
 }: {
-  header: ReactNode;
+  headingId: string;
+  title: ReactNode;
   children: ReactNode;
-  collapsed?: ReactNode;
+  collapsed: ReactNode;
   label?: string;
+  duration?: number;
 }) {
   const [open, setOpen] = useState(false);
+  const [toggled, setToggled] = useState(false);
+  // Measure the panes' inner content: a hidden pane is clipped to h-0, but
+  // its content keeps its natural height, so targets are always ready.
   const longRef = useRef<HTMLDivElement | null>(null);
   const shortRef = useRef<HTMLDivElement | null>(null);
-  const [heights, setHeights] = useState<{ long: number; short: number } | null>(
-    null,
-  );
+  const [heights, setHeights] = useState<{ long: number; short: number } | null>(null);
   const [animating, setAnimating] = useState(false);
+  const regionId = useId();
 
   useLayoutEffect(() => {
     const measure = () => {
@@ -63,61 +72,45 @@ export function Expandable({
     return () => ro.disconnect();
   }, []);
 
-  const height = heights ? (open ? heights.long : heights.short) : "auto";
-  // Skip animating the very first auto→px sync after measurement.
-  const measured = heights !== null;
+  // Pixel heights only while animating; at rest the container is auto so
+  // reflows (fonts, resizes) never leave a stale height behind.
+  const height = heights && animating ? (open ? heights.long : heights.short) : "auto";
 
-  // Mid-animation the leaving pane stays in flow while the entering one
-  // overlays it; on completion they settle into their resting roles.
   const paneState = (isLong: boolean): PaneState => {
     if (!animating) return open === isLong ? "flow" : "hidden";
     return open === isLong ? "overlay" : "flow";
   };
 
+  const toggle = (
+    <SeeMore
+      open={open}
+      label={label}
+      controls={regionId}
+      onToggle={() => {
+        setOpen((v) => !v);
+        setToggled(true);
+        if (heights && heights.long !== heights.short) setAnimating(true);
+      }}
+    />
+  );
+
   return (
-    <div className="expander relative" data-open={open}>
-      <div className="flex items-center justify-between gap-3">
-        {header}
-        <button
-          type="button"
-          onClick={() => {
-            setOpen((v) => !v);
-            if (heights && heights.long !== heights.short) setAnimating(true);
-          }}
-          aria-expanded={open}
-          className="group/see relative inline-flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2 -mr-2 font-mono text-meta font-medium text-foreground-secondary transition-[background-color,color,transform] duration-200 outline-none select-none squircle before:absolute before:-inset-y-2 before:-inset-x-1 before:content-[''] hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-[0.97]"
-        >
-          {open ? "See less" : label}
-          <ChevronsUpDown
-            className={`size-3 transition-transform duration-300 motion-reduce:transition-none ${
-              open ? "rotate-180" : ""
-            }`}
-          />
-        </button>
-      </div>
+    <div className="expander relative" data-open={open} data-toggled={toggled || undefined}>
+      <SectionHeader id={headingId} title={title} action={toggle} />
       <motion.div
+        id={regionId}
         className={`relative -mx-3 px-3 ${animating ? "overflow-hidden" : ""}`}
         initial={false}
         animate={{ height }}
-        transition={{ duration: measured ? 0.5 : 0, ease: heightEase }}
+        transition={{ duration: heights && animating ? duration : 0, ease: heightEase }}
         onAnimationComplete={() => setAnimating(false)}
       >
-        <div
-          ref={longRef}
-          inert={!open}
-          className={paneClasses(paneState(true), open)}
-        >
-          {children}
+        <div inert={!open} className={paneClasses(paneState(true), open)}>
+          <div ref={longRef}>{children}</div>
         </div>
-        {collapsed != null && (
-          <div
-            ref={shortRef}
-            inert={open}
-            className={paneClasses(paneState(false), !open)}
-          >
-            {collapsed}
-          </div>
-        )}
+        <div inert={open} className={paneClasses(paneState(false), !open)}>
+          <div ref={shortRef}>{collapsed}</div>
+        </div>
       </motion.div>
     </div>
   );
