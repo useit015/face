@@ -10,10 +10,13 @@ import { useEffect, useRef, type ReactNode } from "react";
 export function ScrollFadeX({
   as = "div",
   className: classNameProp = "",
+  startAtEnd = false,
   children,
 }: {
   as?: "div" | "ul";
   className?: string;
+  /** Open scrolled to the far end (e.g. the most recent weeks of a timeline). */
+  startAtEnd?: boolean;
   children: ReactNode;
 }) {
   const ref = useRef<HTMLElement | null>(null);
@@ -32,6 +35,7 @@ export function ScrollFadeX({
         el.scrollLeft < max - 1 ? "var(--scroll-fade-size)" : "0px",
       );
     };
+    if (startAtEnd) el.scrollLeft = el.scrollWidth;
     update();
     el.addEventListener("scroll", update, { passive: true });
     const ro = new ResizeObserver(update);
@@ -40,7 +44,7 @@ export function ScrollFadeX({
       el.removeEventListener("scroll", update);
       ro.disconnect();
     };
-  }, []);
+  }, [startAtEnd]);
 
   const className = `scroll-fade-x ${classNameProp}`;
   if (as === "ul") {
