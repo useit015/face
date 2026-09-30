@@ -1,480 +1,118 @@
-"use client";
-
-import { ArrowUpRight, ChevronsUpDown } from "lucide-react";
-import {
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-  type RefObject,
-} from "react";
-import { motion, useReducedMotion } from "motion/react";
+import type { CSSProperties } from "react";
+import { Expandable } from "@/components/expandable";
 import { Reveal } from "@/components/reveal";
-import { SkillIcon } from "@/components/icons";
+import { Glyph } from "@/components/ink/glyph";
+import { IconTile, InkDot, SketchSvg, Stroke, TimelineArrow } from "@/components/ink/sketch";
+import { hashSeed, lineStroke } from "@/lib/sketch";
 import { experience, type Role } from "@/lib/content";
 
-const heightEase = [0.16, 1, 0.3, 1] as const;
-const ease = [0.4, 0, 0.2, 1] as const;
-const flyEase = [0.16, 1, 0.3, 1] as const;
-// The relocation rows settle at this point; the rest of the tree only enters
-// once they are fully animated.
-const FLIGHT_S = 0.8;
+const STRIP = 4;
+// The timeline arrow draws over ARROW_MS on a steady curve (--ease-write);
+// these are the fractions of that time at which the pen passes each column's
+// dot (0, ¼, ½, ¾ of the width), so each column lands as the line reaches it.
+const ARROW_DELAY = 120;
+const ARROW_MS = 1000;
+const ARRIVE = [0.06, 0.335, 0.5, 0.665];
+const arrival = (i: number) => Math.round(ARROW_DELAY + ARROW_MS * ARRIVE[i]);
 
-type Point = { x: number; y: number };
-
-type PaneState = "flow" | "overlay" | "hidden";
-
-// The two trees swap roles around the height animation:
-// - flow: in flow — defines the container's resting height
-// - overlay: painted in place at natural height while the height animates;
-//   clipped only by the container's overflow-hidden so flying rows can travel
-//   outside the tree's own box
-// - hidden: fully out of the way once the animation has settled
-const PANE_CLASS: Record<PaneState, string> = {
-  flow: "relative",
-  // left-3/right-3 (not inset-x-0) so the overlay spans the container's
-  // content box — same position the tree occupies in flow. The container is
-  // -mx-3 px-3, so inset-x-0 would sit 12px left and jump on every swap.
-  overlay: "absolute left-3 right-3 top-0",
-  hidden:
-    "pointer-events-none invisible absolute left-3 right-3 top-0 h-0 overflow-hidden",
-};
-
-const PANE_FADE =
-  "transition-opacity duration-[250ms] ease-out motion-reduce:transition-none";
-
-function paneClasses(state: PaneState, target: boolean) {
-  // Asymmetric crossfade: the entering tree is fully visible from frame one
-  // so its flights read as relocation, not a fade; only the leaving tree
-  // crossfades away.
-  const leaving = state === "flow" && !target; // only possible mid-animation
-  const opacity = leaving || state === "hidden" ? "opacity-0" : "opacity-100";
-  return `${PANE_CLASS[state]} ${opacity} ${leaving ? PANE_FADE : ""}`;
-}
-
-// Mid-animation the leaving tree stays in flow while the entering one
-// overlays it; on completion they settle into their resting roles.
-function paneStateFor(target: boolean, animating: boolean): PaneState {
-  if (!animating) return target ? "flow" : "hidden";
-  return target ? "overlay" : "flow";
-}
-
-function TimelineDot({ active }: { active?: boolean }) {
+function CompanyName({ role, className = "" }: { role: Role; className?: string }) {
+  if (!role.url) return <span className={className}>{role.company}</span>;
   return (
-    <span className="relative -mt-1 inline-flex size-[7px] items-center justify-center">
-      {active && (
-        <span
-          aria-hidden="true"
-          className="timeline-status-halo absolute size-6 rounded-full"
-        />
-      )}
-      <span
-        className={`relative z-10 inline-block size-[7px] rounded-full squircle ${
-          active ? "bg-foreground" : "bg-foreground-quaternary"
-        }`}
-      />
-    </span>
-  );
-}
-
-type BodyPhase = "static" | "reveal" | "conceal";
-
-function RoleDetail({
-  role,
-  bodyPhase = "static",
-}: {
-  role: Role;
-  bodyPhase?: BodyPhase;
-}) {
-  return (
-    <div className="relative flex min-w-0 gap-3">
-      <span className="squircle mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg border border-border bg-card">
-        <SkillIcon
-          name={role.icon}
-          className="size-4 text-foreground-secondary"
-        />
-      </span>
-      <div className="min-w-0 flex-1">
-        <div className="flex min-w-0 items-baseline justify-between gap-3">
-          <h3 className="flex min-w-0 items-center gap-1.5 text-body font-medium tracking-tight">
-            {role.url ? (
-              <a
-                href={role.url}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex min-w-0 items-center gap-1.5 rounded-sm underline-offset-3 decoration-foreground-decoration outline-none transition-[text-decoration-color,color] duration-200 hover:text-foreground hover:underline focus-visible:ring-3 focus-visible:ring-ring/50"
-              >
-                <span className="truncate">{role.company}</span>
-                <ArrowUpRight className="size-3 shrink-0 text-foreground-tertiary" />
-              </a>
-            ) : (
-              role.company
-            )}
-          </h3>
-          <p className="shrink-0 font-mono text-meta text-foreground-tertiary">
-            {role.period}
-          </p>
-        </div>
-        {/* While flying, only the header travels (it mirrors the strip card);
-            title + bullets unfurl once the row nears its resting spot. */}
-        <motion.div
-          initial={
-            bodyPhase === "reveal"
-              ? { opacity: 0 }
-              : bodyPhase === "conceal"
-                ? { opacity: 1 }
-                : false
-          }
-          animate={{ opacity: bodyPhase === "conceal" ? 0 : 1 }}
-          transition={
-            bodyPhase === "reveal"
-              ? { delay: 0.3, duration: 0.35, ease }
-              : bodyPhase === "conceal"
-                ? { duration: 0.15, ease }
-                : { duration: 0 }
-          }
-        >
-          <p className="mt-0.5 text-body text-foreground-secondary">
-            {role.title}
-          </p>
-          {role.bullets.length > 0 && (
-            <ul className="mt-2.5 flex max-w-[65ch] flex-col gap-1">
-              {role.bullets.map((bullet) => (
-                <li
-                  key={bullet}
-                  className="flex gap-2 text-body text-foreground-tertiary"
-                >
-                  <span
-                    aria-hidden="true"
-                    className="mt-[0.45em] size-1 shrink-0 rounded-full bg-foreground-quaternary"
-                  />
-                  {bullet}
-                </li>
-              ))}
-            </ul>
-          )}
-        </motion.div>
-      </div>
-    </div>
-  );
-}
-
-function DetailTree({
-  pane,
-  target,
-  restRevealed,
-  rootRef,
-  deltas,
-  flip,
-  rowRefs,
-}: {
-  pane: PaneState;
-  target: boolean;
-  restRevealed: boolean;
-  rootRef: RefObject<HTMLOListElement | null>;
-  deltas: Record<string, Point> | null;
-  flip: number;
-  rowRefs: RefObject<Map<string, HTMLDivElement>>;
-}) {
-  // Under reduced motion there is no flight, so the body belongs to the row's
-  // own fade instead of unfurling on a delay.
-  const reduce = useReducedMotion() ?? false;
-  return (
-    <ol
-      ref={rootRef}
-      inert={!target}
-      className={`flex flex-col gap-y-2 pt-5 ${paneClasses(pane, target)}`}
+    <a
+      href={role.url}
+      target="_blank"
+      rel="noreferrer"
+      className={`ink-hover group/co inline-flex min-w-0 items-baseline gap-1 text-ink ${className}`}
     >
-      {experience.map((role, i) => {
-        const d = target ? deltas?.[role.company] : undefined;
-        const flying = i < 4 && d != null;
-        const bodyPhase: BodyPhase = reduce
-          ? "static"
-          : !target
-            ? "conceal"
-            : flying
-              ? "reveal"
-              : "static";
-        return (
+      <span className="pen-underline truncate">{role.company}</span>
+      <Glyph
+        name="external-link"
+        className="size-3 shrink-0 translate-y-[-1px] text-ink-3 opacity-0 transition-[opacity,translate] duration-200 group-hover/co:translate-x-0.5 group-hover/co:opacity-100 group-focus-visible/co:opacity-100 motion-reduce:transition-none"
+      />
+    </a>
+  );
+}
+
+/** The collapsed view: four stops on a hand-drawn timeline arrow. */
+function Strip() {
+  return (
+    <Reveal variant="plain" className="relative pt-8">
+      <TimelineArrow seed="experience-arrow" delay={ARROW_DELAY} className="left-0 top-[26px] hidden h-3 sm:block" />
+      <ol className="grid grid-cols-2 gap-x-4 gap-y-7 sm:grid-cols-4 sm:gap-y-0">
+        {experience.slice(0, STRIP).map((role, i) => (
           <li
             key={role.company}
-            className={`relative ${i === 0 ? "" : "pt-6"}`}
+            className="strip-col close-in relative flex min-w-0 flex-col gap-2.5 sm:pt-5"
+            style={{ "--i": i, "--col-delay": `${arrival(i) - 40}ms` } as CSSProperties}
           >
-            <motion.div
-              key={`${role.company}-${flip}`}
-              // Flying rows travel fully opaque — the relocation IS the
-              // animation. While hidden, skip the mount animation entirely.
-              initial={
-                target
-                  ? flying
-                    ? { x: d.x, y: d.y }
-                    : reduce
-                      ? false
-                      : { y: 24, opacity: 0 }
-                  : reduce || restRevealed
-                    ? false
-                    : { opacity: 0 }
-              }
-              // Rows whose staged entrance never ran stay at zero through the
-              // collapse instead of fading in while the tree is leaving.
-              animate={
-                flying
-                  ? { x: 0, y: 0 }
-                  : { x: 0, y: 0, opacity: !reduce && !target && !restRevealed ? 0 : 1 }
-              }
-              transition={
-                flying
-                  ? { duration: FLIGHT_S, ease: flyEase }
-                  : reduce
-                    ? { duration: 0 }
-                    : target
-                      ? // The rest waits for the relocation to fully settle.
-                        {
-                          duration: 0.45,
-                          ease: flyEase,
-                          delay: FLIGHT_S + Math.max(0, i - 4) * 0.045,
-                        }
-                      : { duration: 0.45, ease: flyEase }
-              }
-            >
-              <div
-                ref={(el) => {
-                  if (el) rowRefs.current.set(role.company, el);
-                  else rowRefs.current.delete(role.company);
-                }}
-              >
-                <RoleDetail role={role} bodyPhase={bodyPhase} />
-              </div>
-            </motion.div>
+            <InkDot seed={`dot-${role.company}`} r={3.4} delay={arrival(i)} className="-top-[5.5px] left-0 hidden sm:block" />
+            <div className="flex min-w-0 items-center gap-3">
+              <IconTile seed={`tile-${role.company}`} size={38} delay={arrival(i) + 80}>
+                <Glyph name={role.icon} className="boil size-[26px]" />
+              </IconTile>
+              <CompanyName role={role} className="text-body font-bold" />
+            </div>
+            <p className="truncate text-meta font-normal text-ink-3">{role.period}</p>
           </li>
-        );
-      })}
-    </ol>
+        ))}
+      </ol>
+    </Reveal>
   );
 }
 
-function StripTree({
-  pane,
-  target,
-  rootRef,
-  deltas,
-  flip,
-  cardRefs,
-}: {
-  pane: PaneState;
-  target: boolean;
-  rootRef: RefObject<HTMLDivElement | null>;
-  deltas: Record<string, Point> | null;
-  flip: number;
-  cardRefs: RefObject<Map<string, HTMLDivElement>>;
-}) {
-  const strip = experience.slice(0, 4);
+const bulletDash = lineStroke(hashSeed("bullet"), [0.5, 3], [8.5, 2.4], { bow: 0.4, jitter: 0.3 });
+
+/** The expanded view: every role, with the timeline turned vertical. */
+function Details() {
   return (
-    <div
-      ref={rootRef}
-      inert={!target}
-      className={`pt-6 ${paneClasses(pane, target)}`}
-    >
-      <div className="absolute left-[3px] right-0 top-[23px] hidden h-px bg-timeline-line sm:block" />
-      <div
-        className="absolute left-[3px] top-[23px] hidden h-px w-[calc(25%-3px)] sm:block"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, var(--foreground) 0%, var(--timeline-line) 70%, var(--timeline-line) 100%)",
-        }}
-      />
-      <Reveal variant="stagger" className="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-4 sm:gap-y-0">
-        {strip.map((entry, i) => {
-          const d = target ? deltas?.[entry.company] : undefined;
-          return (
-            <div key={entry.company} className="flex min-w-0 flex-col gap-3">
-              {/* The dot stays on the timeline as the flight's destination;
-                  only the card content travels. */}
-              <TimelineDot active={i === 0} />
-              <motion.div
-                key={`${entry.company}-${flip}`}
-                initial={d ? { x: d.x, y: d.y } : false}
-                animate={{ x: 0, y: 0 }}
-                transition={{ duration: 0.8, ease: flyEase }}
-              >
-                <div
-                  ref={(el) => {
-                    if (el) cardRefs.current.set(entry.company, el);
-                    else cardRefs.current.delete(entry.company);
-                  }}
-                  className="flex min-w-0 flex-col gap-3"
-                >
-                  <div className="flex min-w-0 items-center gap-2">
-                    <span className="squircle flex size-8 shrink-0 items-center justify-center rounded-lg border border-border bg-card">
-                      <SkillIcon
-                        name={entry.icon}
-                        className="size-4 text-foreground-secondary"
-                      />
-                    </span>
-                    {entry.url ? (
-                      <a
-                        href={entry.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="min-w-0 truncate rounded-sm text-body font-medium underline-offset-3 decoration-foreground-decoration outline-none transition-[text-decoration-color,color] duration-200 hover:text-foreground hover:underline focus-visible:ring-3 focus-visible:ring-ring/50"
-                      >
-                        {entry.company}
-                      </a>
-                    ) : (
-                      <span className="min-w-0 truncate text-body font-medium">
-                        {entry.company}
-                      </span>
-                    )}
-                  </div>
-                  <p className="truncate font-mono text-meta text-foreground-tertiary">
-                    {entry.period}
-                  </p>
-                </div>
-              </motion.div>
+    <div className="relative pt-8">
+      <SketchSvg box={[0, 0, 3, 600]} stretch className="left-[18px] top-14 h-[calc(100%-6rem)] w-[3px] text-ink-4">
+        <Stroke d={lineStroke(hashSeed("experience-spine"), [1.5, 0], [1.5, 600], { bow: 0.3, jitter: 0.6 })} mode="static" />
+      </SketchSvg>
+      <ol className="relative flex flex-col gap-8">
+        {experience.map((role, i) => (
+          <li key={role.company} className="open-in relative flex gap-4" style={{ "--i": i } as CSSProperties}>
+            <IconTile seed={`tile-${role.company}`} size={38} mode="static" className="mt-0.5 bg-paper">
+              <Glyph name={role.icon} className="boil size-[26px]" />
+            </IconTile>
+            <div className="min-w-0 flex-1">
+              <div className="flex min-w-0 flex-wrap items-baseline justify-between gap-x-4">
+                <h3 className="min-w-0 text-body font-bold">
+                  <CompanyName role={role} />
+                </h3>
+                <p className="shrink-0 text-meta font-normal text-ink-3">{role.period}</p>
+              </div>
+              <p className="text-body font-normal text-ink-2">{role.title}</p>
+              <ul className="mt-2 flex max-w-[62ch] flex-col gap-1.5">
+                {role.bullets.map((bullet) => (
+                  <li key={bullet} className="flex gap-2.5 text-body text-ink-2">
+                    <svg aria-hidden="true" viewBox="0 0 9 5" className="sketch mt-[0.72em] h-[5px] w-[9px] shrink-0 overflow-visible text-ink-3">
+                      <path d={bulletDash} strokeWidth={1.3} />
+                    </svg>
+                    <span>{bullet}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-          );
-        })}
-      </Reveal>
+          </li>
+        ))}
+      </ol>
     </div>
   );
 }
 
 export function ExperienceSection() {
-  const [open, setOpen] = useState(false);
-  const [animating, setAnimating] = useState(false);
-  const [deltas, setDeltas] = useState<Record<string, Point> | null>(null);
-  const [flip, setFlip] = useState(0);
-  // Whether the rows below the flying four have been revealed in the current
-  // open cycle. Guards against them flashing in when a collapse interrupts
-  // their delayed entrance.
-  const [restRevealed, setRestRevealed] = useState(false);
-  const restTimer = useRef<number | undefined>(undefined);
-  const stripRootRef = useRef<HTMLDivElement | null>(null);
-  const detailRootRef = useRef<HTMLOListElement | null>(null);
-  const [heights, setHeights] = useState<{
-    strip: number;
-    detail: number;
-  } | null>(null);
-  const stripRefs = useRef<Map<string, HTMLDivElement>>(new Map());
-  const rowRefs = useRef<Map<string, HTMLDivElement>>(new Map());
-  const fromRects = useRef<Record<string, Point> | null>(null);
-
-  useEffect(() => () => window.clearTimeout(restTimer.current), []);
-
-  useLayoutEffect(() => {
-    const measure = () => {
-      const s = stripRootRef.current;
-      const d = detailRootRef.current;
-      if (s && d) setHeights({ strip: s.offsetHeight, detail: d.offsetHeight });
-    };
-    measure();
-    const ro = new ResizeObserver(measure);
-    if (stripRootRef.current) ro.observe(stripRootRef.current);
-    if (detailRootRef.current) ro.observe(detailRootRef.current);
-    return () => ro.disconnect();
-  }, []);
-
-  const height = heights ? (open ? heights.detail : heights.strip) : "auto";
-
-  // Runs after a visibility swap, before paint: the entering tree is at its
-  // final position with un-transformed children, so its rects are the exact
-  // flight targets.
-  useLayoutEffect(() => {
-    const from = fromRects.current;
-    if (!from) return;
-    const refs = open ? rowRefs.current : stripRefs.current;
-    const next: Record<string, Point> = {};
-    for (const [company, point] of Object.entries(from)) {
-      const el = refs.get(company);
-      if (!el) continue;
-      const r = el.getBoundingClientRect();
-      next[company] = { x: point.x - r.x, y: point.y - r.y };
-    }
-    fromRects.current = null;
-    setDeltas(next);
-    setFlip((f) => f + 1);
-  }, [open]);
-
-  const toggle = () => {
-    window.clearTimeout(restTimer.current);
-    const rects: Record<string, Point> = {};
-    const refs = open ? rowRefs.current : stripRefs.current;
-    refs.forEach((el, company) => {
-      const r = el.getBoundingClientRect();
-      rects[company] = { x: r.x, y: r.y };
-    });
-    fromRects.current = rects;
-    setDeltas(null);
-    if (open) {
-      // Collapsing: keep restRevealed as-is so rows that were already shown
-      // fade out with the tree instead of popping.
-    } else {
-      // Expanding: the rest enters only after the flights fully settle.
-      setRestRevealed(false);
-      restTimer.current = window.setTimeout(
-        () => setRestRevealed(true),
-        FLIGHT_S * 1000,
-      );
-    }
-    setOpen((v) => !v);
-    if (heights && heights.strip !== heights.detail) setAnimating(true);
-  };
-
   return (
-    <section
-      aria-labelledby="experience-heading"
-      className="flex flex-col gap-5"
-    >
-      <Reveal variant="fade">
-        <div className="relative">
-          <div className="flex items-center justify-between gap-3">
-            <h2
-              id="experience-heading"
-              className="font-mono text-meta font-medium uppercase tracking-[0.14em] text-foreground-tertiary"
-            >
-              Experience
-            </h2>
-            <button
-              type="button"
-              onClick={toggle}
-              aria-expanded={open}
-              className="group/see relative inline-flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-2 -mr-2 font-mono text-meta font-medium text-foreground-secondary transition-[background-color,color,transform] duration-200 outline-none select-none squircle before:absolute before:-inset-y-2 before:-inset-x-1 before:content-[''] hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 active:scale-[0.97]"
-            >
-              {open ? "See less" : `See ${experience.length - 4} more`}
-              <ChevronsUpDown
-                className={`size-3 transition-transform duration-300 motion-reduce:transition-none ${
-                  open ? "rotate-180" : ""
-                }`}
-              />
-            </button>
-          </div>
-          <motion.div
-            className={`relative -mx-3 px-3 ${animating ? "overflow-hidden" : ""}`}
-            initial={false}
-            animate={{ height }}
-            transition={{ duration: heights ? 0.65 : 0, ease: heightEase }}
-            onAnimationComplete={() => setAnimating(false)}
-          >
-            <StripTree
-              pane={paneStateFor(!open, animating)}
-              target={!open}
-              rootRef={stripRootRef}
-              deltas={deltas}
-              flip={flip}
-              cardRefs={stripRefs}
-            />
-            <DetailTree
-              pane={paneStateFor(open, animating)}
-              target={open}
-              restRevealed={restRevealed}
-              rootRef={detailRootRef}
-              deltas={deltas}
-              flip={flip}
-              rowRefs={rowRefs}
-            />
-          </motion.div>
-        </div>
-      </Reveal>
+    <section aria-labelledby="experience-heading">
+      <Expandable
+        headingId="experience-heading"
+        title="Experience"
+        label={`See ${experience.length - STRIP} more`}
+        collapsed={<Strip />}
+        duration={0.65}
+      >
+        <Details />
+      </Expandable>
     </section>
   );
 }
