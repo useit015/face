@@ -1,101 +1,79 @@
 @import "tailwindcss";
 
+/* ─── Paper & ink ────────────────────────────────────────────────────────
+   One ink, one paper. Everything else is the same ink at lighter pressure,
+   mixed toward the paper so it stays in family in both themes. */
+
 :root {
   color-scheme: light;
-  --background: oklch(0.977 0.005 85);
-  --foreground: oklch(0.24 0.009 70);
-  --border: oklch(0.24 0.009 70 / 0.12);
-  --card: oklch(0.993 0.003 85);
-  --muted: oklch(0.945 0.007 85);
-  --ring: oklch(0.55 0.012 70);
+  --paper: oklch(0.958 0.013 86);
+  --ink: oklch(0.4 0.185 267);
+  --grain-opacity: 1;
+  --vignette: radial-gradient(120% 90% at 50% 40%, transparent 55%, oklch(0.55 0.04 70 / 0.1) 100%);
 }
 
 .dark {
   color-scheme: dark;
-  --background: oklch(0.155 0.004 80);
-  --foreground: oklch(0.93 0.004 80);
-  --border: color-mix(in oklch, var(--foreground) 10%, transparent);
-  --card: oklch(0.205 0.005 80);
-  --muted: oklch(0.27 0.006 80);
-  --ring: oklch(0.72 0.006 80);
+  --paper: oklch(0.215 0.038 266);
+  --ink: oklch(0.9 0.045 258);
+  --grain-opacity: 0.75;
+  --vignette: radial-gradient(120% 90% at 50% 40%, transparent 50%, oklch(0.12 0.03 266 / 0.55) 100%);
 }
 
 :root {
-  --foreground-secondary: color-mix(in oklch, var(--foreground) 75%, var(--background));
-  --foreground-tertiary: color-mix(in oklch, var(--foreground) 62%, var(--background));
-  --foreground-quaternary: color-mix(in oklch, var(--foreground) 30%, var(--background));
-  --foreground-decoration: color-mix(in oklch, var(--foreground-secondary) 44%, var(--background));
-  --foreground-decoration-hover: color-mix(in oklch, var(--foreground-secondary) 60%, var(--background));
-  --foreground-watermark: color-mix(in oklch, var(--foreground) 2.2%, var(--background));
-  --muted-foreground: color-mix(in oklch, var(--foreground) 62%, var(--background));
-  --timeline-line: color-mix(in oklch, var(--foreground) 17.5%, var(--background));
-  --timeline-hover: color-mix(in oklch, var(--foreground) 4%, var(--background));
-  --timeline-halo: color-mix(in oklch, var(--foreground) 28%, transparent);
-  --contrib-0: color-mix(in oklch, var(--foreground) 7%, var(--background));
-  --contrib-1: color-mix(in oklch, var(--foreground) 18%, var(--background));
-  --contrib-2: color-mix(in oklch, var(--foreground) 35%, var(--background));
-  --contrib-3: color-mix(in oklch, var(--foreground) 60%, var(--background));
-  --contrib-4: color-mix(in oklch, var(--foreground) 92%, var(--background));
-  --corner-scale: 0.6;
-  --radius: calc(0.625rem * var(--corner-scale));
-  --radius-md: calc(var(--radius) * 0.8);
-  --section-gap: 2.5rem;
+  --ink-2: color-mix(in oklab, var(--ink) 86%, var(--paper));
+  --ink-3: color-mix(in oklab, var(--ink) 77%, var(--paper));
+  --ink-4: color-mix(in oklab, var(--ink) 40%, var(--paper));
+  --ink-5: color-mix(in oklab, var(--ink) 16%, var(--paper));
+  --section-gap: 2.75rem;
+  --hand-radius: 14px 5px 12px 6px / 6px 12px 5px 14px;
+
+  /* Motion. Exponential ease-outs for things arriving, a quick ease-in for
+     things leaving, and a pen curve (accelerate, then settle) for strokes. */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-pen: cubic-bezier(0.45, 0.05, 0.25, 1);
+  --ease-write: cubic-bezier(0.37, 0, 0.63, 1);
+  --dur-press: 90ms;
+  --dur-hover: 220ms;
+  --dur-state: 300ms;
+  --dur-enter: 560ms;
 }
 
-@supports (corner-shape: squircle) {
+@media (min-width: 640px) {
   :root {
-    --corner-scale: 1;
+    --section-gap: 3.25rem;
   }
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-foreground-secondary: var(--foreground-secondary);
-  --color-foreground-tertiary: var(--foreground-tertiary);
-  --color-foreground-quaternary: var(--foreground-quaternary);
-  --color-foreground-decoration: var(--foreground-decoration);
-  --color-foreground-decoration-hover: var(--foreground-decoration-hover);
-  --color-foreground-watermark: var(--foreground-watermark);
-  --color-border: var(--border);
-  --color-card: var(--card);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-ring: var(--ring);
-  --color-timeline-line: var(--timeline-line);
-  --color-timeline-hover: var(--timeline-hover);
-  --color-timeline-halo: var(--timeline-halo);
-  --color-contrib-0: var(--contrib-0);
-  --color-contrib-1: var(--contrib-1);
-  --color-contrib-2: var(--contrib-2);
-  --color-contrib-3: var(--contrib-3);
-  --color-contrib-4: var(--contrib-4);
-  --radius-md: var(--radius-md);
-  --font-sans: var(--font-familjen);
-  --font-mono: var(--font-martian);
-  --text-meta: 0.6875rem;
-  --text-meta--line-height: 1.5;
-  --text-body: 1rem;
-  --text-body--line-height: 1.6;
-  --text-heading: 1.5rem;
-  --text-heading--line-height: 1.25;
-}
-
-@utility squircle {
-  corner-shape: squircle;
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-ink-4: var(--ink-4);
+  --color-ink-5: var(--ink-5);
+  --font-sans: var(--font-kalam), "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive;
+  --text-meta: 0.9375rem;
+  --text-meta--line-height: 1.4;
+  --text-label: 0.875rem;
+  --text-label--line-height: 1.3;
+  --text-body: 1.125rem;
+  --text-body--line-height: 1.55;
+  --text-heading: 1.3125rem;
+  --text-heading--line-height: 1.2;
+  --text-display: clamp(2.25rem, 1.9rem + 1.6vw, 2.875rem);
+  --text-display--line-height: 1.05;
 }
 
 @utility max-w-page {
-  max-width: 43.75rem;
+  max-width: 47rem;
 }
 
 @utility gap-section {
   gap: var(--section-gap);
-}
-
-@utility timeline-status-halo {
-  background: radial-gradient(circle, var(--timeline-halo) 0%, transparent 80%);
-  animation: halo-breathe 3.2s ease-in-out infinite;
 }
 
 @utility no-scrollbar {
@@ -106,6 +84,734 @@
     display: none;
   }
 }
+
+@utility hand-radius {
+  border-radius: var(--hand-radius);
+}
+
+/* ─── Base ─────────────────────────────────────────────────────────────── */
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: clip;
+  background: var(--paper);
+  scrollbar-color: var(--ink-4) transparent;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: 1.125rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Paper tooth + a soft vignette, fixed behind everything so scrolling never
+   repaints it. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: url("/paper.svg"), var(--vignette);
+  background-size: 320px 320px, 100% 100%;
+  opacity: var(--grain-opacity);
+}
+
+::selection {
+  background: color-mix(in oklab, var(--ink) 20%, var(--paper));
+}
+
+:focus-visible {
+  outline: 1.5px solid var(--ink);
+  outline-offset: 4px;
+  border-radius: var(--hand-radius);
+}
+
+/* ─── Sketch strokes ───────────────────────────────────────────────────── */
+
+.sketch {
+  color: inherit;
+}
+
+.sketch path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sketch .ink-fill {
+  fill: currentColor;
+  stroke: none;
+  opacity: 0.9;
+}
+
+.draw,
+.hover-draw {
+  stroke-dasharray: 1.05 1.05;
+}
+
+@keyframes draw {
+  from {
+    stroke-dashoffset: 1.05;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Strokes wait undrawn until their section scrolls in, then the pen runs. */
+.js [data-reveal]:not(.is-inview) .draw {
+  stroke-dashoffset: 1.05;
+}
+
+.js [data-reveal].is-inview .draw {
+  animation: draw var(--d, 500ms) var(--ease-pen) var(--dd, 0ms) both;
+}
+
+/* Long strokes (the timeline) are pulled at an even pace, like a hand
+   drawing a line across the page. */
+.js [data-reveal].is-inview .draw.steady {
+  animation-timing-function: var(--ease-write);
+}
+
+.js [data-reveal].is-inview .draw.drawn {
+  stroke-dasharray: none;
+  animation: none;
+}
+
+/* Hover strokes: drawn in on hover/focus, pulled back out (faster) on
+   leave. The opacity hand-off hides the round cap that would otherwise sit
+   at rest. */
+.hover-draw {
+  --out: calc(var(--d, 320ms) * 0.65);
+  stroke-dashoffset: 1.05;
+  opacity: 0;
+  transition:
+    stroke-dashoffset var(--out) var(--ease-in),
+    opacity 0s linear var(--out);
+}
+
+.ink-hover:hover .hover-draw,
+.ink-hover:focus-visible .hover-draw,
+.ink-hover[aria-expanded="true"] .hover-draw.stay-open {
+  stroke-dashoffset: 0;
+  opacity: 1;
+  transition:
+    stroke-dashoffset var(--d, 320ms) var(--ease-out),
+    opacity 0s;
+}
+
+@media (hover: none) {
+  .ink-hover:hover .hover-draw {
+    stroke-dashoffset: 1.05;
+    opacity: 0;
+  }
+}
+
+.has-loop:focus-visible {
+  outline: none;
+}
+
+/* Line boil: a few discrete jitters per second, the way hand-drawn animation
+   never quite holds still. Only while hovered. */
+@keyframes boil {
+  0% {
+    transform: rotate(-3deg) translate(0.4px, 0);
+  }
+  33% {
+    transform: rotate(2deg) translate(-0.4px, 0.3px);
+  }
+  66% {
+    transform: rotate(-0.5deg) translate(0.2px, -0.4px);
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .ink-hover:hover .boil {
+    animation: boil 330ms steps(1) infinite;
+  }
+}
+
+/* ─── Glyphs (alpha-mask atlas, tinted with currentColor) ────────────── */
+
+.glyph {
+  display: inline-block;
+  flex-shrink: 0;
+  background-color: currentColor;
+  -webkit-mask-image: url("/ink/glyphs.webp");
+  mask-image: url("/ink/glyphs.webp");
+  /* 64px cells cover 1–2× screens; 3× phones get the 96px sheet. */
+  -webkit-mask-image: -webkit-image-set(url("/ink/glyphs.webp") 2x, url("/ink/glyphs@3x.webp") 3x);
+  mask-image: image-set(url("/ink/glyphs.webp") 2x, url("/ink/glyphs@3x.webp") 3x);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 1000% 800%;
+  mask-size: 1000% 800%;
+  -webkit-mask-position: var(--gx) var(--gy);
+  mask-position: var(--gx) var(--gy);
+}
+
+.glyph-projects {
+  -webkit-mask-image: url("/ink/projects.webp");
+  mask-image: url("/ink/projects.webp");
+  -webkit-mask-size: 400% 100%;
+  mask-size: 400% 100%;
+}
+
+/* ─── Reveal choreography ─────────────────────────────────────────────── */
+
+@property --write {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 130%;
+}
+
+@keyframes write {
+  from {
+    --write: 0%;
+  }
+  to {
+    --write: 130%;
+  }
+}
+
+/* Ink settling: a short rise with a fade. Transform and opacity only, so it
+   stays on the compositor even while the main thread is busy hydrating. */
+@keyframes ink-in {
+  from {
+    opacity: 0;
+    translate: 0 6px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    translate: 0 10px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Handwriting: a feathered mask sweeps left to right across the words. */
+.write-text {
+  padding-inline: 0.12em 0.3em;
+  margin-inline: -0.12em -0.3em;
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(var(--write) - 18%), transparent var(--write));
+  mask-image: linear-gradient(90deg, #000 calc(var(--write) - 18%), transparent var(--write));
+}
+
+.js [data-reveal]:not(.is-inview) .write-text {
+  --write: 0%;
+}
+
+.js [data-reveal].is-inview .write-text {
+  animation: write var(--write-d, 650ms) var(--ease-write) var(--write-dd, 0ms) both;
+}
+
+.js [data-reveal="ink"] {
+  opacity: 0;
+}
+
+.js [data-reveal="ink"].is-inview {
+  animation: ink-in 640ms var(--ease-out) var(--reveal-delay, 0ms) both;
+}
+
+.js [data-reveal="fade"] {
+  opacity: 0;
+}
+
+.js [data-reveal="fade"].is-inview {
+  animation: fade-in 360ms var(--ease-out) var(--reveal-delay, 0ms) both;
+}
+
+.js [data-reveal="rise"] {
+  opacity: 0;
+}
+
+.js [data-reveal="rise"].is-inview {
+  animation: rise-in var(--dur-enter) var(--ease-out-expo) var(--reveal-delay, 0ms) both;
+}
+
+.js [data-reveal="stagger"] > * {
+  opacity: 0;
+}
+
+.js [data-reveal="stagger"].is-inview > * {
+  animation: ink-in var(--dur-enter) var(--ease-out) both;
+  /* Stagger capped at eight steps so long lists never drag. */
+  animation-delay: calc(var(--reveal-delay, 0ms) + min(var(--i, 0), 8) * 60ms);
+}
+
+/* Expandable panes: entering content inks in, strokes re-draw on open. */
+/* Timeline columns arrive as the arrow's pen passes their dot (delays are
+   set per column from the arrow's easing). */
+.js [data-reveal]:not(.is-inview) .strip-col {
+  opacity: 0;
+}
+
+.js [data-reveal].is-inview .strip-col {
+  animation: ink-in 480ms var(--ease-out) var(--col-delay, 0ms) both;
+}
+
+/* Expandable panes: entering content settles in, softly out of focus. */
+@keyframes ink-settle {
+  from {
+    opacity: 0;
+    filter: blur(2.5px);
+    translate: 0 3px;
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    translate: 0 0;
+  }
+}
+
+.expander[data-open="true"] .open-in,
+.expander[data-toggled][data-open="false"] .close-in {
+  animation: ink-settle 520ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  animation-delay: calc(var(--i, 0) * 55ms);
+}
+
+/* ─── Controls ────────────────────────────────────────────────────────── */
+
+.ink-btn {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 2.75rem;
+  padding-inline: 1.1rem;
+  font-weight: 400;
+  font-size: 1.125rem;
+  white-space: nowrap;
+  user-select: none;
+  cursor: pointer;
+  transition: translate var(--dur-hover) var(--ease-out);
+}
+
+/* Hover lifts the face up and to the left, revealing a solid drawn shadow
+   underneath; pressing flattens it back onto the paper. */
+.ink-btn .btn-shadow {
+  opacity: 0;
+  transition:
+    translate var(--dur-hover) var(--ease-out),
+    opacity 120ms var(--ease-out);
+}
+
+.sketch .shadow-fill {
+  fill: currentColor;
+  stroke: none;
+}
+
+.sketch .face-fill {
+  fill: var(--paper);
+  stroke: none;
+}
+
+@media (hover: hover) {
+  .ink-btn:hover {
+    translate: -1.5px -1.5px;
+  }
+
+  .ink-btn:hover .btn-shadow {
+    opacity: 1;
+    translate: 4px 4px;
+  }
+
+  .ink-btn:hover .nudge {
+    translate: 2px -2px;
+  }
+}
+
+.ink-btn:focus-visible {
+  translate: -1.5px -1.5px;
+}
+
+.ink-btn:focus-visible .btn-shadow {
+  opacity: 1;
+  translate: 4px 4px;
+}
+
+.ink-btn:active {
+  translate: 0 0;
+}
+
+.ink-btn:active,
+.ink-btn:active .btn-shadow {
+  transition-duration: var(--dur-press);
+}
+
+.ink-btn:active .btn-shadow {
+  translate: 0 0;
+}
+
+.ink-btn--solid {
+  color: var(--paper);
+}
+
+.ink-btn--solid .sketch {
+  color: var(--ink);
+}
+
+.ink-btn--solid .scribble {
+  stroke-width: 1.1;
+}
+
+.nudge {
+  transition: translate var(--dur-hover) var(--ease-out);
+}
+
+.link-underline {
+  color: var(--ink);
+}
+
+/* Tooltip: paper slip with a wobbly hand-drawn border. */
+.ink-tip {
+  border: 1.3px solid var(--ink);
+  border-radius: var(--hand-radius);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 3px 3px 0 -1px color-mix(in oklab, var(--ink) 18%, transparent);
+  animation: tip-in 160ms var(--ease-out-expo) both;
+}
+
+@keyframes tip-in {
+  from {
+    opacity: 0;
+    translate: 0 4px;
+    rotate: -2deg;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+    rotate: -0.6deg;
+  }
+}
+
+/* Portrait: a server-rendered still hands over to the live sketch, per
+   theme. Both themes' avatars sit in the same box and follow the same cursor;
+   theme CSS only decides which one is visible, so a switch is instant. */
+.portrait-avatar {
+  position: absolute;
+  inset: 0;
+  display: block;
+  opacity: 0;
+}
+
+.portrait-avatar,
+.portrait-still {
+  transition: opacity 420ms var(--ease-out);
+}
+
+.portrait-slot[data-ready-light="true"] .portrait-avatar--light,
+.portrait-slot[data-ready-dark="true"] .portrait-avatar--dark {
+  opacity: 1;
+}
+
+.portrait-still[data-hidden="true"] {
+  opacity: 0;
+}
+
+:root:not(.dark) .portrait-avatar--dark,
+:root:not(.dark) .portrait-still--dark,
+.dark .portrait-avatar--light,
+.dark .portrait-still--light {
+  visibility: hidden;
+}
+
+/* Contribution cells */
+.contrib-col {
+  opacity: 1;
+}
+
+.js [data-reveal]:not(.is-inview) .contrib-col {
+  opacity: 0;
+}
+
+.js [data-reveal].is-inview .contrib-col {
+  animation: fade-in 280ms var(--ease-out) both;
+  animation-delay: calc(var(--c, 0) * 12ms + 120ms);
+}
+
+/* ─── Theme change: an ink blot spreads from the toggle ───────────────── */
+
+@property --blot-size {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@keyframes blot-spread {
+  from {
+    --blot-size: 0px;
+  }
+  to {
+    --blot-size: var(--theme-reach);
+  }
+}
+
+:root[data-theme-transition]::view-transition-old(root),
+:root[data-theme-transition]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+:root[data-theme-transition]::view-transition-group(root) {
+  animation: none;
+}
+
+:root[data-theme-transition]::view-transition-old(root) {
+  z-index: 1;
+}
+
+:root[data-theme-transition]::view-transition-new(root) {
+  z-index: 2;
+  --blot-size: 0px;
+  -webkit-mask-image: var(--blot);
+  mask-image: var(--blot);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: var(--blot-size) var(--blot-size);
+  mask-size: var(--blot-size) var(--blot-size);
+  -webkit-mask-position: calc(var(--theme-cx) - var(--blot-size) / 2) calc(var(--theme-cy) - var(--blot-size) / 2);
+  mask-position: calc(var(--theme-cx) - var(--blot-size) / 2) calc(var(--theme-cy) - var(--blot-size) / 2);
+}
+
+:root[data-theme-animating]::view-transition-new(root) {
+  /* Ink hits the page fast, then creeps to a stop. */
+  animation: blot-spread 720ms var(--ease-out) both;
+}
+
+:root[data-theme-transition]::view-transition {
+  pointer-events: none;
+}
+
+:root[data-theme-transition] *,
+:root[data-theme-transition] *::before,
+:root[data-theme-transition] *::after {
+  transition: none !important;
+}
+
+/* ─── Reduced motion: no movement, no drawing — the page simply fades in ── */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  /* The drawing and handwriting are already finished. */
+  .js [data-reveal] .draw,
+  .js [data-reveal]:not(.is-inview) .draw {
+    stroke-dashoffset: 0 !important;
+    animation: none !important;
+  }
+
+  .js [data-reveal] .write-text {
+    --write: 130% !important;
+    animation: none !important;
+  }
+
+  /* Entrances keep a short crossfade, without the rise or the stagger. */
+  .js [data-reveal="ink"].is-inview,
+  .js [data-reveal="rise"].is-inview,
+  .js [data-reveal="fade"].is-inview,
+  .js [data-reveal="stagger"].is-inview > *,
+  .js [data-reveal].is-inview .strip-col,
+  .expander[data-open="true"] .open-in,
+  .expander[data-toggled][data-open="false"] .close-in {
+    animation: fade-in 200ms var(--ease-out) both !important;
+  }
+
+  .js [data-reveal] .contrib-col {
+    opacity: 1 !important;
+    animation: none !important;
+  }
+
+  .hover-draw,
+  .ink-btn,
+  .ink-btn .btn-shadow,
+  .nudge,
+  .portrait-avatar,
+  .portrait-still {
+    transition: none !important;
+  }
+
+  .ink-tip {
+    animation: none;
+  }
+}
+
+/* ─── Theme toggle: the sun and moon draw themselves in and out ───────── */
+
+.theme-toggle .ts {
+  stroke-dasharray: 1.05 1.05;
+}
+
+/* Match the size and stroke weight of the hand-drawn raster icons beside
+   it (they fill ~58% of their box with ~2.2px strokes). */
+.theme-icon path {
+  stroke-width: 2.6;
+}
+
+.theme-icon .theme-moon path {
+  stroke-width: 1.9;
+}
+
+:root:not(.dark) .theme-toggle .theme-moon .ts,
+.dark .theme-toggle .theme-sun .ts {
+  stroke-dashoffset: 1.05;
+}
+
+:root:not(.dark) .theme-toggle .theme-sun .ts,
+.dark .theme-toggle .theme-moon .ts {
+  stroke-dashoffset: 0;
+}
+
+@keyframes ts-in {
+  from {
+    stroke-dashoffset: 1.05;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes ts-out {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: 1.05;
+  }
+}
+
+:root:not(.dark) .theme-toggle[data-armed] .theme-sun .ts,
+.dark .theme-toggle[data-armed] .theme-moon .ts {
+  animation: ts-in 360ms var(--ease-pen) calc(var(--dd, 0ms) + 160ms) both;
+}
+
+:root:not(.dark) .theme-toggle[data-armed] .theme-moon .ts,
+.dark .theme-toggle[data-armed] .theme-sun .ts {
+  animation: ts-out 180ms var(--ease-in) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle[data-armed] .ts {
+    animation: none !important;
+  }
+}
+
+.copied-tick path {
+  stroke-dasharray: 1.05 1.05;
+  animation: draw 240ms var(--ease-pen) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .copied-tick path {
+    animation: none;
+  }
+}
+
+/* ─── Pen underlines (CSS-only, stretch to any width) ─────────────────── */
+
+:root {
+  --pen-rest: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 200 6%27 preserveAspectRatio=%27none%27%3E%3Cpath d=%27M1.5 3.9C38 2.6 84 4.6 128 3.2S183 2.1 198.5 2.7%27 fill=%27none%27 stroke=%27%231d36a9%27 stroke-opacity=%270.42%27 stroke-width=%271.5%27 stroke-linecap=%27round%27/%3E%3C/svg%3E");
+  --pen-line: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 200 6%27 preserveAspectRatio=%27none%27%3E%3Cpath d=%27M1 3.1C46 4.3 97 2.2 146 3.4S188 4.1 199 2.9%27 fill=%27none%27 stroke=%27%231d36a9%27 stroke-opacity=%271%27 stroke-width=%271.5%27 stroke-linecap=%27round%27/%3E%3C/svg%3E");
+}
+
+.dark {
+  --pen-rest: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 200 6%27 preserveAspectRatio=%27none%27%3E%3Cpath d=%27M1.5 3.9C38 2.6 84 4.6 128 3.2S183 2.1 198.5 2.7%27 fill=%27none%27 stroke=%27%23cce0fc%27 stroke-opacity=%270.42%27 stroke-width=%271.5%27 stroke-linecap=%27round%27/%3E%3C/svg%3E");
+  --pen-line: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 200 6%27 preserveAspectRatio=%27none%27%3E%3Cpath d=%27M1 3.1C46 4.3 97 2.2 146 3.4S188 4.1 199 2.9%27 fill=%27none%27 stroke=%27%23cce0fc%27 stroke-opacity=%271%27 stroke-width=%271.5%27 stroke-linecap=%27round%27/%3E%3C/svg%3E");
+}
+
+/* Hover-only underline that wipes in left to right, like a quick pen pass. */
+.pen-underline {
+  padding-bottom: 2px;
+  background-image: var(--pen-line);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 6px;
+  transition: background-size 200ms var(--ease-in);
+}
+
+@media (hover: hover) {
+  .ink-hover:hover .pen-underline {
+    background-size: 100% 6px;
+    transition: background-size 280ms var(--ease-out);
+  }
+}
+
+.ink-hover:focus-visible .pen-underline {
+  background-size: 100% 6px;
+}
+
+/* Inline links: always underlined lightly, inked over on hover. */
+.ink-link {
+  padding-bottom: 2px;
+  font-weight: 400;
+  white-space: nowrap;
+  background-image: var(--pen-line), var(--pen-rest);
+  background-repeat: no-repeat;
+  background-position: 0 100%, 0 100%;
+  background-size: 0% 6px, 100% 6px;
+  transition: background-size 200ms var(--ease-in);
+}
+
+@media (hover: hover) {
+  .ink-link:hover {
+    background-size: 100% 6px, 100% 6px;
+    transition: background-size 280ms var(--ease-out);
+  }
+}
+
+.ink-link:focus-visible {
+  background-size: 100% 6px, 100% 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pen-underline,
+  .ink-link {
+    transition: none;
+  }
+}
+
+.cell-loop {
+  stroke-dasharray: 1.05 1.05;
+  animation: draw 280ms var(--ease-pen) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cell-loop {
+    animation: none;
+  }
+}
+
+/* ─── Horizontal scrollers fade only the edges that hide content ─────── */
 
 @utility scroll-fade-x {
   --scroll-fade-size: 1.75rem;
@@ -120,8 +826,7 @@
   );
 }
 
-/* Registered as <length> so the edge fades slide in/out instead of popping.
-   Browsers without @property support fall back to the instant swap. */
+/* Registered as <length> so the edge fades slide instead of popping. */
 @property --scroll-fade-s {
   syntax: "<length>";
   inherits: false;
@@ -136,273 +841,109 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .scroll-fade-x {
-    transition: --scroll-fade-s 240ms ease, --scroll-fade-e 240ms ease;
+    transition:
+      --scroll-fade-s 240ms var(--ease-out),
+      --scroll-fade-e 240ms var(--ease-out);
   }
 }
 
-@keyframes halo-breathe {
-  0%,
-  100% {
-    opacity: 0.55;
-  }
-  50% {
-    opacity: 1;
-  }
+/* ─── Projects ────────────────────────────────────────────────────────── */
+
+.project-glyph,
+.star-glyph {
+  transition:
+    rotate var(--dur-state) var(--ease-out),
+    scale var(--dur-state) var(--ease-out);
 }
 
-@keyframes reveal-fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+.star-fill {
+  color: var(--ink);
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  background: repeating-linear-gradient(-50deg, currentColor 0 1.2px, transparent 1.2px 2.5px);
+  opacity: 0;
+  scale: 0.5;
+  transition:
+    opacity var(--dur-hover) var(--ease-out),
+    scale var(--dur-state) var(--ease-out);
 }
 
-@keyframes reveal-rise-in {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
+@media (hover: hover) {
+  .project-row:hover .project-glyph {
+    rotate: -5deg;
+    scale: 1.06;
   }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
 
-@keyframes tooltip-in {
-  from {
-    opacity: 0;
-    translate: 0 3px;
-    scale: 0.97;
+  .project-row:hover .star-glyph {
+    rotate: 14deg;
   }
-  to {
+
+  .project-row:hover .star-fill {
     opacity: 1;
-    translate: 0 0;
     scale: 1;
   }
 }
 
-html {
-  scroll-behavior: smooth;
-  /* The experience flight animates rows from off-axis strip positions;
-     clip the horizontal spillover instead of flickering a scrollbar. */
-  overflow-x: clip;
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-size: 1rem;
-  line-height: 1.6;
-  transition: background-color 200ms ease, color 200ms ease;
-}
-
-/* Theme flips expand a rounded-square blob from the toggle button via the
-   View Transitions API (see theme-toggle.tsx) — in both directions, so the
-   motion always starts where the user clicked. Browsers without support and
-   reduced-motion users fall back to the instant swap. */
-
-/* The new snapshot expands on top; the old one waits beneath at full size. */
-:root[data-theme-transition]::view-transition-old(root),
-:root[data-theme-transition]::view-transition-new(root) {
-  animation: none;
-  mix-blend-mode: normal;
-}
-:root[data-theme-transition]::view-transition-group(root) {
-  animation: none;
-}
-:root[data-theme-transition]::view-transition-new(root) {
-  z-index: 2;
-}
-:root[data-theme-transition]::view-transition-old(root) {
-  z-index: 1;
-}
-:root[data-theme-transition]::view-transition {
-  pointer-events: none;
-}
-
-/* Capture settled colors rather than partially blended frames. */
-:root[data-theme-transition] *,
-:root[data-theme-transition] *::before,
-:root[data-theme-transition] *::after {
-  transition: none !important;
-}
-
-@keyframes theme-squircle-open {
-  from {
-    clip-path: inset(
-      var(--theme-inset-top) var(--theme-inset-right)
-      var(--theme-inset-bottom) var(--theme-inset-left)
-      round var(--radius-md)
-    );
-  }
-  to {
-    clip-path: inset(0 0 0 0 round 0px);
-  }
-}
-
-/* Static clip states hold between snapshot capture and the animating
-   attribute, so nothing flashes in between: the new snapshot waits as the
-   button-sized shape while the old snapshot still covers everything. */
-:root[data-theme-transition]::view-transition-new(root) {
-  clip-path: inset(
-    var(--theme-inset-top) var(--theme-inset-right)
-    var(--theme-inset-bottom) var(--theme-inset-left)
-    round var(--radius-md)
-  );
-}
-:root[data-theme-transition]::view-transition-old(root) {
-  clip-path: inset(0 0 0 0 round 0px);
-}
-:root[data-theme-animating]::view-transition-new(root) {
-  animation: theme-squircle-open 680ms cubic-bezier(0.4, 0, 0.2, 1) both;
-}
-
-/* True squircle reveal: a rounded square centered on the button that scales
-   uniformly from the button's size to beyond the viewport, so the shape is
-   geometrically similar at every frame and reads as one blob expanding.
-   Every coordinate is center ± factor × s, with the corner offset at
-   0.571 × s to match the button's rounded-md corners at scale one. Each
-   edge is a straight line between corner curves; every corner curve's
-   control point sits exactly on the sharp corner. Browsers without shape()
-   keep the inset() version above. */
-@supports (clip-path: shape(from 0% 0%, line to 1% 0%)) {
-  @keyframes theme-squircle-open {
-    from {
-      clip-path: shape(
-        from calc(var(--theme-cx) - var(--theme-half) * 0.429) calc(var(--theme-cy) - var(--theme-half)),
-        line to calc(var(--theme-cx) + var(--theme-half) * 0.429) calc(var(--theme-cy) - var(--theme-half)),
-        curve to calc(var(--theme-cx) + var(--theme-half)) calc(var(--theme-cy) - var(--theme-half) * 0.429)
-          with calc(var(--theme-cx) + var(--theme-half)) calc(var(--theme-cy) - var(--theme-half)),
-        line to calc(var(--theme-cx) + var(--theme-half)) calc(var(--theme-cy) + var(--theme-half) * 0.429),
-        curve to calc(var(--theme-cx) + var(--theme-half) * 0.429) calc(var(--theme-cy) + var(--theme-half))
-          with calc(var(--theme-cx) + var(--theme-half)) calc(var(--theme-cy) + var(--theme-half)),
-        line to calc(var(--theme-cx) - var(--theme-half) * 0.429) calc(var(--theme-cy) + var(--theme-half)),
-        curve to calc(var(--theme-cx) - var(--theme-half)) calc(var(--theme-cy) + var(--theme-half) * 0.429)
-          with calc(var(--theme-cx) - var(--theme-half)) calc(var(--theme-cy) + var(--theme-half)),
-        line to calc(var(--theme-cx) - var(--theme-half)) calc(var(--theme-cy) - var(--theme-half) * 0.429),
-        curve to calc(var(--theme-cx) - var(--theme-half) * 0.429) calc(var(--theme-cy) - var(--theme-half))
-          with calc(var(--theme-cx) - var(--theme-half)) calc(var(--theme-cy) - var(--theme-half))
-      );
-    }
-    to {
-      clip-path: shape(
-        from calc(var(--theme-cx) - var(--theme-reach) * 0.429) calc(var(--theme-cy) - var(--theme-reach)),
-        line to calc(var(--theme-cx) + var(--theme-reach) * 0.429) calc(var(--theme-cy) - var(--theme-reach)),
-        curve to calc(var(--theme-cx) + var(--theme-reach)) calc(var(--theme-cy) - var(--theme-reach) * 0.429)
-          with calc(var(--theme-cx) + var(--theme-reach)) calc(var(--theme-cy) - var(--theme-reach)),
-        line to calc(var(--theme-cx) + var(--theme-reach)) calc(var(--theme-cy) + var(--theme-reach) * 0.429),
-        curve to calc(var(--theme-cx) + var(--theme-reach) * 0.429) calc(var(--theme-cy) + var(--theme-reach))
-          with calc(var(--theme-cx) + var(--theme-reach)) calc(var(--theme-cy) + var(--theme-reach)),
-        line to calc(var(--theme-cx) - var(--theme-reach) * 0.429) calc(var(--theme-cy) + var(--theme-reach)),
-        curve to calc(var(--theme-cx) - var(--theme-reach)) calc(var(--theme-cy) + var(--theme-reach) * 0.429)
-          with calc(var(--theme-cx) - var(--theme-reach)) calc(var(--theme-cy) + var(--theme-reach)),
-        line to calc(var(--theme-cx) - var(--theme-reach)) calc(var(--theme-cy) - var(--theme-reach) * 0.429),
-        curve to calc(var(--theme-cx) - var(--theme-reach) * 0.429) calc(var(--theme-cy) - var(--theme-reach))
-          with calc(var(--theme-cx) - var(--theme-reach)) calc(var(--theme-cy) - var(--theme-reach))
-      );
-    }
-  }
-
-  :root[data-theme-transition]::view-transition-new(root) {
-    clip-path: shape(
-      from calc(var(--theme-cx) - var(--theme-half) * 0.429) calc(var(--theme-cy) - var(--theme-half)),
-      line to calc(var(--theme-cx) + var(--theme-half) * 0.429) calc(var(--theme-cy) - var(--theme-half)),
-      curve to calc(var(--theme-cx) + var(--theme-half)) calc(var(--theme-cy) - var(--theme-half) * 0.429)
-        with calc(var(--theme-cx) + var(--theme-half)) calc(var(--theme-cy) - var(--theme-half)),
-      line to calc(var(--theme-cx) + var(--theme-half)) calc(var(--theme-cy) + var(--theme-half) * 0.429),
-      curve to calc(var(--theme-cx) + var(--theme-half) * 0.429) calc(var(--theme-cy) + var(--theme-half))
-        with calc(var(--theme-cx) + var(--theme-half)) calc(var(--theme-cy) + var(--theme-half)),
-      line to calc(var(--theme-cx) - var(--theme-half) * 0.429) calc(var(--theme-cy) + var(--theme-half)),
-      curve to calc(var(--theme-cx) - var(--theme-half)) calc(var(--theme-cy) + var(--theme-half) * 0.429)
-        with calc(var(--theme-cx) - var(--theme-half)) calc(var(--theme-cy) + var(--theme-half)),
-      line to calc(var(--theme-cx) - var(--theme-half)) calc(var(--theme-cy) - var(--theme-half) * 0.429),
-      curve to calc(var(--theme-cx) - var(--theme-half) * 0.429) calc(var(--theme-cy) - var(--theme-half))
-        with calc(var(--theme-cx) - var(--theme-half)) calc(var(--theme-cy) - var(--theme-half))
-    );
-  }
-}
-
-::selection {
-  background: color-mix(in oklch, var(--foreground) 22%, var(--background));
-}
-
-.js [data-reveal="fade"] {
-  opacity: 0;
-  transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1);
-  transition-delay: var(--reveal-delay, 0ms);
-}
-
-.js [data-reveal="fade"].is-inview {
+.project-row:focus-visible .star-fill {
   opacity: 1;
-}
-
-/* Hidden up front so above-fold content never paints fully visible and then
-   blinks out when the IntersectionObserver starts the rise animation. */
-.js [data-reveal="rise"] {
-  opacity: 0;
-}
-
-.js [data-reveal="rise"].is-inview {
-  animation: reveal-rise-in 500ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-delay: var(--reveal-delay, 0ms);
-}
-
-.js [data-reveal="stagger"] > * {
-  opacity: 0;
-}
-
-.js [data-reveal="stagger"].is-inview > * {
-  animation: reveal-rise-in 500ms cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.js [data-reveal="stagger"].is-inview > *:nth-child(1) { animation-delay: 0ms; }
-.js [data-reveal="stagger"].is-inview > *:nth-child(2) { animation-delay: 45ms; }
-.js [data-reveal="stagger"].is-inview > *:nth-child(3) { animation-delay: 90ms; }
-.js [data-reveal="stagger"].is-inview > *:nth-child(4) { animation-delay: 135ms; }
-.js [data-reveal="stagger"].is-inview > *:nth-child(5) { animation-delay: 180ms; }
-.js [data-reveal="stagger"].is-inview > *:nth-child(6) { animation-delay: 225ms; }
-.js [data-reveal="stagger"].is-inview > *:nth-child(7) { animation-delay: 270ms; }
-.js [data-reveal="stagger"].is-inview > *:nth-child(8) { animation-delay: 315ms; }
-.js [data-reveal="stagger"].is-inview > *:nth-child(9) { animation-delay: 360ms; }
-.js [data-reveal="stagger"].is-inview > *:nth-child(10) { animation-delay: 405ms; }
-.js [data-reveal="stagger"].is-inview > *:nth-child(11) { animation-delay: 450ms; }
-.js [data-reveal="stagger"].is-inview > *:nth-child(n+12) { animation-delay: 495ms; }
-
-.expander[data-open="true"] .stagger-in {
-  animation: reveal-rise-in 450ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-delay: calc(var(--i, 0) * 50ms);
-}
-
-.expander[data-open="true"] .chip-in {
-  animation: reveal-rise-in 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-delay: calc(220ms + var(--i, 0) * 30ms);
-}
-
-/* Pop-in for the portal-mounted contribution tooltip (recreated per hover). */
-.tooltip-in {
-  animation: tooltip-in 160ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  scale: 1;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
+  .project-glyph,
+  .star-glyph,
+  .star-fill {
+    transition: none;
+  }
+}
+
+@media (pointer: fine) and (min-width: 768px) {
+  .doodle-hint {
+    display: block;
+  }
+}
+
+/* ─── Accessibility & print ───────────────────────────────────────────── */
+
+/* Asked for more contrast: drop the lighter pen pressures. */
+@media (prefers-contrast: more) {
+  :root {
+    --ink-2: var(--ink);
+    --ink-3: var(--ink);
+    --ink-4: color-mix(in oklab, var(--ink) 70%, var(--paper));
+  }
+}
+
+/* Forced colours paint over backgrounds, which would erase the mask-based
+   icons; pin them to the system text colour instead. */
+@media (forced-colors: active) {
+  .glyph {
+    forced-color-adjust: none;
+    background-color: CanvasText;
   }
 
-  .timeline-status-halo {
-    animation: none;
+  body::before {
+    display: none;
   }
+}
 
-  .tooltip-in {
-    animation: none;
+@media print {
+  body::before,
+  canvas,
+  .theme-toggle,
+  .doodle-hint {
+    display: none !important;
   }
 
   .js [data-reveal],
-  .js [data-reveal="stagger"] > *,
-  .expander .stagger-in,
-  .expander .chip-in {
-    opacity: 1;
-    animation: none;
+  .js [data-reveal="stagger"] > * {
+    opacity: 1 !important;
+    animation: none !important;
+  }
+
+  .js [data-reveal] .draw,
+  .js [data-reveal] .write-text {
+    stroke-dashoffset: 0 !important;
+    --write: 130% !important;
+    animation: none !important;
   }
 }

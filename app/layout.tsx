@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Familjen_Grotesk, Martian_Mono } from "next/font/google";
+import { Kalam } from "next/font/google";
+import { preload } from "react-dom";
 import { MotionProvider } from "@/components/motion-provider";
+import { PaperDoodles } from "@/components/paper-doodles";
+import { InkSettle } from "@/components/ink/settle";
 import {
   personJsonLd,
   siteDescription,
@@ -9,16 +12,14 @@ import {
   siteTitle,
   siteUrl,
 } from "@/lib/seo";
+import { themeColors } from "@/lib/theme";
 import "./globals.css";
 
-const familjenGrotesk = Familjen_Grotesk({
-  variable: "--font-familjen",
+const kalam = Kalam({
+  variable: "--font-kalam",
+  weight: ["300", "400", "700"],
   subsets: ["latin"],
-});
-
-const martianMono = Martian_Mono({
-  variable: "--font-martian",
-  subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -65,27 +66,40 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f9f7f4" },
-    { media: "(prefers-color-scheme: dark)", color: "#0d0c0a" },
+    { media: "(prefers-color-scheme: light)", color: themeColors.light },
+    { media: "(prefers-color-scheme: dark)", color: themeColors.dark },
   ],
   colorScheme: "light dark",
 };
 
-const jsClassScript = `document.documentElement.classList.add("js")`;
+// `js` arms the reveal choreography. If the app hasn't hydrated within four
+// seconds (slow network, blocked script), disarm it so nothing stays hidden.
+const jsClassScript = `(function(){var d=document.documentElement;d.classList.add("js");setTimeout(function(){if(!d.classList.contains("hydrated"))d.classList.remove("js")},4000)})()`;
 
-const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d=t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches;document.documentElement.classList.toggle("dark",d)}catch(e){}})()`;
+// Resolve the theme before first paint, and start fetching that theme's
+// portrait sheet (the avatar module requests it with fetch()).
+const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d=t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches;document.documentElement.classList.toggle("dark",d);var l=document.createElement("link");l.rel="preload";l.as="fetch";l.crossOrigin="anonymous";l.href="/avatar/ink/sheet-"+(d?"dark":"light")+".webp";document.head.appendChild(l)}catch(e){}})()`;
 
-const consoleScript = `try{console.log("%cViewing source? Good instinct. It's how I'd vet this page too.","font-weight:600;font-size:13px");console.log("%cIf the code passes inspection, the engineer might too — useit015@gmail.com","color:#8a8578")}catch(e){}`;
+const consoleScript = `try{console.log("%cViewing source? Good instinct. It's how I'd vet this page too.","font-weight:600;font-size:13px");console.log("%cEverything here is drawn at runtime from seeded strokes. The margins take ink, too — drag on the empty paper.","color:#5b67c9");console.log("%cIf the code passes inspection, the engineer might too — useit015@gmail.com","color:#8a8578")}catch(e){}`;
 
-const whisperScript = `(function(){try{var t=document.title,w=["Still here.","The avatar noticed.","The other tab is slower."],i=Math.floor(Math.random()*w.length);document.addEventListener("visibilitychange",function(){document.title=document.hidden?w[i++%w.length]:t})}catch(e){}})()`;
+const whisperScript = `(function(){try{var t=document.title,w=["Still here.","The ink is drying.","The other tab is slower."],i=Math.floor(Math.random()*w.length);document.addEventListener("visibilitychange",function(){document.title=document.hidden?w[i++%w.length]:t})}catch(e){}})()`;
 
 const jsonLdScript = JSON.stringify(personJsonLd).replaceAll("<", "\\u003c");
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
+  // CSS masks are fetched in CORS mode, so the preload must match it.
+  preload("/ink/glyphs.webp", {
+    as: "image",
+    type: "image/webp",
+    crossOrigin: "anonymous",
+    fetchPriority: "high",
+    imageSrcSet: "/ink/glyphs.webp 2x, /ink/glyphs@3x.webp 3x",
+  });
+
   return (
     <html
       lang="en"
-      className={`${familjenGrotesk.variable} ${martianMono.variable} h-full antialiased`}
+      className={`${kalam.variable} h-full`}
       suppressHydrationWarning
     >
       <head>
@@ -101,11 +115,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-foreground focus:px-3 focus:py-1.5 focus:font-mono focus:text-meta focus:text-background focus:outline-none"
+          className="ink-tip sr-only px-3 py-1.5 text-meta focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50"
         >
           Skip to content
         </a>
         <MotionProvider>{children}</MotionProvider>
+        <PaperDoodles />
+        <InkSettle />
       </body>
     </html>
   );
