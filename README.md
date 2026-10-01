@@ -11,7 +11,7 @@ with Next.js App Router.
 - Tailwind CSS 4
 - TypeScript
 - ESLint 9
-- Kalam (via `next/font`)
+- Gaegu (via `next/font`)
 
 ## Development
 
@@ -42,6 +42,10 @@ Next.js ISR and degrade silently to empty values if unavailable.
 
 - `lib/sketch.ts` — seeded stroke geometry (boxes, underlines, loops, hatching,
   arrows, the theme-change ink blot). Same seed, same wobble, on server and client.
+  Underlines, margin scrawls, flicks and the footer signature are drawn as
+  ballpoint ink (`underlineInk`, `inkPulls`): filled ribbons whose width
+  follows pen pressure (light landing, thin lift-off, ink pooling at sharp
+  turns), revealed by a mask stroke along each centreline (`InkMarks`).
 - `components/ink/` — SVG primitives built on it. Strokes use `pathLength=1`
   and draw themselves in when their `Reveal` scrolls into view, on hover, or
   when an expandable opens (see the "Sketch strokes" and "Reveal" sections of
@@ -57,9 +61,13 @@ Next.js ISR and degrade silently to empty values if unavailable.
   hair and shadows left as paper). Both follow the
   cursor together and theme CSS picks one. `still-*.webp` are the centre pose,
   rendered on the server until the sheets load.
-- `public/paper.svg` — the seamless paper tile (tooth, fibres, specks).
-- `components/paper-doodles.tsx` — drag on empty paper (mouse or pen) to leave
-  ink that fades after a few seconds.
+- `public/paper-{light,dark}.svg` — seamless paper tiles: fractal noise lit
+  with `feDiffuseLighting` for soft crinkle relief, calibrated so each
+  averages out to its theme's `--paper`. Painted on the root, so the paper
+  scrolls with the page.
+- `components/margin-scrawl.tsx` — pen-test scrawls pinned in the page margins.
+- `components/paper-doodles.tsx` — the cursor turns into a pen over empty paper;
+  drag (mouse or stylus) to leave grainy ballpoint ink that dries and fades.
 
 ## Structure
 

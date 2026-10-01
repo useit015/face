@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useLayoutEffect, useRef, useState } from "react";
-import { boxStroke, hashSeed, loopStroke, scribbleFill } from "@/lib/sketch";
+import { boxStroke, cornerTicks, crossedBoxStroke, hashSeed, loopStroke, shadeFill } from "@/lib/sketch";
 import { SketchSvg, Stroke, type DrawMode } from "@/components/ink/sketch";
 
 type Size = readonly [number, number];
@@ -55,6 +55,8 @@ export function MeasuredBox({
 }) {
   const [ref, [w, h]] = useParentSize(estimate);
   const clipId = useId();
+  const maskId = useId();
+  const hatchId = useId();
   const s = hashSeed(seed);
   const body = `${boxStroke(s + 7, w, h, { overshoot: 0, jitter: 0.9 })}Z`;
   return (
@@ -65,27 +67,44 @@ export function MeasuredBox({
       className="sketch-box"
       style={{ left: -pad, top: -pad, width: `calc(100% + ${pad * 2}px)`, height: `calc(100% + ${pad * 2}px)` }}
     >
-      <g className="btn-shadow" aria-hidden="true">
-        <path d={body} className="shadow-fill" />
+      {/* The hover shadow is pen hatching, masked out under the face rather
+          than covered by it, so the face stays the paper itself. Inline
+          styles: `.sketch path` would otherwise blank these fills. */}
+      <defs>
+        <pattern id={hatchId} patternUnits="userSpaceOnUse" width={3.2} height={3.2} patternTransform="rotate(-45)">
+          <path d="M0 -1V4.2" style={{ strokeWidth: 1.05 }} />
+        </pattern>
+        <mask id={maskId} maskUnits="userSpaceOnUse" x={-pad - 20} y={-pad - 20} width={w + pad * 2 + 40} height={h + pad * 2 + 40}>
+          <rect x={-pad - 20} y={-pad - 20} width={w + pad * 2 + 40} height={h + pad * 2 + 40} fill="#fff" />
+          <path d={body} style={{ fill: "#000", stroke: "#000", strokeWidth: 1.5 }} />
+        </mask>
+      </defs>
+      <g mask={`url(#${maskId})`}>
+        <g className="btn-shadow" aria-hidden="true">
+          <path d={body} style={{ fill: `url(#${hatchId})`, stroke: "none" }} />
+          <path d={crossedBoxStroke(s + 9, w, h, { overshoot: 2, jitter: 1 })} style={{ strokeWidth: 1 }} />
+        </g>
       </g>
       <g>
-        {/* An opaque face so the shadow never shows through the label (or
-            through the slightly translucent pen shading). */}
-        <path d={body} className="face-fill" />
         {filled && (
           <>
             {/* Shading stays inside a slightly loose version of the box. */}
             <clipPath id={clipId}>
-              <rect x={-0.5} y={-0.5} width={w + 1} height={h + 1} rx={1.5} />
+              <rect x={-1.5} y={-1.5} width={w + 3} height={h + 3} rx={1.5} />
             </clipPath>
             <path d={body} className="ink-fill" />
             <g clipPath={`url(#${clipId})`}>
-              <Stroke d={scribbleFill(s + 3, w, h)} mode={mode} delay={delay + 120} duration={620} width={1.1} className="scribble" />
+              <Stroke d={shadeFill(s + 3, w, h, { gap: 2.3, angle: -14 })} mode={mode} delay={delay + 120} duration={620} width={1.5} className="scribble" />
+              <Stroke d={shadeFill(s + 4, w, h, { gap: 4.2, angle: -26 })} mode={mode} delay={delay + 300} duration={520} width={1} opacity={0.7} className="scribble" />
             </g>
           </>
         )}
-        <Stroke d={boxStroke(s, w, h)} mode={mode} delay={delay} duration={480} />
-        <Stroke d={boxStroke(s + 1, w, h, { overshoot: 1.4 })} mode={mode} delay={delay + 340} duration={380} opacity={0.5} width={0.9} />
+        {/* Three passes that never quite line up, each running past its
+            corners, the way a box gets gone over when it matters. */}
+        <Stroke d={crossedBoxStroke(s, w, h, { overshoot: 4 })} mode={mode} delay={delay} duration={480} width={1.4} />
+        <Stroke d={crossedBoxStroke(s + 1, w, h, { overshoot: 7, jitter: 1.6, shift: [1.8, -1.6] })} mode={mode} delay={delay + 300} duration={420} opacity={0.8} width={1.1} />
+        <Stroke d={crossedBoxStroke(s + 2, w, h, { overshoot: 5, jitter: 1.8, shift: [-1.4, 2.2] })} mode={mode} delay={delay + 520} duration={380} opacity={0.55} width={1} />
+        {!filled && <Stroke d={cornerTicks(s + 5, w, h)} mode={mode} delay={delay + 760} duration={260} opacity={0.7} width={1} />}
       </g>
     </SketchSvg>
   );

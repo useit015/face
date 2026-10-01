@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Kalam } from "next/font/google";
+import { Gaegu } from "next/font/google";
 import { preload } from "react-dom";
 import { MotionProvider } from "@/components/motion-provider";
 import { PaperDoodles } from "@/components/paper-doodles";
@@ -15,8 +15,9 @@ import {
 import { themeColors } from "@/lib/theme";
 import "./globals.css";
 
-const kalam = Kalam({
-  variable: "--font-kalam",
+// Gaegu: an upright, monoline print hand, the closest type to a ballpoint.
+const hand = Gaegu({
+  variable: "--font-hand",
   weight: ["300", "400", "700"],
   subsets: ["latin"],
   display: "swap",
@@ -99,7 +100,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${kalam.variable} h-full`}
+      className={`${hand.variable} h-full`}
       suppressHydrationWarning
     >
       <head>

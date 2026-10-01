@@ -21,7 +21,7 @@ export function SeeMore({
       onClick={onToggle}
       aria-expanded={open}
       aria-controls={controls}
-      className="ink-hover group relative -mr-1 inline-flex h-11 shrink-0 cursor-pointer items-center gap-2 px-1 text-meta font-normal text-ink-2 transition-colors duration-200 select-none hover:text-ink"
+      className="see-more ink-hover group relative -mr-1 inline-flex h-11 shrink-0 cursor-pointer items-center gap-2 px-1 text-meta font-normal text-ink-2 transition-colors duration-200 select-none hover:text-ink"
     >
       <span className="pen-underline">{open ? "See less" : label}</span>
       <svg

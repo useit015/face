@@ -36,23 +36,23 @@ function CompanyName({ role, className = "" }: { role: Role; className?: string 
 /** The collapsed view: four stops on a hand-drawn timeline arrow. */
 function Strip() {
   return (
-    <Reveal variant="plain" className="relative pt-8">
-      <TimelineArrow seed="experience-arrow" delay={ARROW_DELAY} className="left-0 top-[26px] hidden h-3 sm:block" />
-      <ol className="grid grid-cols-2 gap-x-4 gap-y-7 sm:grid-cols-4 sm:gap-y-0">
+    <Reveal variant="plain" className="relative pt-7">
+      <TimelineArrow seed="experience-arrow" delay={ARROW_DELAY} className="left-0 top-[22px] hidden h-3 min-[860px]:block" />
+      <ol className="grid grid-cols-2 gap-x-4 gap-y-7 min-[860px]:grid-cols-4 min-[860px]:gap-y-0">
         {experience.slice(0, STRIP).map((role, i) => (
           <li
             key={role.company}
-            className="strip-col close-in relative flex min-w-0 flex-col gap-2.5 sm:pt-5"
+            className="strip-col close-in relative flex min-w-0 flex-col gap-2 min-[860px]:pt-6"
             style={{ "--i": i, "--col-delay": `${arrival(i) - 40}ms` } as CSSProperties}
           >
-            <InkDot seed={`dot-${role.company}`} r={3.4} delay={arrival(i)} className="-top-[5.5px] left-0 hidden sm:block" />
-            <div className="flex min-w-0 items-center gap-3">
-              <IconTile seed={`tile-${role.company}`} size={38} delay={arrival(i) + 80}>
-                <Glyph name={role.icon} className="boil size-[26px]" />
+            <InkDot seed={`dot-${role.company}`} r={4.4} delay={arrival(i)} className="-top-[6.5px] left-0 hidden min-[860px]:block" />
+            <div className="flex min-w-0 items-center gap-3.5">
+              <IconTile seed={`tile-${role.company}`} size={46} delay={arrival(i) + 80}>
+                <Glyph name={role.icon} className="boil size-[38px]" />
               </IconTile>
-              <CompanyName role={role} className="text-body font-bold" />
+              <CompanyName role={role} className="text-body leading-tight font-bold sm:text-[1.5rem]" />
             </div>
-            <p className="truncate text-meta font-normal text-ink-3">{role.period}</p>
+            <p className="truncate text-body text-ink-2">{role.period}</p>
           </li>
         ))}
       </ol>
@@ -66,18 +66,18 @@ const bulletDash = lineStroke(hashSeed("bullet"), [0.5, 3], [8.5, 2.4], { bow: 0
 function Details() {
   return (
     <div className="relative pt-8">
-      <SketchSvg box={[0, 0, 3, 600]} stretch className="left-[18px] top-14 h-[calc(100%-6rem)] w-[3px] text-ink-4">
+      <SketchSvg box={[0, 0, 3, 600]} stretch className="left-[22px] top-14 h-[calc(100%-6rem)] w-[3px] text-ink-4">
         <Stroke d={lineStroke(hashSeed("experience-spine"), [1.5, 0], [1.5, 600], { bow: 0.3, jitter: 0.6 })} mode="static" />
       </SketchSvg>
       <ol className="relative flex flex-col gap-8">
         {experience.map((role, i) => (
           <li key={role.company} className="open-in relative flex gap-4" style={{ "--i": i } as CSSProperties}>
-            <IconTile seed={`tile-${role.company}`} size={38} mode="static" className="mt-0.5 bg-paper">
-              <Glyph name={role.icon} className="boil size-[26px]" />
+            <IconTile seed={`tile-${role.company}`} size={46} mode="static" className="mt-0.5 bg-paper">
+              <Glyph name={role.icon} className="boil size-[38px]" />
             </IconTile>
             <div className="min-w-0 flex-1">
               <div className="flex min-w-0 flex-wrap items-baseline justify-between gap-x-4">
-                <h3 className="min-w-0 text-body font-bold">
+                <h3 className="min-w-0 text-[1.5rem] leading-tight font-bold">
                   <CompanyName role={role} />
                 </h3>
                 <p className="shrink-0 text-meta font-normal text-ink-3">{role.period}</p>

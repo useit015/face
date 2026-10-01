@@ -2,12 +2,17 @@ import type { CSSProperties, ReactNode, Ref } from "react";
 import {
   arrowStroke,
   boxStroke,
+  crossedBoxStroke,
   dotStroke,
   hashSeed,
   hatchStrokes,
-  lineStroke,
   ruleStroke,
-  underlineStroke,
+  flickPulls,
+  inkPulls,
+  signaturePulls,
+  speckPulls,
+  type InkStroke,
+  underlineInk,
   verticalStroke,
 } from "@/lib/sketch";
 
@@ -93,6 +98,7 @@ export function SketchBox({
   mode = "reveal",
   delay = 0,
   passes = 2,
+  crossed = false,
   className = "",
   pad = 4,
 }: {
@@ -102,10 +108,20 @@ export function SketchBox({
   mode?: DrawMode;
   delay?: number;
   passes?: 1 | 2;
+  /** Sides pulled separately, running well past the corners (picture frames). */
+  crossed?: boolean;
   className?: string;
   pad?: number;
 }) {
   const s = hashSeed(seed);
+  if (crossed) {
+    return (
+      <SketchSvg box={[-pad, -pad, w + pad * 2, h + pad * 2]} className={className} style={{ left: -pad, top: -pad, width: w + pad * 2, height: h + pad * 2 }}>
+        <Stroke d={crossedBoxStroke(s, w, h, { overshoot: 7, jitter: 1.4 })} mode={mode} delay={delay} duration={560} width={1.5} />
+        <Stroke d={crossedBoxStroke(s + 1, w, h, { overshoot: 11, jitter: 2, shift: [2, -1.5] })} mode={mode} delay={delay + 380} duration={460} opacity={0.75} width={1.1} />
+      </SketchSvg>
+    );
+  }
   return (
     <SketchSvg
       box={[-pad, -pad, w + pad * 2, h + pad * 2]}
@@ -114,13 +130,15 @@ export function SketchBox({
     >
       <Stroke d={boxStroke(s, w, h)} mode={mode} delay={delay} duration={520} />
       {passes === 2 && (
+        // The second pass is quicker and looser, so the two outlines part at
+        // the corners the way a re-traced pen box does.
         <Stroke
-          d={boxStroke(s + 1, w, h, { overshoot: 1.6 })}
+          d={boxStroke(s + 1, w, h, { overshoot: 2.6, jitter: 1.5, bow: 1.4 })}
           mode={mode}
           delay={delay + 380}
           duration={420}
-          opacity={0.5}
-          width={0.9}
+          opacity={0.72}
+          width={1}
         />
       )}
     </SketchSvg>
@@ -155,30 +173,28 @@ export function IconTile({
 }
 
 /**
- * Heading underline swoosh. Stretches horizontally to its positioned parent,
- * so it always spans the heading; `w` only shapes the curve.
+ * Heading underline in ballpoint ink: pressured ribbons (see underlineInk),
+ * drawn on by a mask that follows each stroke's centreline. Stretches to its
+ * positioned parent's width; `w` should be close to that width so the ink
+ * keeps its proportions.
  */
 export function Underline({
   w = 120,
   seed,
   delay = 0,
-  hook = true,
+  weight,
   className = "",
 }: {
   w?: number;
   seed: string | number;
   delay?: number;
-  hook?: boolean;
+  weight?: number;
   className?: string;
 }) {
+  const s = hashSeed(seed);
   return (
-    <SketchSvg
-      box={[-6, -4, w + 16, 14]}
-      stretch
-      className={className}
-      style={{ left: -6, width: "calc(100% + 16px)", height: 14 }}
-    >
-      <Stroke d={underlineStroke(hashSeed(seed), w, { hook })} delay={delay} duration={560} />
+    <SketchSvg box={[-20, -3, w + 42, 20]} stretch className={className} style={{ left: -20, width: "calc(100% + 42px)", height: 20 }}>
+      <InkMarks id={`u${s.toString(36)}`} strokes={underlineInk(s, w, { weight })} delay={delay} guide={10} />
     </SketchSvg>
   );
 }
@@ -217,7 +233,8 @@ export function InkDot({ seed, r = 3.2, delay = 0, className = "" }: { seed: str
   const box = r + 2;
   return (
     <SketchSvg box={[-box, -box, box * 2, box * 2]} className={className} style={{ width: box * 2, height: box * 2 }}>
-      <Stroke d={dotStroke(hashSeed(seed), r)} delay={delay} duration={260} width={1.5} />
+      {/* A heavy line on a tight spiral, so the dot reads as solid ink. */}
+      <Stroke d={dotStroke(hashSeed(seed), r)} delay={delay} duration={260} width={r * 0.75} />
     </SketchSvg>
   );
 }
@@ -256,16 +273,66 @@ export function Hatch({
 /** Short flick marks, like the quick emphasis strokes beside a signature. */
 export function Flicks({ seed, delay = 0, className = "" }: { seed: string | number; delay?: number; className?: string }) {
   const s = hashSeed(seed);
-  const marks = [
-    lineStroke(s, [2, 16], [10, 3], { bow: 0.4, jitter: 0.6 }),
-    lineStroke(s + 1, [9, 19], [21, 10], { bow: 0.4, jitter: 0.6 }),
-    lineStroke(s + 2, [13, 25], [23, 22], { bow: 0.3, jitter: 0.5 }),
-  ];
   return (
-    <SketchSvg box={[0, 0, 26, 28]} className={className} style={{ width: 26, height: 28 }}>
-      {marks.map((d, i) => (
-        <Stroke key={i} d={d} delay={delay + i * 110} duration={150} width={1.4} />
+    <SketchSvg box={[0, 0, 28, 28]} className={className} style={{ width: 28, height: 28 }}>
+      <InkMarks id={`f${s.toString(36)}`} strokes={inkPulls(s, flickPulls(s), { weight: 2.1, dur: 120, gap: 40 })} delay={delay} />
+    </SketchSvg>
+  );
+}
+
+/**
+ * Ink strokes drawn on in order: each pass's filled ribbon is revealed by a
+ * mask stroke running along its centreline, one mask per pass so crossing
+ * strokes never reveal each other early.
+ */
+export function InkMarks({ id, strokes, delay = 0, guide = 8 }: { id: string; strokes: InkStroke[]; delay?: number; guide?: number }) {
+  return (
+    <>
+      <defs>
+        {strokes.map((k, i) => (
+          <mask key={i} id={`${id}-${i}`} maskUnits="userSpaceOnUse" x={-2000} y={-2000} width={6000} height={6000}>
+            <Stroke d={k.guide} delay={delay + k.at} duration={k.dur} width={guide} className="ink-guide" />
+          </mask>
+        ))}
+      </defs>
+      {strokes.map((k, i) => (
+        <path key={i} d={k.ink} className="ink-ribbon" opacity={k.opacity} mask={`url(#${id}-${i})`} />
       ))}
+    </>
+  );
+}
+
+/**
+ * The footer's signature line: a long rule pulled twice, running out into a
+ * worried knot at the right end. Drawn at a fixed scale (no stretching, so
+ * the ink keeps its shape) and clipped to whatever width it's given.
+ */
+export function SignatureRule({ seed, delay = 0, className = "" }: { seed: string | number; delay?: number; className?: string }) {
+  const s = hashSeed(seed);
+  const w = 760;
+  const { rule, knot } = signaturePulls(s, w);
+  const ruleInk = inkPulls(s, rule, { weight: 1.25, opacity: 0.85, dur: 520, gap: -260, bow: 0.4 });
+  const knotInk = inkPulls(s + 1, knot, { weight: 1, opacity: 0.8, dur: 260, gap: -60, retrace: 0.5, wander: 2.5 }).map((k) => ({ ...k, at: k.at + 700 }));
+  return (
+    <span aria-hidden="true" className={`relative block h-3 ${className}`}>
+      <SketchSvg box={[0, -36, w, 54]} className="right-0 -top-9 w-full" style={{ height: 54 }}>
+        <g className="text-ink-2">
+          <InkMarks id={`sig${s.toString(36)}`} strokes={ruleInk} delay={delay} />
+        </g>
+        <g className="text-ink-2">
+          <InkMarks id={`knot${s.toString(36)}`} strokes={knotInk} delay={delay} guide={6} />
+        </g>
+      </SketchSvg>
+    </span>
+  );
+}
+
+/** A few tiny scratches beside something, where the pen touched down. */
+export function Specks({ seed, delay = 0, className = "" }: { seed: string | number; delay?: number; className?: string }) {
+  const s = hashSeed(seed);
+  return (
+    <SketchSvg box={[0, 0, 30, 9]} className={`text-ink-3 ${className}`} style={{ width: 30, height: 9 }}>
+      <InkMarks id={`sp${s.toString(36)}`} strokes={inkPulls(s, speckPulls(s), { weight: 1.2, dur: 70, gap: 60 })} delay={delay} guide={5} />
     </SketchSvg>
   );
 }

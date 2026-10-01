@@ -43,7 +43,7 @@ export function CopyEmail({ email }: { email: string }) {
             style={{ gridArea: "1 / 1" }}
             className={`${labelSwap} ${copied ? "-translate-y-1 opacity-0" : "translate-y-0 opacity-100"}`}
           >
-            Copy email
+            Email me
           </span>
           <span
             aria-hidden={!copied}

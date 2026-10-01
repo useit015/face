@@ -132,7 +132,7 @@ export function Portrait({ label, className = "" }: { label: string; className?:
   }, [label]);
 
   return (
-    <div className={`portrait relative size-[132px] shrink-0 sm:size-[176px] ${className}`}>
+    <div className={`portrait relative size-[120px] shrink-0 sm:size-[160px] md:size-[204px] ${className}`}>
       <div className="absolute inset-[5px] overflow-hidden sm:inset-[6px]">
         {THEMES.map((theme) => (
           <Image
@@ -153,13 +153,14 @@ export function Portrait({ label, className = "" }: { label: string; className?:
           ref={slotRef}
           data-ready-light={ready.light}
           data-ready-dark={ready.dark}
-          className="portrait-slot relative origin-top-left scale-[0.7439] cursor-pointer select-none sm:scale-100"
+          className="portrait-slot relative origin-top-left scale-[0.6707] cursor-pointer select-none sm:scale-[0.9024] md:scale-[1.1707]"
           style={{ width: AVATAR_PX, height: AVATAR_PX }}
         />
       </div>
       <div className="absolute inset-0 text-ink">
-        <SketchBox w={132} h={132} seed="portrait-frame-sm" delay={180} pad={5} className="sm:hidden" />
-        <SketchBox w={176} h={176} seed="portrait-frame" delay={180} pad={5} className="hidden sm:block" />
+        <SketchBox crossed w={120} h={120} seed="portrait-frame-sm" delay={180} pad={14} className="sm:hidden" />
+        <SketchBox crossed w={160} h={160} seed="portrait-frame-md" delay={180} pad={14} className="hidden sm:block md:hidden" />
+        <SketchBox crossed w={204} h={204} seed="portrait-frame" delay={180} pad={14} className="hidden md:block" />
       </div>
     </div>
   );
