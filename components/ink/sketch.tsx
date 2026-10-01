@@ -304,8 +304,7 @@ export function InkMarks({ id, strokes, delay = 0, guide = 8 }: { id: string; st
 
 /**
  * The footer's signature line: a long rule pulled twice, running out into a
- * worried knot at the right end. Drawn at a fixed scale (no stretching, so
- * the ink keeps its shape) and clipped to whatever width it's given.
+ * worried knot at the right end.
  */
 export function SignatureRule({ seed, delay = 0, className = "" }: { seed: string | number; delay?: number; className?: string }) {
   const s = hashSeed(seed);
@@ -314,8 +313,12 @@ export function SignatureRule({ seed, delay = 0, className = "" }: { seed: strin
   const ruleInk = inkPulls(s, rule, { weight: 1.25, opacity: 0.85, dur: 520, gap: -260, bow: 0.4 });
   const knotInk = inkPulls(s + 1, knot, { weight: 1, opacity: 0.8, dur: 260, gap: -60, retrace: 0.5, wander: 2.5 }).map((k) => ({ ...k, at: k.at + 700 }));
   return (
-    <span aria-hidden="true" className={`relative block h-3 ${className}`}>
-      <SketchSvg box={[0, -36, w, 54]} className="right-0 -top-9 w-full" style={{ height: 54 }}>
+    // Always drawn at 1:1, anchored right so the knot keeps its size; a
+    // narrow footer just shows less of the rule, faded in where it's cut.
+    // The box is tall enough for the knot (the edge fade clips to it) and
+    // gives most of that height back with negative margins.
+    <span aria-hidden="true" className={`signature-rule relative -my-8 block h-20 self-center overflow-hidden ${className}`}>
+      <SketchSvg box={[0, -36, w, 54]} className="right-0 origin-[100%_76%] max-sm:scale-[0.72]" style={{ width: w, height: 54, top: -1 }}>
         <g className="text-ink-2">
           <InkMarks id={`sig${s.toString(36)}`} strokes={ruleInk} delay={delay} />
         </g>

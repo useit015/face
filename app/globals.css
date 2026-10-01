@@ -924,6 +924,13 @@ body {
 }
 
 
+/* The footer rule is cut on the left when the footer is narrow; fade it in
+   there so it reads as the pen landing, not a crop. */
+.signature-rule {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 3rem);
+  mask-image: linear-gradient(90deg, transparent, #000 3rem);
+}
+
 /* ─── Margin scrawls: only where the page has margin to spare ────────── */
 
 .margin-scrawl {
