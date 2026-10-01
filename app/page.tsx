@@ -121,7 +121,7 @@ export default async function Home() {
         <ProjectList stars={repoStars} />
       </section>
 
-      <Reveal as="footer" variant="plain" className="mt-auto flex items-baseline gap-4 pt-6 text-meta font-normal text-ink-3">
+      <Reveal as="footer" variant="plain" className="mt-auto flex items-center gap-4 pt-10 text-meta font-normal text-ink-3">
         <p className="shrink-0">© {new Date().getFullYear()} {hero.name}</p>
         <SignatureRule seed="signature" delay={200} className="min-w-0 flex-1 -mr-1" />
       </Reveal>
