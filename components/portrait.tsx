@@ -39,8 +39,8 @@ function ensureModule() {
  * mask with the backdrop hatching baked in and knocked out around the figure,
  * so nothing ever shows through the face.
  *
- * Each theme has its own sheet: blue ink on the paper by day, a moonlit
- * duotone by night (figure lit in pale ink, pen strokes left dark). Both live
+ * Each theme has its own sheet: blue ink on the paper by day, white ink on
+ * the night paper (the light drawn in, hair and shadows left dark). Both live
  * in the same box and follow the same cursor, so theme CSS can swap them
  * instantly, inside the ink-blot transition. The inactive one loads at idle.
  *

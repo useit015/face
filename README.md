@@ -52,8 +52,9 @@ Next.js ISR and degrade silently to empty values if unavailable.
 - `public/avatar/ink/sheet-{light,dark}.webp` — the `<cursor-avatar>` portrait:
   nine ballpoint poses redrawn from the original photo sheet, stored as ink
   masks with the backdrop hatching baked in and knocked out around the figure,
-  so nothing shows through the face. Light is blue ink on paper; dark is a
-  moonlit duotone (figure lit in pale ink, strokes left dark). Both follow the
+  so nothing shows through the face. Light is blue ink on paper; dark is its
+  own white-ink drawing on the night paper (the light drawn in pale strokes,
+  hair and shadows left as paper). Both follow the
   cursor together and theme CSS picks one. `still-*.webp` are the centre pose,
   rendered on the server until the sheets load.
 - `public/paper.svg` — the seamless paper tile (tooth, fibres, specks).
