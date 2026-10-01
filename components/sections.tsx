@@ -16,9 +16,9 @@ function SkillChip({ skill, className = "", style }: { skill: Skill; className?:
         href={skill.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="ink-hover inline-flex items-center gap-1.5 py-0.5 text-body text-ink-2 transition-colors duration-200 hover:text-ink"
+        className="ink-hover inline-flex items-center gap-2 py-0.5 text-body text-ink transition-colors duration-200"
       >
-        <Glyph name={skill.icon} className="boil size-[25px]" />
+        <Glyph name={skill.icon} className="boil size-[30px]" />
         <span className="pen-underline">{skill.name}</span>
       </a>
     </li>
@@ -27,24 +27,24 @@ function SkillChip({ skill, className = "", style }: { skill: Skill; className?:
 
 function RowLabel({ label, seed }: { label: string; seed: string }) {
   return (
-    <div className="flex items-start justify-between gap-2 min-[480px]:pt-[7px] min-[480px]:pr-1">
-      <h3 className="text-label font-bold tracking-[0.06em] text-ink-2 uppercase">{label}</h3>
-      <span className="relative -mt-[5px] hidden h-[30px] w-[3px] shrink-0 min-[480px]:block">
-        <VRule seed={seed} h={28} className="left-0 top-0" />
+    <div className="flex items-start justify-between gap-2 min-[480px]:pt-[6px] min-[480px]:pr-1">
+      <h3 className="text-label font-bold tracking-[0.04em] text-ink uppercase">{label}</h3>
+      <span className="relative -mt-[6px] hidden h-[36px] w-[3px] shrink-0 min-[480px]:block">
+        <VRule seed={seed} h={34} className="left-0 top-0" />
       </span>
     </div>
   );
 }
 
-const rowGrid = "grid grid-cols-1 gap-y-1 min-[480px]:grid-cols-[10.75rem_minmax(0,1fr)] min-[480px]:gap-x-4";
+const rowGrid = "grid grid-cols-1 gap-y-1 min-[480px]:grid-cols-[11.5rem_minmax(0,1fr)] min-[480px]:gap-x-5";
 
 function CompactRows() {
   return (
-    <Reveal variant="stagger" className="flex flex-col gap-3.5 pt-7">
+    <Reveal variant="stagger" className="flex flex-col gap-4 pt-6">
       {skillGroups.map((group, i) => (
         <div key={group.label} className={`close-in ${rowGrid}`} style={{ "--i": i } as CSSProperties}>
           <RowLabel label={group.label} seed={`vr-${group.label}`} />
-          <ScrollFadeX as="ul" className="no-scrollbar flex flex-nowrap gap-x-4 overflow-x-auto">
+          <ScrollFadeX as="ul" className="no-scrollbar flex flex-nowrap gap-x-5 overflow-x-auto">
             {group.skills.map((skill) => (
               <SkillChip key={skill.name} skill={skill} />
             ))}
@@ -57,11 +57,11 @@ function CompactRows() {
 
 function FullRows() {
   return (
-    <div className="flex flex-col gap-4 pt-7">
+    <div className="flex flex-col gap-4 pt-6">
       {skillGroups.map((group, i) => (
         <div key={group.label} className={`open-in ${rowGrid}`} style={{ "--i": i } as CSSProperties}>
           <RowLabel label={group.label} seed={`vr-${group.label}`} />
-          <ul className="flex flex-wrap gap-x-4 gap-y-1.5">
+          <ul className="flex flex-wrap gap-x-5 gap-y-1.5">
             {group.skills.map((skill) => (
               <SkillChip key={skill.name} skill={skill} />
             ))}
@@ -83,7 +83,7 @@ function FullRows() {
 export function SkillsSection() {
   return (
     <section aria-labelledby="skills-heading">
-      <Expandable headingId="skills-heading" title="Skills" label="See more" collapsed={<CompactRows />}>
+      <Expandable headingId="skills-heading" title="Skills" label="See more" collapsed={<CompactRows />} specks>
         <FullRows />
       </Expandable>
     </section>

@@ -158,13 +158,13 @@ export function ThemeToggle() {
       aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
       title="Toggle theme"
       data-armed={armed || undefined}
-      className="theme-toggle ink-hover has-loop group relative flex size-10 cursor-pointer items-center justify-center text-ink select-none"
+      className="theme-toggle ink-hover has-loop group relative flex size-[38px] cursor-pointer sm:size-11 items-center justify-center text-ink select-none"
     >
       <HoverLoop seed="theme-loop" estimate={[22, 22]} pad={4} />
       <svg
         aria-hidden="true"
         viewBox="-6 -6 20 20"
-        className="sketch theme-icon boil size-[16px] overflow-visible"
+        className="sketch theme-icon boil size-[19px] overflow-visible"
       >
         <g className="theme-sun">
           <path d={sunCore} pathLength={1} className="ts" style={{ "--dd": "0ms" } as React.CSSProperties} />

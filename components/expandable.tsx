@@ -41,6 +41,7 @@ export function Expandable({
   collapsed,
   label = "See more",
   duration = 0.55,
+  specks,
 }: {
   headingId: string;
   title: ReactNode;
@@ -48,6 +49,7 @@ export function Expandable({
   collapsed: ReactNode;
   label?: string;
   duration?: number;
+  specks?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [toggled, setToggled] = useState(false);
@@ -96,7 +98,7 @@ export function Expandable({
 
   return (
     <div className="expander relative" data-open={open} data-toggled={toggled || undefined}>
-      <SectionHeader id={headingId} title={title} action={toggle} />
+      <SectionHeader id={headingId} title={title} action={toggle} specks={specks} />
       <motion.div
         id={regionId}
         className={`relative -mx-3 px-3 ${animating ? "overflow-hidden" : ""}`}
