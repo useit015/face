@@ -2,8 +2,8 @@
 <filter id='p' x='0' y='0' width='100%' height='100%' color-interpolation-filters='sRGB'>
 <feTurbulence type='fractalNoise' baseFrequency='.007' numOctaves='4' seed='3' stitchTiles='stitch' result='n'/>
 <feDiffuseLighting in='n' lighting-color='#fff' surfaceScale='5.5' diffuseConstant='1' result='l'><feDistantLight azimuth='225' elevation='55'/></feDiffuseLighting>
-<feComponentTransfer><feFuncR type='linear' slope='0.13' intercept='-0.0369'/><feFuncG type='linear' slope='0.13' intercept='-0.0069'/><feFuncB type='linear' slope='0.13' intercept='0.0648'/><feFuncA type='linear' slope='0' intercept='1'/></feComponentTransfer>
+<feComponentTransfer><feFuncR type='linear' slope='0.21' intercept='-0.1009'/><feFuncG type='linear' slope='0.21' intercept='-0.0709'/><feFuncB type='linear' slope='0.21' intercept='0.0008'/><feFuncA type='linear' slope='0' intercept='1'/></feComponentTransfer>
 </filter>
-<filter id='t' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='9' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .35 0 0 0 0 .3 0 0 0 0 .22 0 0 0 0.030 -0.009'/></filter>
+<filter id='t' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='9' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .35 0 0 0 0 .3 0 0 0 0 .22 0 0 0 0.040 -0.012'/></filter>
 <rect width='100%' height='100%' filter='url(#p)'/><rect width='100%' height='100%' filter='url(#t)'/>
 </svg>

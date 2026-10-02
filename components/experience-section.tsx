@@ -6,14 +6,33 @@ import { IconTile, InkDot, SketchSvg, Stroke, TimelineArrow } from "@/components
 import { hashSeed, lineStroke } from "@/lib/sketch";
 import { experience, type Role } from "@/lib/content";
 
+// The collapsed timeline shows as many stops as fit the section: 2, 3 or 4
+// columns, switched by container queries (thresholds in globals.css and the
+// classes below), so it never squeezes a company name.
 const STRIP = 4;
-// The timeline arrow draws over ARROW_MS on a steady curve (--ease-write);
-// these are the fractions of that time at which the pen passes each column's
-// dot (0, ¼, ½, ¾ of the width), so each column lands as the line reaches it.
+const LAYOUTS = [2, 3, 4] as const;
+
+// The timeline arrow draws over ARROW_MS on a steady curve (--ease-write,
+// cubic-bezier(0.37, 0, 0.63, 1)). A column lands when the pen passes its
+// dot, at i/cols of the width, so invert the curve to find that moment.
 const ARROW_DELAY = 120;
 const ARROW_MS = 1000;
-const ARRIVE = [0.06, 0.335, 0.5, 0.665];
-const arrival = (i: number) => Math.round(ARROW_DELAY + ARROW_MS * ARRIVE[i]);
+function penReaches(fraction: number) {
+  const bez = (t: number, a: number, b: number) => 3 * (1 - t) ** 2 * t * a + 3 * (1 - t) * t * t * b + t ** 3;
+  let lo = 0;
+  let hi = 1;
+  for (let k = 0; k < 24; k++) {
+    const mid = (lo + hi) / 2;
+    // Progress along the line at curve parameter `mid`, versus the target.
+    if (bez(mid, 0, 1) < fraction) lo = mid;
+    else hi = mid;
+  }
+  return bez(lo, 0.37, 0.63);
+}
+const arrival = (i: number, cols: number) => Math.round(ARROW_DELAY + ARROW_MS * Math.max(0.06, penReaches(i / cols)));
+
+// Hide the stops a narrower layout has no room for.
+const hiddenBelow = (i: number) => (i >= 3 ? "@max-[45rem]:hidden" : i >= 2 ? "@max-[33rem]:hidden" : "");
 
 function CompanyName({ role, className = "" }: { role: Role; className?: string }) {
   if (!role.url) return <span className={className}>{role.company}</span>;
@@ -33,21 +52,28 @@ function CompanyName({ role, className = "" }: { role: Role; className?: string 
   );
 }
 
-/** The collapsed view: four stops on a hand-drawn timeline arrow. */
+/** The collapsed view: the first few stops on a hand-drawn timeline arrow. */
 function Strip() {
   return (
     <Reveal variant="plain" className="relative pt-7">
-      <TimelineArrow seed="experience-arrow" delay={ARROW_DELAY} className="left-0 top-[22px] hidden h-3 min-[860px]:block" />
-      <ol className="grid grid-cols-2 gap-x-4 gap-y-7 min-[860px]:grid-cols-4 min-[860px]:gap-y-0">
+      <TimelineArrow seed="experience-arrow" delay={ARROW_DELAY} className="left-0 top-[22px] h-3" />
+      <ol className="grid grid-cols-2 gap-x-4 @min-[33rem]:grid-cols-3 @min-[45rem]:grid-cols-4">
         {experience.slice(0, STRIP).map((role, i) => (
           <li
             key={role.company}
-            className="strip-col close-in relative flex min-w-0 flex-col gap-2 min-[860px]:pt-6"
-            style={{ "--i": i, "--col-delay": `${arrival(i) - 40}ms` } as CSSProperties}
+            className={`strip-col close-in relative flex min-w-0 flex-col gap-2 pt-6 ${hiddenBelow(i)}`}
+            // When the pen reaches this stop in each layout; CSS picks one
+            // and offsets the stop's own strokes (dot, tile) by it.
+            style={
+              {
+                "--i": i,
+                ...Object.fromEntries(LAYOUTS.map((cols) => [`--at-${cols}`, `${arrival(Math.min(i, cols - 1), cols)}ms`])),
+              } as CSSProperties
+            }
           >
-            <InkDot seed={`dot-${role.company}`} r={4.4} delay={arrival(i)} className="-top-[6.5px] left-0 hidden min-[860px]:block" />
+            <InkDot seed={`dot-${role.company}`} r={4.4} className="-top-[6.5px] left-0" />
             <div className="flex min-w-0 items-center gap-3.5">
-              <IconTile seed={`tile-${role.company}`} size={46} delay={arrival(i) + 80}>
+              <IconTile seed={`tile-${role.company}`} size={46} delay={80}>
                 <Glyph name={role.icon} className="boil size-[38px]" />
               </IconTile>
               <CompanyName role={role} className="text-body leading-tight font-bold sm:text-[1.5rem]" />
@@ -103,11 +129,17 @@ function Details() {
 
 export function ExperienceSection() {
   return (
-    <section aria-labelledby="experience-heading">
+    <section aria-labelledby="experience-heading" className="@container">
       <Expandable
         headingId="experience-heading"
         title="Experience"
-        label={`See ${experience.length - STRIP} more`}
+        label={
+          <>
+            <span className="@min-[33rem]:hidden">See {experience.length - 2} more</span>
+            <span className="@max-[33rem]:hidden @min-[45rem]:hidden">See {experience.length - 3} more</span>
+            <span className="@max-[45rem]:hidden">See {experience.length - STRIP} more</span>
+          </>
+        }
         collapsed={<Strip />}
         duration={0.65}
       >

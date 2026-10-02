@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { hashSeed, lineStroke } from "@/lib/sketch";
 
 const shaft = lineStroke(hashSeed("see-shaft"), [0, 5.5], [17, 5], { bow: 0.5, jitter: 0.3 });
@@ -12,7 +13,7 @@ export function SeeMore({
 }: {
   open: boolean;
   onToggle: () => void;
-  label: string;
+  label: ReactNode;
   controls?: string;
 }) {
   return (

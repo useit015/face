@@ -3,6 +3,7 @@ import { Gaegu } from "next/font/google";
 import { preload } from "react-dom";
 import { MotionProvider } from "@/components/motion-provider";
 import { PaperDoodles } from "@/components/paper-doodles";
+import { PaperMarks } from "@/components/paper-marks";
 import { InkSettle } from "@/components/ink/settle";
 import {
   personJsonLd,
@@ -113,7 +114,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           dangerouslySetInnerHTML={{ __html: jsonLdScript }}
         />
       </head>
-      <body className="min-h-full flex flex-col">
+      <body className="relative min-h-full flex flex-col">
+        <PaperMarks />
         <a
           href="#main"
           className="ink-tip sr-only px-3 py-1.5 text-meta focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50"

@@ -1,0 +1,13 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400' width='400' height='400'>
+<defs>
+<filter id='w' x='-15%' y='-15%' width='130%' height='130%'><feTurbulence type='fractalNoise' baseFrequency='.012' numOctaves='1' seed='8' result='lo'/><feDisplacementMap in='SourceGraphic' in2='lo' scale='5' xChannelSelector='R' yChannelSelector='G' result='d'/><feTurbulence type='fractalNoise' baseFrequency='.09' numOctaves='2' seed='3' result='hi'/><feDisplacementMap in='d' in2='hi' scale='3.5' xChannelSelector='R' yChannelSelector='G'/></filter>
+<filter id='m' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.045' numOctaves='3' seed='5' result='n'/><feColorMatrix in='n' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.6 -.35' result='a'/><feComposite in='SourceGraphic' in2='a' operator='in'/></filter>
+<radialGradient id='g'><stop offset='.5' stop-opacity='.04'/><stop offset='.88' stop-opacity='.11'/><stop offset='.97' stop-opacity='.2'/><stop offset='1' stop-opacity='0'/></radialGradient>
+</defs>
+<g filter='url(#w)'>
+<g filter='url(#m)'><circle cx='196' cy='204' r='132' fill='url(#g)'/></g>
+<circle cx='196' cy='204' r='131' fill='none' stroke='#000' stroke-opacity='.42' stroke-width='2.2'/>
+<circle cx='196' cy='204' r='127' fill='none' stroke='#000' stroke-opacity='.12' stroke-width='7'/>
+<circle cx='218' cy='188' r='129' fill='none' stroke='#000' stroke-opacity='.26' stroke-width='1.8' stroke-dasharray='300 60 180 90 120 900' stroke-dashoffset='40'/>
+</g>
+<circle cx='338' cy='92' r='5' fill='#000' fill-opacity='0.22' filter='url(#w)'/><circle cx='352' cy='78' r='2.4' fill='#000' fill-opacity='0.2' filter='url(#w)'/><circle cx='70' cy='330' r='3' fill='#000' fill-opacity='0.16' filter='url(#w)'/><circle cx='326' cy='110' r='1.6' fill='#000' fill-opacity='0.18' filter='url(#w)'/></svg>
