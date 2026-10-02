@@ -11,6 +11,10 @@
   --paper: #ede8df;
   --paper-tile: url("/paper-light.svg");
   --ink: oklch(0.4 0.185 267);
+  --stain: oklch(0.5 0.075 62);
+  --stain-strength: 0.5;
+  --stain-blend: multiply;
+  --lamp: none;
 }
 
 .dark {
@@ -18,6 +22,16 @@
   --paper: oklch(0.215 0.038 266);
   --paper-tile: url("/paper-dark.svg");
   --ink: oklch(0.9 0.045 258);
+  /* At night a dried coffee ring catches the light: a faint warm tide
+     line on the navy rather than a dark mark. */
+  --stain: oklch(0.78 0.05 70);
+  --stain-strength: 0.14;
+  --stain-blend: screen;
+  /* A desk lamp: the sheet is lit a touch warmer near the top and falls
+     off toward the edges. Fixed to the viewport, so it stays with you. */
+  --lamp:
+    radial-gradient(90% 70% at 50% 18%, oklch(0.75 0.06 80 / 0.07), transparent 70%),
+    radial-gradient(130% 100% at 50% 40%, transparent 55%, oklch(0.1 0.03 266 / 0.55) 100%);
 }
 
 :root {
@@ -378,8 +392,29 @@ body {
   opacity: 0;
 }
 
+/* --at-N: when the pen reaches this stop with N columns showing. */
+.strip-col {
+  --col-at: var(--at-2, 0ms);
+}
+
+@container (min-width: 33rem) {
+  .strip-col {
+    --col-at: var(--at-3, 0ms);
+  }
+}
+
+@container (min-width: 45rem) {
+  .strip-col {
+    --col-at: var(--at-4, 0ms);
+  }
+}
+
 .js [data-reveal].is-inview .strip-col {
-  animation: ink-in 480ms var(--ease-out) var(--col-delay, 0ms) both;
+  animation: ink-in 480ms var(--ease-out) calc(var(--col-at) - 40ms) both;
+}
+
+.js [data-reveal].is-inview .strip-col .draw {
+  animation-delay: calc(var(--col-at) + var(--dd, 0ms));
 }
 
 /* Expandable panes: entering content settles in, softly out of focus. */
@@ -924,6 +959,42 @@ body {
 }
 
 
+/* ─── Paper marks: coffee rings, age spots, lamp light ───────────────── */
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -20;
+  pointer-events: none;
+  background: var(--lamp);
+}
+
+.paper-stain,
+.paper-foxing {
+  position: absolute;
+  background: var(--stain);
+  opacity: var(--stain-strength);
+  mix-blend-mode: var(--stain-blend);
+}
+
+.paper-stain {
+  translate: -50% -50%;
+  -webkit-mask: url("/stain-ring.svg") center / contain no-repeat;
+  mask: url("/stain-ring.svg") center / contain no-repeat;
+}
+
+.paper-stain.opacity-55 {
+  opacity: calc(var(--stain-strength) * 0.55);
+}
+
+.paper-foxing {
+  inset: 0;
+  opacity: calc(var(--stain-strength) * 0.8);
+  -webkit-mask: url("/stain-foxing.svg") 0 0 / 900px 1300px repeat;
+  mask: url("/stain-foxing.svg") 0 0 / 900px 1300px repeat;
+}
+
 /* The footer rule is cut on the left when the footer is narrow; fade it in
    there so it reads as the pen landing, not a crop. */
 .signature-rule {
@@ -969,9 +1040,11 @@ body {
     background: none;
   }
 
+  body::before,
   canvas,
   .theme-toggle,
-  .margin-scrawl {
+  .margin-scrawl,
+  .paper-marks {
     display: none !important;
   }
 

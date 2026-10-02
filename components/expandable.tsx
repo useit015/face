@@ -47,7 +47,7 @@ export function Expandable({
   title: ReactNode;
   children: ReactNode;
   collapsed: ReactNode;
-  label?: string;
+  label?: ReactNode;
   duration?: number;
   specks?: boolean;
 }) {
