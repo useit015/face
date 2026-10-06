@@ -281,8 +281,8 @@ body {
 .glyph-projects {
   -webkit-mask-image: url("/ink/projects.webp");
   mask-image: url("/ink/projects.webp");
-  -webkit-mask-size: 400% 100%;
-  mask-size: 400% 100%;
+  -webkit-mask-size: 500% 100%;
+  mask-size: 500% 100%;
 }
 
 /* ─── Reveal choreography ─────────────────────────────────────────────── */

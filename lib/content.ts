@@ -160,6 +160,14 @@ export type Project = {
 
 export const projects: Project[] = [
   {
+    name: "Ballpoint",
+    icon: "ballpoint",
+    description: "Open-source React component library drawn in this site's ballpoint style.",
+    stack: ["React 19", "Tailwind CSS 4", "Base UI", "shadcn registry"],
+    url: "https://ballpoint.st9wd.com",
+    repo: { owner: "useit015", name: "ballpoint", url: "https://github.com/useit015/ballpoint" },
+  },
+  {
     name: "whichmodel",
     icon: "whichmodel",
     description: "TypeScript command-line tool (CLI) that recommends an AI model for a task.",

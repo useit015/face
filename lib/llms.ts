@@ -39,8 +39,8 @@ function llmsTxt() {
     ...projects.map(
       (project) =>
         `- **${project.name}** — ${project.description} (${projectMeta(project)})${
-          project.repo ? ` — ${project.repo.url}` : ""
-        }`,
+          project.url ? ` — ${project.url}` : ""
+        }${project.repo ? ` — ${project.repo.url}` : ""}`,
     ),
     "",
     "## Skills",
@@ -86,6 +86,7 @@ function llmsFullTxt() {
       "",
       `- Stack: ${project.stack.join(", ")}`,
       ...(project.note ? [`- Note: ${project.note}`] : []),
+      ...(project.url ? [`- Site: ${project.url}`] : []),
       ...(project.repo ? [`- Repo: ${project.repo.url}`] : []),
       "",
     ]),

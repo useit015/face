@@ -26,7 +26,7 @@ function Meta({ project, stars }: { project: Project; stars?: number }) {
 }
 
 function ProjectRow({ project, stars, index }: { project: Project; stars?: number; index: number }) {
-  const href = project.repo?.url ?? project.url;
+  const href = project.url ?? project.repo?.url;
   const body = (
     <div className="flex min-w-0 items-center gap-4 py-3 sm:gap-5">
       <ProjectGlyph name={project.icon} className="project-glyph size-11 text-ink sm:size-14" />
