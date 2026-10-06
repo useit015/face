@@ -17,9 +17,6 @@ import { getStars } from "@/lib/stars";
 
 const [firstName, ...rest] = hero.name.split(" ");
 const lastName = rest.join(" ");
-// Narrow screens would otherwise break "42-grad" at its hyphen.
-const KEEP_WHOLE = "42-grad";
-const [leadBefore, leadAfter = ""] = hero.bioLead.split(KEEP_WHOLE);
 
 export default async function Home() {
   const repoStars = await getStars([
@@ -82,9 +79,7 @@ export default async function Home() {
 
         <div className="max-w-[60ch] text-body [grid-area:bio] sm:mt-9">
           <Reveal eager as="p" variant="ink" delay={220}>
-            {leadBefore}
-            <span className="whitespace-nowrap">{KEEP_WHOLE}</span>
-            {leadAfter} <InkLink href={contact.cal}>Book a call</InkLink> for the full story, or find my
+            {hero.bioLead} <InkLink href={contact.cal}>Book a call</InkLink> for the full story, or find my
             references on <InkLink href={contact.toptal}>Toptal</InkLink>.
           </Reveal>
           <Reveal eager as="p" variant="ink" delay={320} className="mt-3.5 text-ink-2">

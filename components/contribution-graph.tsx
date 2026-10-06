@@ -66,8 +66,8 @@ export async function ContributionGraph() {
   const totalLabel = total.toLocaleString("en-US");
 
   return (
-    <section aria-labelledby="performance-heading" className="relative flex flex-col gap-6">
-      <SectionHeader id="performance-heading" title="Performance" />
+    <section aria-labelledby="github-activity-heading" className="relative flex flex-col gap-6">
+      <SectionHeader id="github-activity-heading" title="GitHub activity" />
       <Reveal variant="plain">
         <a
           href={contact.github}
