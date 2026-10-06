@@ -6,7 +6,7 @@ import { PaperDoodles } from "@/components/paper-doodles";
 import { PaperMarks } from "@/components/paper-marks";
 import { InkSettle } from "@/components/ink/settle";
 import {
-  personJsonLd,
+  siteJsonLd,
   siteDescription,
   siteName,
   siteSocialDescription,
@@ -86,7 +86,7 @@ const consoleScript = `try{console.log("%cViewing source? Good instinct. It's ho
 
 const whisperScript = `(function(){try{var t=document.title,w=["Still here.","The ink is drying.","The other tab is slower."],i=Math.floor(Math.random()*w.length);document.addEventListener("visibilitychange",function(){document.title=document.hidden?w[i++%w.length]:t})}catch(e){}})()`;
 
-const jsonLdScript = JSON.stringify(personJsonLd).replaceAll("<", "\\u003c");
+const jsonLdScript = JSON.stringify(siteJsonLd).replaceAll("<", "\\u003c");
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   // CSS masks are fetched in CORS mode, so the preload must match it.
