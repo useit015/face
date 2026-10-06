@@ -53,12 +53,10 @@ export const metadata: Metadata = {
     title: siteTitle,
     description: siteSocialDescription,
   },
+  // Indexing is the default; only the preview limits need saying (an
+  // explicit "index" would also sit beside the 404 page's "noindex").
   robots: {
-    index: true,
-    follow: true,
     googleBot: {
-      index: true,
-      follow: true,
       "max-image-preview": "large",
       "max-snippet": -1,
       "max-video-preview": -1,

@@ -12,7 +12,7 @@ export const contact = {
 export const hero = {
   name: "Oussama Nahiz",
   bioLead:
-    "Senior full-stack engineer and 42 graduate with 9+ years building production software with React, Node.js, TypeScript, and AI.",
+    "Senior full-stack engineer and graduate of the 42 coding school, with 9+ years building production software with React, Node.js, TypeScript, and AI.",
   bioProof:
     "I built an enterprise healthcare platform on my own as part of a six-figure deal. As co-founder and CTO, I led 9 engineers. Through Toptal, I completed 8 engagements for 7 clients.",
 };
@@ -40,9 +40,9 @@ export const experience: Role[] = [
     url: "https://acur.ai/",
     title: "Senior Software Engineer",
     period: "Jan 25 – Jun 25", icon: "co-cloud",
-    summary: "AI startup working to reduce incorrect answers from large language models.",
+    summary: "AI startup working to reduce incorrect answers (hallucinations) from large language models.",
     bullets: [
-      "Shipped the Chat, Wiki, and Brain Builder interfaces.",
+      "Shipped the front end for the Chat, Wiki, and Brain Builder interfaces.",
       "Used TypeScript, Next.js, and Node.js for OpenAI-integrated workflows.",
     ],
   },
@@ -98,7 +98,7 @@ export const experience: Role[] = [
     period: "Apr 22 – Aug 22", icon: "co-sprout",
     summary: "Company behind See & Spray computer vision, acquired by John Deere for $300M.",
     bullets: [
-      "Built Clicky Clicky on my own: a web labeling tool for collecting reference data on See & Spray boom height.",
+      "Built Clicky Clicky on my own: a web labeling tool for collecting reference data (ground truth) on See & Spray boom height.",
       "Migrated the Spyglass platform from vanilla JavaScript to React.",
     ],
   },
@@ -162,7 +162,7 @@ export const projects: Project[] = [
   {
     name: "whichmodel",
     icon: "whichmodel",
-    description: "TypeScript command-line tool that recommends an AI model for a task.",
+    description: "TypeScript command-line tool (CLI) that recommends an AI model for a task.",
     stack: ["TypeScript", "Node.js", "OpenRouter", "FAL"],
     repo: { owner: "useit015", name: "whichmodel", url: "https://github.com/useit015/whichmodel" },
   },

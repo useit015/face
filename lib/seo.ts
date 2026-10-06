@@ -4,9 +4,9 @@ const siteUrl = "https://st9wd.com";
 const siteName = hero.name;
 const siteTitle = `${siteName} – Senior Full-Stack Engineer`;
 const siteDescription =
-  `${siteName} is a senior full-stack engineer and 42 graduate with 9+ years building React, Node.js, TypeScript, and AI-powered products.`;
+  `${siteName} is a senior full-stack engineer and graduate of the 42 coding school, with 9+ years building React, Node.js, TypeScript, and AI products.`;
 const siteSocialDescription =
-  "9+ years shipping production software across React, Node.js, TypeScript, and AI. Architecture to deployment.";
+  "9+ years building production software with React, Node.js, TypeScript, and AI. Architecture to deployment.";
 
 const siteJsonLd = {
   "@context": "https://schema.org",
@@ -32,6 +32,7 @@ const siteJsonLd = {
       name: siteName,
       alternateName: contact.githubUser,
       url: siteUrl,
+      image: `${siteUrl}/portrait.jpg`,
       mainEntityOfPage: { "@id": `${siteUrl}/#profile` },
       jobTitle: "Senior Full-Stack Engineer",
       description: siteDescription,
