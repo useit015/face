@@ -154,6 +154,7 @@ export function IconTile({
   mode = "reveal",
   children,
   className = "",
+  flip,
 }: {
   seed: string | number;
   size?: number;
@@ -161,9 +162,12 @@ export function IconTile({
   mode?: DrawMode;
   children: ReactNode;
   className?: string;
+  /** Shared-item key for an Expandable's move between versions. */
+  flip?: string;
 }) {
   return (
     <span
+      data-flip={flip}
       className={`relative inline-flex shrink-0 items-center justify-center ${className}`}
       style={{ width: size, height: size }}
     >

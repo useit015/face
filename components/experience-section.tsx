@@ -35,9 +35,16 @@ const arrival = (i: number, cols: number) => Math.round(ARROW_DELAY + ARROW_MS *
 const hiddenBelow = (i: number) => (i >= 3 ? "@max-[45rem]:hidden" : i >= 2 ? "@max-[33rem]:hidden" : "");
 
 function CompanyName({ role, className = "" }: { role: Role; className?: string }) {
-  if (!role.url) return <span className={className}>{role.company}</span>;
+  const flip = `name-${role.company}`;
+  if (!role.url)
+    return (
+      <span data-flip={flip} className={className}>
+        {role.company}
+      </span>
+    );
   return (
     <a
+      data-flip={flip}
       href={role.url}
       target="_blank"
       rel="noreferrer"
@@ -56,12 +63,14 @@ function CompanyName({ role, className = "" }: { role: Role; className?: string 
 function Strip() {
   return (
     <Reveal variant="plain" className="relative pt-7">
-      <TimelineArrow seed="experience-arrow" delay={ARROW_DELAY} className="left-0 top-[22px] h-3" />
+      <div data-enter className="absolute inset-x-0 top-[22px] h-3">
+        <TimelineArrow seed="experience-arrow" delay={ARROW_DELAY} className="left-0 top-0 h-3" />
+      </div>
       <ol className="grid grid-cols-2 gap-x-4 @min-[33rem]:grid-cols-3 @min-[45rem]:grid-cols-4">
         {experience.slice(0, STRIP).map((role, i) => (
           <li
             key={role.company}
-            className={`strip-col close-in relative flex min-w-0 flex-col gap-2 pt-6 ${hiddenBelow(i)}`}
+            className={`strip-col relative flex min-w-0 flex-col gap-2 pt-6 ${hiddenBelow(i)}`}
             // When the pen reaches this stop in each layout; CSS picks one
             // and offsets the stop's own strokes (dot, tile) by it.
             style={
@@ -71,14 +80,18 @@ function Strip() {
               } as CSSProperties
             }
           >
-            <InkDot seed={`dot-${role.company}`} r={4.4} className="-top-[6.5px] left-0" />
+            <span data-enter className="absolute -top-[6.5px] left-0">
+              <InkDot seed={`dot-${role.company}`} r={4.4} />
+            </span>
             <div className="flex min-w-0 items-center gap-3.5">
-              <IconTile seed={`tile-${role.company}`} size={46} delay={80}>
+              <IconTile seed={`tile-${role.company}`} size={46} delay={80} flip={`tile-${role.company}`}>
                 <Glyph name={role.icon} className="boil size-[38px]" />
               </IconTile>
               <CompanyName role={role} className="text-body leading-tight font-bold sm:text-[1.5rem]" />
             </div>
-            <p className="truncate text-body text-ink-2">{role.period}</p>
+            <p data-flip={`period-${role.company}`} className="truncate text-body text-ink-2">
+              {role.period}
+            </p>
           </li>
         ))}
       </ol>
@@ -92,13 +105,15 @@ const bulletDash = lineStroke(hashSeed("bullet"), [0.5, 3], [8.5, 2.4], { bow: 0
 function Details() {
   return (
     <div className="relative pt-8">
-      <SketchSvg box={[0, 0, 3, 600]} stretch className="left-[22px] top-14 h-[calc(100%-6rem)] w-[3px] text-ink-4">
-        <Stroke d={lineStroke(hashSeed("experience-spine"), [1.5, 0], [1.5, 600], { bow: 0.3, jitter: 0.6 })} mode="static" />
-      </SketchSvg>
+      <div data-enter className="absolute inset-0">
+        <SketchSvg box={[0, 0, 3, 600]} stretch className="left-[22px] top-14 h-[calc(100%-6rem)] w-[3px] text-ink-4">
+          <Stroke d={lineStroke(hashSeed("experience-spine"), [1.5, 0], [1.5, 600], { bow: 0.3, jitter: 0.6 })} mode="static" />
+        </SketchSvg>
+      </div>
       <ol className="relative flex flex-col gap-8">
         {experience.map((role, i) => (
-          <li key={role.company} className="open-in relative flex gap-4" style={{ "--i": i } as CSSProperties}>
-            <IconTile seed={`tile-${role.company}`} size={46} mode="static" className="mt-0.5 bg-paper">
+          <li key={role.company} className="relative flex gap-4" style={{ "--i": i } as CSSProperties}>
+            <IconTile seed={`tile-${role.company}`} size={46} mode="static" className="mt-0.5 bg-paper" flip={`tile-${role.company}`}>
               <Glyph name={role.icon} className="boil size-[38px]" />
             </IconTile>
             <div className="min-w-0 flex-1">
@@ -106,10 +121,14 @@ function Details() {
                 <h3 className="min-w-0 text-[1.5rem] leading-tight font-bold">
                   <CompanyName role={role} />
                 </h3>
-                <p className="shrink-0 text-meta font-normal text-ink-3">{role.period}</p>
+                <p data-flip={`period-${role.company}`} className="shrink-0 text-meta font-normal text-ink-3">
+                  {role.period}
+                </p>
               </div>
-              <p className="text-body font-normal text-ink-2">{role.title}</p>
-              <ul className="mt-2 flex max-w-[62ch] flex-col gap-1.5">
+              <p data-enter className="text-body font-normal text-ink-2">
+                {role.title}
+              </p>
+              <ul data-enter className="mt-2 flex max-w-[62ch] flex-col gap-1.5">
                 {role.bullets.map((bullet) => (
                   <li key={bullet} className="flex gap-2.5 text-body text-ink-2">
                     <svg aria-hidden="true" viewBox="0 0 9 5" className="sketch mt-[0.72em] h-[5px] w-[9px] shrink-0 overflow-visible text-ink-3">

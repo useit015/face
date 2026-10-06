@@ -385,7 +385,6 @@ body {
   animation-delay: calc(var(--reveal-delay, 0ms) + min(var(--i, 0), 8) * 60ms);
 }
 
-/* Expandable panes: entering content inks in, strokes re-draw on open. */
 /* Timeline columns arrive as the arrow's pen passes their dot (delays are
    set per column from the arrow's easing). */
 .js [data-reveal]:not(.is-inview) .strip-col {
@@ -415,26 +414,6 @@ body {
 
 .js [data-reveal].is-inview .strip-col .draw {
   animation-delay: calc(var(--col-at) + var(--dd, 0ms));
-}
-
-/* Expandable panes: entering content settles in, softly out of focus. */
-@keyframes ink-settle {
-  from {
-    opacity: 0;
-    filter: blur(2.5px);
-    translate: 0 3px;
-  }
-  to {
-    opacity: 1;
-    filter: blur(0);
-    translate: 0 0;
-  }
-}
-
-.expander[data-open="true"] .open-in,
-.expander[data-toggled][data-open="false"] .close-in {
-  animation: ink-settle 520ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
-  animation-delay: calc(var(--i, 0) * 55ms);
 }
 
 /* ─── Controls ────────────────────────────────────────────────────────── */
@@ -682,9 +661,7 @@ body {
   .js [data-reveal="rise"].is-inview,
   .js [data-reveal="fade"].is-inview,
   .js [data-reveal="stagger"].is-inview > *,
-  .js [data-reveal].is-inview .strip-col,
-  .expander[data-open="true"] .open-in,
-  .expander[data-toggled][data-open="false"] .close-in {
+  .js [data-reveal].is-inview .strip-col {
     animation: fade-in 200ms var(--ease-out) both !important;
   }
 
@@ -882,6 +859,16 @@ body {
     #000 calc(100% - var(--scroll-fade-e)),
     transparent 100%
   );
+}
+
+/* While an expandable moves, its scrolling rows clip sideways only, so
+   items can fly in from above or below (a scroller clips both ways, and
+   the fade mask clips to its box). */
+.expander[data-moving] .scroll-fade-x {
+  overflow-x: clip;
+  overflow-y: visible;
+  mask-clip: no-clip;
+  mask-repeat: repeat-y;
 }
 
 /* Registered as <length> so the edge fades slide instead of popping. */

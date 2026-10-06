@@ -9,9 +9,9 @@ import type { GlyphName } from "@/lib/glyphs";
 
 type Skill = { readonly name: string; readonly icon: GlyphName; readonly url: string };
 
-function SkillChip({ skill, className = "", style }: { skill: Skill; className?: string; style?: CSSProperties }) {
+function SkillChip({ skill, flip, style }: { skill: Skill; flip: string; style?: CSSProperties }) {
   return (
-    <li className={`shrink-0 ${className}`} style={style}>
+    <li data-flip={flip} className="shrink-0" style={style}>
       <a
         href={skill.url}
         target="_blank"
@@ -28,8 +28,10 @@ function SkillChip({ skill, className = "", style }: { skill: Skill; className?:
 function RowLabel({ label, seed }: { label: string; seed: string }) {
   return (
     <div className="flex items-start justify-between gap-2 min-[480px]:pt-[6px] min-[480px]:pr-1">
-      <h3 className="text-label font-bold tracking-[0.04em] text-ink uppercase">{label}</h3>
-      <span className="relative -mt-[6px] hidden h-[36px] w-[3px] shrink-0 min-[480px]:block">
+      <h3 data-flip={`label-${label}`} className="text-label font-bold tracking-[0.04em] text-ink uppercase">
+        {label}
+      </h3>
+      <span data-flip={`rule-${label}`} className="relative -mt-[6px] hidden h-[36px] w-[3px] shrink-0 min-[480px]:block">
         <VRule seed={seed} h={34} className="left-0 top-0" />
       </span>
     </div>
@@ -42,11 +44,11 @@ function CompactRows() {
   return (
     <Reveal variant="stagger" className="flex flex-col gap-4 pt-6">
       {skillGroups.map((group, i) => (
-        <div key={group.label} className={`close-in ${rowGrid}`} style={{ "--i": i } as CSSProperties}>
+        <div key={group.label} className={rowGrid} style={{ "--i": i } as CSSProperties}>
           <RowLabel label={group.label} seed={`vr-${group.label}`} />
           <ScrollFadeX as="ul" className="no-scrollbar flex flex-nowrap gap-x-5 overflow-x-auto">
             {group.skills.map((skill) => (
-              <SkillChip key={skill.name} skill={skill} />
+              <SkillChip key={skill.name} skill={skill} flip={`${group.label}/${skill.name}`} />
             ))}
           </ScrollFadeX>
         </div>
@@ -59,17 +61,18 @@ function FullRows() {
   return (
     <div className="flex flex-col gap-4 pt-6">
       {skillGroups.map((group, i) => (
-        <div key={group.label} className={`open-in ${rowGrid}`} style={{ "--i": i } as CSSProperties}>
+        <div key={group.label} className={rowGrid} style={{ "--i": i } as CSSProperties}>
           <RowLabel label={group.label} seed={`vr-${group.label}`} />
           <ul className="flex flex-wrap gap-x-5 gap-y-1.5">
             {group.skills.map((skill) => (
-              <SkillChip key={skill.name} skill={skill} />
+              <SkillChip key={skill.name} skill={skill} flip={`${group.label}/${skill.name}`} />
             ))}
+            {/* Only in the full list, so these settle in once the rest have moved. */}
             {group.more.map((skill, j) => (
               <SkillChip
                 key={skill.name}
                 skill={skill}
-                className="open-in"
+                flip={`${group.label}/${skill.name}`}
                 style={{ "--i": i + 2 + j * 0.6 } as CSSProperties}
               />
             ))}
