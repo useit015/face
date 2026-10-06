@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { preloadModule } from "react-dom";
 import { SketchBox } from "@/components/ink/sketch";
+import { attachPortraitPlay } from "@/components/portrait-play";
 import { isDarkTheme } from "@/lib/theme";
 
 type Theme = "light" | "dark";
@@ -50,6 +51,8 @@ function ensureModule() {
 export function Portrait({ label, className = "" }: { label: string; className?: string }) {
   preloadModule(MODULE_SRC, { as: "script" });
   const slotRef = useRef<HTMLDivElement | null>(null);
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const inkRef = useRef<HTMLCanvasElement | null>(null);
   const [ready, setReady] = useState<Record<Theme, boolean>>({ light: false, dark: false });
 
   useEffect(() => {
@@ -131,8 +134,20 @@ export function Portrait({ label, className = "" }: { label: string; className?:
     };
   }, [label]);
 
+  useEffect(() => {
+    const root = rootRef.current;
+    const slot = slotRef.current;
+    const ink = inkRef.current;
+    if (!root || !slot || !ink) return;
+    return attachPortraitPlay(root, slot, ink);
+  }, []);
+
   return (
-    <div className={`portrait relative size-[120px] shrink-0 sm:size-[160px] md:size-[204px] ${className}`}>
+    <div
+      ref={rootRef}
+      data-no-doodle
+      className={`portrait relative size-[120px] shrink-0 touch-manipulation sm:size-[160px] md:size-[204px] ${className}`}
+    >
       <div className="absolute inset-[5px] overflow-hidden sm:inset-[6px]">
         {THEMES.map((theme) => (
           <Image
@@ -156,6 +171,11 @@ export function Portrait({ label, className = "" }: { label: string; className?:
           className="portrait-slot relative origin-top-left scale-[0.6707] cursor-pointer select-none sm:scale-[0.9024] md:scale-[1.1707]"
           style={{ width: AVATAR_PX, height: AVATAR_PX }}
         />
+        {/* Expression frames (see portrait-play), shown over the sketch. */}
+        {THEMES.map((theme) => (
+          <div key={theme} aria-hidden="true" className={`portrait-expr portrait-expr--${theme}`} />
+        ))}
+        <canvas ref={inkRef} aria-hidden="true" className="portrait-ink pointer-events-none absolute inset-0 z-10 size-full" />
       </div>
       <div className="absolute inset-0 text-ink">
         <SketchBox crossed w={120} h={120} seed="portrait-frame-sm" delay={180} pad={14} className="sm:hidden" />

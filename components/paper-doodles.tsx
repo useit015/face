@@ -25,7 +25,7 @@ function isPaper(target: EventTarget | null) {
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
 /** Resolve any CSS color (oklch included) to rgb() so it survives inside an SVG data URI. */
-function toRgb(color: string) {
+export function toRgb(color: string) {
   const c = document.createElement("canvas");
   c.width = c.height = 1;
   const x = c.getContext("2d", { willReadFrequently: true });
@@ -37,7 +37,7 @@ function toRgb(color: string) {
 }
 
 /** A small ballpoint, tip at the bottom-left hotspot. */
-function penCursor(ink: string, paper: string) {
+export function penCursor(ink: string, paper: string) {
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='${ink}' stroke-width='1.1' stroke-linejoin='round' stroke-linecap='round'><path d='M3.6 17.2 16.4 4.4a1.9 1.9 0 0 1 2.7 0l.5.5a1.9 1.9 0 0 1 0 2.7L6.8 20.4Z' fill='${paper}'/><path d='m3.6 17.2-.9 4.1 4.1-.9M14.5 6.3l3.2 3.2'/><circle cx='2.7' cy='21.3' r='.7' fill='${ink}' stroke='none'/></svg>`;
   return `url("data:image/svg+xml,${encodeURIComponent(svg)}") 2 22, crosshair`;
 }
@@ -171,11 +171,13 @@ export function PaperDoodles() {
       if (on === hovering) return;
       hovering = on;
       if (on) {
-        const body = getComputedStyle(document.body);
-        const key = `${body.color}|${body.backgroundColor}`;
+        const ink = getComputedStyle(document.body).color;
+        // The paper is painted on the root; body is transparent.
+        const paper = getComputedStyle(document.documentElement).backgroundColor;
+        const key = `${ink}|${paper}`;
         if (key !== cursorKey) {
           cursorKey = key;
-          cursor = penCursor(toRgb(body.color), toRgb(body.backgroundColor));
+          cursor = penCursor(toRgb(ink), toRgb(paper));
         }
       }
       document.documentElement.style.cursor = on ? cursor : "";

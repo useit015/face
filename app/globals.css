@@ -564,6 +564,77 @@ body {
   visibility: hidden;
 }
 
+/* Portrait expressions: hand-drawn frames swapped in over the live sketch
+   (no crossfade, the way animation frames swap). */
+.portrait-expr {
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
+  background-repeat: no-repeat;
+  background-size: 300% 100%;
+}
+
+.portrait-expr--light {
+  background-image: url("/avatar/ink/expr-light.webp");
+}
+
+.portrait-expr--dark {
+  background-image: url("/avatar/ink/expr-dark.webp");
+}
+
+.portrait[data-expr="blink"] .portrait-expr {
+  background-position: 0% 0;
+}
+
+.portrait[data-expr="amused"] .portrait-expr {
+  background-position: 50% 0;
+}
+
+.portrait[data-expr="wince"] .portrait-expr {
+  background-position: 100% 0;
+}
+
+:root:not(.dark) .portrait[data-expr] .portrait-expr--light,
+.dark .portrait[data-expr] .portrait-expr--dark {
+  visibility: visible;
+}
+
+.portrait[data-expr] .portrait-slot,
+.portrait[data-expr] .portrait-still {
+  visibility: hidden;
+}
+
+/* While being drawn on he can't keep still. */
+@keyframes squirm {
+  0% {
+    translate: 0.5px 0;
+    rotate: -0.6deg;
+  }
+  33% {
+    translate: -0.5px 0.4px;
+    rotate: 0.5deg;
+  }
+  66% {
+    translate: 0.2px -0.4px;
+    rotate: -0.2deg;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .portrait.is-drawn-on .portrait-expr {
+    animation: squirm 300ms steps(1) infinite;
+  }
+}
+
+.portrait-ink {
+  opacity: 0.92;
+  transition: opacity 1.4s var(--ease-in-out);
+}
+
+.portrait-ink.is-fading {
+  opacity: 0;
+}
+
 /* Contribution cells */
 .contrib-col {
   opacity: 1;
