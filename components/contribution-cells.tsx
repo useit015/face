@@ -148,7 +148,7 @@ export function ContributionCells({ weeks, today }: GridProps) {
         <Cells weeks={weeks} today={today} />
         {hover && (
           <g key={`${hover.wi}-${hover.di}`} transform={`translate(${hover.wi * PITCH} ${hover.di * PITCH})`} className="sketch">
-            <path d={loop} pathLength={1} className="cell-loop" strokeWidth={1.3} />
+            <path d={loop} pathLength={1} className="cell-loop" style={{ strokeWidth: 1.3 }} />
           </g>
         )}
       </svg>

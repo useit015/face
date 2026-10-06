@@ -52,7 +52,7 @@ export function CopyEmail({ email }: { email: string }) {
           >
             <svg key={round} viewBox="0 0 14 12" aria-hidden="true" className="sketch copied-tick size-3.5 overflow-visible">
               {tick.map((d, i) => (
-                <path key={i} d={d} pathLength={1} strokeWidth={1.6} style={{ animationDelay: `${i * 110}ms` }} />
+                <path key={i} d={d} pathLength={1} style={{ strokeWidth: 1.6, animationDelay: `${i * 110}ms` }} />
               ))}
             </svg>
             Copied.

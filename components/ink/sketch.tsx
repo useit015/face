@@ -47,14 +47,15 @@ export function Stroke({
   opacity?: number;
   className?: string;
 }) {
+  // The width goes inline: `.sketch path` sets the default stroke-width, and
+  // any CSS rule beats an SVG presentation attribute.
   return (
     <path
       d={d}
       pathLength={1}
       className={`${modeClass[mode]} ${className}`}
-      strokeWidth={width}
       opacity={opacity}
-      style={{ "--dd": `${delay}ms`, "--d": `${duration}ms` } as CSSProperties}
+      style={{ strokeWidth: width, "--dd": `${delay}ms`, "--d": `${duration}ms` } as CSSProperties}
     />
   );
 }

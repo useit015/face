@@ -38,7 +38,7 @@ export function InkButton({
       <span className="relative">{children}</span>
       <svg viewBox="-1 -1 14 14" aria-hidden="true" className="sketch nudge relative size-3.5 overflow-visible !text-paper">
         {arrow.map((d, i) => (
-          <path key={i} d={d} strokeWidth={1.6} />
+          <path key={i} d={d} style={{ strokeWidth: 1.6 }} />
         ))}
       </svg>
     </a>

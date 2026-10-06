@@ -32,8 +32,8 @@ export function SeeMore({
           open ? "rotate-[-90deg]" : "group-hover:translate-x-0.5"
         }`}
       >
-        <path d={shaft} strokeWidth={1.4} />
-        <path d={head} strokeWidth={1.4} />
+        <path d={shaft} style={{ strokeWidth: 1.4 }} />
+        <path d={head} style={{ strokeWidth: 1.4 }} />
       </svg>
     </button>
   );

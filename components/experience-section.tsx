@@ -113,7 +113,7 @@ function Details() {
                 {role.bullets.map((bullet) => (
                   <li key={bullet} className="flex gap-2.5 text-body text-ink-2">
                     <svg aria-hidden="true" viewBox="0 0 9 5" className="sketch mt-[0.72em] h-[5px] w-[9px] shrink-0 overflow-visible text-ink-3">
-                      <path d={bulletDash} strokeWidth={1.3} />
+                      <path d={bulletDash} style={{ strokeWidth: 1.3 }} />
                     </svg>
                     <span>{bullet}</span>
                   </li>

@@ -518,10 +518,6 @@ body {
   color: var(--ink);
 }
 
-.ink-btn--solid .scribble {
-  stroke-width: 1.2;
-}
-
 /* Let the shading strokes read through the fill, like a pen-coloured box. */
 .ink-btn--solid .ink-fill {
   opacity: 0.72;
