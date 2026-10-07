@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { boxStroke, hashSeed, underlineStroke } from "@/lib/sketch";
 
-export const alt = "Oussama Nahiz — Senior Full-Stack Engineer, drawn in blue ballpoint";
+export const alt = "Oussama Nahiz, senior full-stack engineer, drawn in blue ballpoint";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -47,7 +47,7 @@ export default function Image() {
               <path d={underline} fill="none" stroke={ink} strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             <div style={{ display: "flex", fontWeight: 300, fontSize: 36, lineHeight: 1.4, color: ink2, maxWidth: 600, marginTop: 26 }}>
-              Senior full-stack engineer. 9+ years shipping production software across React, Node.js, TypeScript, and AI.
+              Senior full-stack engineer. React, Node.js, TypeScript, and AI, in production since 2016.
             </div>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 700, fontSize: 26, letterSpacing: 2, color: ink3, maxWidth: 640 }}>

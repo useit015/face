@@ -80,7 +80,7 @@ const jsClassScript = `(function(){var d=document.documentElement;d.classList.ad
 // portrait sheet (the avatar module requests it with fetch()).
 const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d=t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches;document.documentElement.classList.toggle("dark",d);var l=document.createElement("link");l.rel="preload";l.as="fetch";l.crossOrigin="anonymous";l.href="/avatar/ink/sheet-"+(d?"dark":"light")+".webp";document.head.appendChild(l)}catch(e){}})()`;
 
-const consoleScript = `try{console.log("%cViewing source? Good instinct. It's how I'd vet this page too.","font-weight:600;font-size:13px");console.log("%cEverything here is drawn at runtime from seeded strokes. The margins take ink, too — drag on the empty paper.","color:#5b67c9");console.log("%cIf the code passes inspection, the engineer might too — useit015@gmail.com","color:#8a8578")}catch(e){}`;
+const consoleScript = `try{console.log("%cReading the source. Fair, that's how I'd check too.","font-weight:600;font-size:13px");console.log("%cEvery line on this page is drawn at runtime from seeded strokes. Drag on the empty paper to add your own.","color:#5b67c9");console.log("%cHiring? useit015@gmail.com","color:#8a8578")}catch(e){}`;
 
 const whisperScript = `(function(){try{var t=document.title,w=["Still here.","The ink is drying.","The other tab is slower."],i=Math.floor(Math.random()*w.length);document.addEventListener("visibilitychange",function(){document.title=document.hidden?w[i++%w.length]:t})}catch(e){}})()`;
 

@@ -24,17 +24,17 @@ export default function NotFound() {
         </p>
         <h1 className="relative mt-4 inline-block text-heading font-bold">
           <span className="write-text" style={{ "--write-dd": "200ms" } as React.CSSProperties}>
-            This route never shipped.
+            This page was never drawn.
           </span>
           <Underline seed="404-underline" w={260} delay={900} className="top-full" />
         </h1>
         <p className="mt-5 max-w-sm text-body text-ink-2">
-          Even the best backlogs have casualties. If you typed this URL by hand, impressively wrong.
+          The link is wrong or the page moved. The rest of the notebook is where you left it.
         </p>
         <div className="mt-8 flex items-center gap-4">
           <Link href="/" className="ink-btn ink-btn--solid">
             <MeasuredBox seed="404-home" estimate={[230, 44]} filled delay={500} />
-            <span className="relative">Back to the shipped things</span>
+            <span className="relative">Back to the front page</span>
           </Link>
           <SketchSvg box={[0, 0, 40, 30]} className="relative hidden text-ink-3 sm:block" style={{ width: 40, height: 30 }}>
             <Stroke d={loopStroke(hashSeed("404-doodle"), 20, 12, { pad: 2, turns: 2.2 })} delay={1300} duration={600} width={1.2} />

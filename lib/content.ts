@@ -12,9 +12,9 @@ export const contact = {
 export const hero = {
   name: "Oussama Nahiz",
   bioLead:
-    "Senior full-stack engineer and graduate of the 42 coding school. For 9+ years I have taken products from architecture to production in React, Node.js, TypeScript, and AI.",
+    "Senior full-stack engineer, trained at 42. I have shipped React, Node.js, and TypeScript to production for nine years, and AI products for the last three.",
   bioProof:
-    "I built a course-creation app alone for a six-figure enterprise deal. As co-founder and CTO of LendStack, I led 9 engineers to two pilot clients in Zambia. Through Toptal, I shipped 8 engagements for 7 clients.",
+    "I delivered a six-figure enterprise project on my own. As a co-founder, I ran a nine-person engineering team. Toptal sent me to seven clients; one booked me twice.",
 };
 
 export const socials = [
@@ -40,10 +40,10 @@ export const experience: Role[] = [
     url: "https://acur.ai/",
     title: "Senior Software Engineer",
     period: "Jan 25 – Jun 25", icon: "co-cloud",
-    summary: "Five-person AI startup reducing hallucinations, the confident wrong answers of large language models.",
+    summary: "Five-person startup working on language models that don't hallucinate.",
     bullets: [
-      "Owned most of the front end: Chat, Wiki, and Brain Builder.",
-      "Shipped it in TypeScript and Next.js, on Node.js services and OpenAI-integrated workflows.",
+      "Built and owned the Chat, Wiki, and Brain Builder apps.",
+      "One of two developers, alongside two researchers and the CEO.",
     ],
   },
   {
@@ -51,12 +51,12 @@ export const experience: Role[] = [
     url: "https://www.linkedin.com/company/lendstack",
     title: "Co-Founder & CTO",
     period: "Oct 23 – May 24", icon: "co-building",
-    summary: "Software for lending startups: customer onboarding, ID checks, and loan origination.",
+    summary: "Bootstrapped platform for microfinance lenders.",
     bullets: [
-      "Led 9 engineers (7 developers, 2 AI engineers) in a bootstrapped, 14-person company.",
-      "Designed three Next.js apps (borrower, lender, admin) on shared Node.js services. Authentication got its own service from day one, because three apps and sensitive ID data made a late extraction too risky.",
-      "Wrote the lending rules (credit limits, installment schedules, repayments split between fees and principal) and built the loan application chatbot.",
-      "Put two pilot clients live in Zambia, with 12 prospects in the pipeline when I left.",
+      "Hired and led nine engineers, two of them on AI.",
+      "Designed separate apps for borrowers, lenders, and admins on shared identity and KYC services. Authentication got its own service on day one, because moving it later would have meant migrating live credentials.",
+      "Wrote the lending rules, down to how each repayment splits between fees and principal, and built the loan application chatbot.",
+      "Two pilot clients went live in Zambia. Twelve more were in the pipeline when I left.",
     ],
   },
   {
@@ -64,10 +64,10 @@ export const experience: Role[] = [
     url: "https://www.toptal.com/",
     title: "Senior Software Engineer",
     period: "Apr 22 – Oct 24", icon: "toptal",
-    summary: "8 engagements for 7 clients over 30 months: agricultural AI, insurance, fintech media, and AI SaaS.",
+    summary: "Contract work through Toptal's freelance network.",
     bullets: [
-      "Shipped full-stack work in React, Node.js, TypeScript, MongoDB, and AWS, from data visualizations to internal tools.",
-      "Clients included Blue River Technology, Axion Ray, What's Next Media, Top Shelf Insurance, DSF OpCo, and iTech Insurance.",
+      "Eight engagements for seven clients over 30 months, mostly full-stack React and Node.js.",
+      "The main ones have their own entries below. The others: Top Shelf Insurance, iTech Insurance, and DSF OpCo.",
     ],
   },
   {
@@ -75,10 +75,10 @@ export const experience: Role[] = [
     url: "https://www.axion.com/",
     title: "Senior Software Engineer",
     period: "May 24 – Oct 24", icon: "co-radar",
-    summary: "AI-powered SaaS platform for data operations and visualization.",
+    summary: "AI software company. I worked on its data-operations product.",
     bullets: [
-      "Extended the data-operations configuration portal end to end: the React interface and the Node.js and MongoDB services behind it.",
-      "Added reusable UI components (checkboxes, radio dials, file uploaders) on top of the existing libraries.",
+      "Built features in the data-operations configuration portal, in the React app and its Node.js and MongoDB backend.",
+      "Built shared form components, such as radio dials and file uploaders.",
     ],
   },
   {
@@ -86,11 +86,12 @@ export const experience: Role[] = [
     url: "https://www.pymnts.com/",
     title: "Senior Software Engineer",
     period: "Sep 23 – Jan 24", icon: "co-activity",
-    summary: "Media and data company covering payments and the connected economy.",
+    summary: "Publisher of PYMNTS, covering payments and the connected economy.",
     bullets: [
-      "Built interactive React data visualizations for connected-economy reporting.",
-      "Built Node.js backend features on SQL, MongoDB, and third-party APIs.",
-      "Created AI-powered writing tools for editors, including a self-publishing tool.",
+      "Built interactive React charts for its connected-economy reports.",
+      "Built Node.js services on SQL, MongoDB, and third-party APIs.",
+      "Built AI writing tools for editors, among them a self-publishing tool.",
+      "Cleaned up the legacy WordPress codebase the site ran on.",
     ],
   },
   {
@@ -98,11 +99,11 @@ export const experience: Role[] = [
     url: "https://www.bluerivertechnology.com/",
     title: "Senior Software Engineer",
     period: "Apr 22 – Aug 22", icon: "co-sprout",
-    summary: "Agricultural AI company behind See & Spray, which spots weeds with computer vision. Acquired by John Deere for $300M.",
+    summary: "Computer-vision weed spraying. Acquired by John Deere for $300M.",
     bullets: [
-      "Solo-built Clicky Clicky, a web labeling tool that collects See & Spray boom-height ground truth (the reference measurements its models train on), plus a dashboard to create and assign labeling jobs.",
-      "Deployed both tools and checked labeling accuracy against radar measurements.",
-      "Migrated Spyglass from vanilla JavaScript to React and fixed existing bugs along the way.",
+      "Built Clicky Clicky alone, a web tool for labeling See & Spray boom-height ground truth.",
+      "Added a dashboard for creating and assigning labeling jobs, and checked label accuracy against radar.",
+      "Rewrote Spyglass from vanilla JavaScript in React, fixing old bugs on the way.",
     ],
   },
   {
@@ -110,11 +111,11 @@ export const experience: Role[] = [
     url: "https://www.vo2-group.com/",
     title: "Senior Software Engineer",
     period: "Jan 21 – Jan 22", icon: "co-heart-pulse",
-    summary: "Healthcare software products.",
+    summary: "Healthcare software.",
     bullets: [
-      "Solo-built the Radiometer Course Creator (React, Node.js, TypeScript, AWS SAM, PostgreSQL) for a six-figure enterprise deal with a medical-diagnostics client.",
-      "Led 3 engineers rebuilding AXA Health Keeper from Quasar/Vue to React and React Native, including a rewards system where healthy habits earn points.",
-      "Saved about $20K a year in licensing by building the AQURE JavaScript API layer in-house.",
+      "Built the Radiometer Course Creator alone, a six-figure enterprise project for a medical-diagnostics company.",
+      "Led three engineers moving AXA Health Keeper from Vue to React and React Native.",
+      "Saved about $20K a year by building the AQURE API layer instead of licensing one.",
     ],
   },
   {
@@ -122,10 +123,10 @@ export const experience: Role[] = [
     url: "https://www.linkedin.com/company/spotbills/",
     title: "Full-Stack Developer",
     period: "Sep 20 – Dec 20", icon: "co-message",
-    summary: "Startup building Peer, a peer-to-peer chat and calling app.",
+    summary: "Peer-to-peer chat and calling app.",
     bullets: [
-      "Built the signaling server that connects Peer users for chat and calls, with NestJS, TypeScript, Redis, MongoDB, Socket.IO, and WebRTC.",
-      "Oversaw deployment and helped the company launch on time.",
+      "Built the app's signaling server in NestJS, with Redis and MongoDB.",
+      "Ran the deployment and helped the company launch on time.",
     ],
   },
   {
@@ -133,11 +134,11 @@ export const experience: Role[] = [
     url: "https://caronae.com/",
     title: "Senior Software Engineer",
     period: "Apr 20 – Sep 20", icon: "co-shield-check",
-    summary: "No-code tools for building identity verification (KYC) workflows.",
+    summary: "No-code identity verification.",
     bullets: [
-      "Led 3 front-end engineers building a drag-and-drop builder for identity verification journeys.",
-      "Solo-built the runtime front end that walks users through each configured journey.",
-      "Owned the integrations for government ID recognition, face matching, and liveness checks.",
+      "Led three front-end engineers on a drag-and-drop builder for KYC flows.",
+      "Built, alone, the front end that walks end users through each flow.",
+      "Owned the ID recognition, face match, and liveness integrations.",
     ],
   },
   {
@@ -145,10 +146,10 @@ export const experience: Role[] = [
     url: "https://www.sqli.com/",
     title: "Software Engineer",
     period: "Feb 20 – Jul 20", icon: "co-shopping-bag",
-    summary: "Contract work on Nespresso's global eCommerce platform.",
+    summary: "Agency work on Nespresso's global online store.",
     bullets: [
-      "Built a guest checkout for the Nespresso storefront, so customers can buy without completing full registration.",
-      "Wrote Jest and Enzyme tests and upgraded legacy AngularJS and jQuery libraries.",
+      "Built guest checkout, so customers could buy without registering.",
+      "Upgraded legacy AngularJS and jQuery code and covered new features with Jest tests.",
     ],
   },
 ];
@@ -167,7 +168,7 @@ export const projects: Project[] = [
   {
     name: "Ballpoint",
     icon: "ballpoint",
-    description: "Open-source React component library, drawn in the same blue ballpoint as this site.",
+    description: "Open-source React components in this page's ballpoint style.",
     stack: ["React 19", "Tailwind CSS 4", "Base UI", "shadcn registry"],
     url: "https://ballpoint.st9wd.com",
     repo: { owner: "useit015", name: "ballpoint", url: "https://github.com/useit015/ballpoint" },
@@ -175,27 +176,27 @@ export const projects: Project[] = [
   {
     name: "whichmodel",
     icon: "whichmodel",
-    description: "Command-line tool (CLI): describe a task in plain English, get an AI model recommendation in three tiers (cheapest, balanced, best).",
+    description: "A CLI that takes a task in plain English and names the AI model to use, at three budgets.",
     stack: ["TypeScript", "Node.js", "OpenRouter", "FAL"],
     repo: { owner: "useit015", name: "whichmodel", url: "https://github.com/useit015/whichmodel" },
   },
   {
     name: "Sigil",
     icon: "sigil",
-    description: "Creator studio that turns videos and images into shareable text-based (ASCII) previews, converted by a Rust engine.",
+    description: "Creator studio that turns video and images into shareable ASCII.",
     stack: ["Next.js", "React", "Rust", "Supabase"],
     note: "329+ commits",
   },
   {
     name: "Asset Forge",
     icon: "asset-forge",
-    description: "Full-stack tool for generating and managing game assets and character art with fal.ai.",
+    description: "Generates and stores game art and characters, built on fal.ai.",
     stack: ["React", "Express", "Supabase", "Cloudflare R2"],
   },
   {
     name: "souk-fighter",
     icon: "souk-fighter",
-    description: "Browser fighting game in the spirit of The King of Fighters, with a character customizer and a custom .sfpack format for sharing characters.",
+    description: "Browser fighting game in the King of Fighters mold, with its own character builder.",
     stack: ["React 19", "Pixi.js 8", "IndexedDB"],
     repo: { owner: "useit015", name: "souk-fighter", url: "https://github.com/useit015/souk-fighter" },
   },
