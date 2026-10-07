@@ -4,7 +4,7 @@ const siteUrl = "https://st9wd.com";
 const siteName = hero.name;
 const siteTitle = `${siteName} – Senior Full-Stack Engineer`;
 const siteDescription =
-  `${siteName} is a senior full-stack engineer trained at 42, with nine years of React, Node.js, and TypeScript in production and three of AI products.`;
+  `${siteName} is a senior full-stack engineer trained at 42, with a decade of React, Node.js, and TypeScript in production and three years of AI products.`;
 const siteSocialDescription =
   "Senior full-stack engineer. React, Node.js, TypeScript, and AI, in production since 2016.";
 
