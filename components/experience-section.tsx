@@ -128,6 +128,9 @@ function Details() {
               <p data-enter className="text-body font-normal text-ink-2">
                 {role.title}
               </p>
+              <p data-enter className="mt-2 max-w-[62ch] text-body text-ink">
+                {role.summary}
+              </p>
               <ul data-enter className="mt-2 flex max-w-[62ch] flex-col gap-1.5">
                 {role.bullets.map((bullet) => (
                   <li key={bullet} className="flex gap-2.5 text-body text-ink-2">
@@ -138,6 +141,9 @@ function Details() {
                   </li>
                 ))}
               </ul>
+              <p data-enter className="mt-2.5 max-w-[62ch] text-meta font-normal text-ink-3">
+                {role.stack.join(" · ")}
+              </p>
             </div>
           </li>
         ))}

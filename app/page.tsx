@@ -79,7 +79,7 @@ export default async function Home() {
 
         <div className="max-w-[60ch] text-body [grid-area:bio] sm:mt-9">
           <Reveal eager as="p" variant="ink" delay={220}>
-            {hero.bioLead} <InkLink href={contact.cal}>Book a call</InkLink> for the full story, or find my
+            {hero.bioLead} <InkLink href={contact.cal}>Book a call</InkLink> for the long version, or see my
             references on <InkLink href={contact.toptal}>Toptal</InkLink>.
           </Reveal>
           <Reveal eager as="p" variant="ink" delay={320} className="mt-3.5 text-ink-2">

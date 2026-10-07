@@ -76,6 +76,8 @@ function llmsFullTxt() {
       "",
       ...role.bullets.map((bullet) => `- ${bullet}`),
       "",
+      `Stack: ${role.stack.join(", ")}`,
+      "",
     ]),
     "## Projects",
     "",
