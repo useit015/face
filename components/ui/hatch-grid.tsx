@@ -3,7 +3,7 @@
 import { memo, useId, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
-import { penStyle, useInkBox, usePen, type Pen } from "@/hooks/use-ink-box";
+import { penStyle, useInkBox, useInkStage, usePen, type Pen } from "@/hooks/use-ink-box";
 import { Stroke } from "@/lib/ink";
 import { boxStroke, hashSeed, hatchStrokes, loopStroke } from "@/lib/ink-sketch";
 
@@ -126,6 +126,7 @@ function HatchGrid({
   const id = `hg${useId().replace(/[^\w-]/g, "")}`;
   const mode = pen.draw ?? "auto";
   const [ref] = useInkBox([800, 120]);
+  const monthRow = useInkStage({ draw: mode });
   const [hover, setHover] = useState<{ wi: number; di: number; text: string; x: number; y: number } | null>(null);
   const scroller = useRef<HTMLDivElement>(null);
   const [overflows, setOverflows] = useState(false);
@@ -225,9 +226,14 @@ function HatchGrid({
       style={penStyle(pen)}
     >
       <div className="w-max">
-        <div aria-hidden="true" className="relative mb-2 h-4 text-xs leading-none text-ink-3">
+        {/* The months are written in, then the weeks land under them. */}
+        <div aria-hidden="true" {...monthRow} className="relative mb-2 h-4 text-xs leading-none text-ink-3">
           {months.map(({ index, label }) => (
-            <span key={index} className="absolute top-0" style={{ left: index * PITCH }}>
+            <span
+              key={index}
+              className={cn("absolute top-0", mode !== "none" && "ink-land")}
+              style={{ left: index * PITCH, "--ink-d": "320ms", "--ink-dd": `${index * 14}ms` } as CSSProperties}
+            >
               {label}
             </span>
           ))}

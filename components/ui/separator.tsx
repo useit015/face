@@ -14,11 +14,17 @@ function Separator({
   className,
   orientation = "horizontal",
   seed,
+  delay = 0,
   draw,
   weight,
   speed,
   ...props
-}: SeparatorPrimitive.Props & Pick<Pen, "draw" | "weight" | "speed"> & { seed?: string | number }) {
+}: SeparatorPrimitive.Props &
+  Pick<Pen, "draw" | "weight" | "speed"> & {
+    seed?: string | number;
+    /** ms after the pen gets to it before the rule is drawn. */
+    delay?: number;
+  }) {
   const pen = usePen({ draw, weight, speed });
   const s = useInkSeed(seed);
   const [ref] = useInkBox([LENGTH, 4]);
@@ -43,7 +49,7 @@ function Separator({
         className={horizontal ? "inset-x-0 -top-0.5 h-[5px] w-full" : "-left-[1px] inset-y-0 h-full w-[3px]"}
         style={penStyle(pen)}
       >
-        <Stroke d={d} draw={mode} duration={700} width={1.1} />
+        <Stroke d={d} draw={mode} delay={delay} duration={700} width={1.1} />
       </InkSvg>
     </SeparatorPrimitive>
   );

@@ -12,9 +12,9 @@ import { InkProvider } from "@/hooks/use-ink-box";
 import { InkGlyph } from "@/lib/ink-glyphs";
 import { contact, hero, socials } from "@/lib/content";
 
-/** When a part lands (fades up), and when its own pen strokes may start. */
+/** When a part lands (fades up) and for how long, and how long after it starts landing its own pen strokes start. */
 const at = (dd: number, d = 600, after?: number) =>
-  ({ "--ink-d": `${d}ms`, "--ink-dd": `${dd}ms`, ...(after === undefined ? {} : { "--ink-after": `${after}ms` }) }) as CSSProperties;
+  ({ "--ink-d": `${d}ms`, "--ink-dd": `${dd}ms`, ...(after === undefined ? {} : { "--ink-after": `${dd + after}ms` }) }) as CSSProperties;
 
 function Socials() {
   return (
@@ -54,9 +54,10 @@ function Socials() {
 }
 
 /**
- * The introduction, drawn as the page loads: the name is written and
- * underlined, the links and portrait land, then the words, then the
- * buttons are ruled in. One grid, so the pieces can trade places: phones
+ * The introduction, drawn as the page loads, in reading order: the name is
+ * written and underlined, the links land beside it, then the words with the
+ * portrait alongside, then the buttons are ruled in. The rest of the page
+ * waits its turn after this (useInkBox). One grid, so the pieces can trade places: phones
  * put the portrait beside a stacked name with the links under it; wider
  * screens run the name and links across the top and hang the portrait
  * beside the words.
@@ -75,20 +76,21 @@ export function Hero() {
             >
               {hero.name}
             </SectionHeading>
-            <Flicks seed="name-flicks" draw="mount" delay={1100} className="-top-2 -right-9 hidden sm:block" />
+            <Flicks seed="name-flicks" draw="mount" delay={860} className="-top-2 -right-9 hidden sm:block" />
           </div>
 
-          <nav aria-label="Elsewhere" className="ink-land -ml-1.5 min-[360px]:-ml-2.5 sm:mt-1 sm:-mr-2.5 sm:ml-0 sm:justify-self-end sm:[grid-area:links]" style={at(160, 520)}>
+          <nav aria-label="Elsewhere" className="ink-land -ml-1.5 min-[360px]:-ml-2.5 sm:mt-1 sm:-mr-2.5 sm:ml-0 sm:justify-self-end sm:[grid-area:links]" style={at(140, 520)}>
             <Socials />
           </nav>
         </div>
 
         <div
           className="ink-land ink-after relative -rotate-2 self-center [grid-area:portrait] sm:mt-8 sm:rotate-[0.6deg] sm:self-start sm:justify-self-end"
-          style={at(120, 640, 160)}
+          style={at(290, 640, 60)}
         >
           <Portrait label="Ballpoint sketch of Oussama Nahiz, following your cursor" />
-          <Flicks seed="portrait-flicks" draw="mount" delay={1300} className="top-10 -right-8 hidden rotate-[20deg] min-[54rem]:block" />
+          {/* Timed from when the portrait's own strokes start (ink-after). */}
+          <Flicks seed="portrait-flicks" draw="mount" delay={600} className="top-10 -right-8 hidden rotate-[20deg] min-[54rem]:block" />
         </div>
 
         <div className="ink-after max-w-[60ch] [grid-area:bio] sm:mt-8" style={{ "--ink-after": "520ms" } as CSSProperties}>
@@ -101,7 +103,7 @@ export function Hero() {
           </p>
         </div>
 
-        <div className="ink-land ink-after grid grid-cols-2 gap-3.5 [grid-area:cta] sm:flex sm:self-end sm:pt-7" style={at(460, 560, 560)}>
+        <div className="ink-land ink-after grid grid-cols-2 gap-3.5 [grid-area:cta] sm:flex sm:self-end sm:pt-7" style={at(440, 560, 160)}>
           <Button
             size="lg"
             seed="book-call"

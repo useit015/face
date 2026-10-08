@@ -1,3 +1,4 @@
+import { Stage } from "@/components/stage";
 import { TextLink } from "@/components/text-link";
 import { HatchGrid } from "@/components/ui/hatch-grid";
 import { SectionHeading } from "@/components/ui/section-heading";
@@ -22,13 +23,13 @@ export async function Activity() {
         // Room for the month names' first letters, which lean out.
         className="-mx-2 px-2"
       />
-      <p className="text-ink-3">
+      <Stage as="p" className="ink-land text-ink-3">
         <span className="font-bold text-ink">{total}</span> contributions in {year}, on{" "}
         <TextLink href={contact.github} seed="activity-github">
           GitHub
         </TextLink>
         .
-      </p>
+      </Stage>
     </section>
   );
 }

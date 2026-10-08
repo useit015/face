@@ -97,32 +97,174 @@ function approach(el: Element, onNear: () => void) {
 // first time it scrolls into view. The attribute is dropped straight from
 // the DOM: React rendered it and never changes it, so it won't put it back,
 // and a few hundred components don't re-render just to start drawing.
-const waiting = new WeakMap<Element, SVGSVGElement[]>();
+//
+// What's in view is drawn the way one pen would go down the page: in
+// reading order, each drawing starting once the one before is under way
+// (LEAD of the time it takes, MAX_LEAD at most). The first waits the same
+// way for whatever the page is still drawing as it loads. A drawing
+// scrolled out of view before its turn waits to be seen again, and once
+// what the pen is busy with has scrolled out of view, it moves on.
+const LEAD = 0.35;
+const MAX_LEAD = 450;
+const waiting = new WeakMap<Element, Element[]>();
+const queued = new WeakSet<Element>();
 let views: IntersectionObserver | undefined;
+// In view and waiting their turn, in reading order; what the pen last
+// drew, and when it's free of it.
+let line: Element[] = [];
+let busy: Element | undefined;
+let penFree: number | undefined;
+let turn: ReturnType<typeof setTimeout> | undefined;
+let looking = false;
 
-function release(el: Element, svg: SVGSVGElement) {
+/** A CSS time in ms ("300ms", "0.3s"); 0 when unset. */
+function ms(time: string) {
+  const n = parseFloat(time);
+  if (Number.isNaN(n)) return 0;
+  return time.trim().endsWith("ms") ? n : n * 1000;
+}
+
+const PARTS = ".ink-draw, .ink-write, .ink-land";
+
+/**
+ * When the pen is done with what's in (or is) el: the latest delay plus
+ * duration, read off the parts' own styles (where Stroke and friends set
+ * them; unset, they're --ink-d's 500ms and no delay).
+ */
+function penTime(el: Element) {
+  let end = 0;
+  for (const part of [el, ...el.querySelectorAll(PARTS)]) {
+    if (!part.matches(PARTS) || !(part instanceof HTMLElement || part instanceof SVGElement)) continue;
+    end = Math.max(end, ms(part.style.getPropertyValue("--ink-dd")) + ms(part.style.getPropertyValue("--ink-d") || "500ms"));
+  }
+  return end / (parseFloat(getComputedStyle(el).getPropertyValue("--ink-speed")) || 1);
+}
+
+/** When the pen is free of what the page drew as it loaded ("mount" drawings, words written in), each held for its LEAD. */
+function loaded() {
+  const now = performance.now();
+  const parts = new Map<Element, [number, number]>();
+  for (const a of document.getAnimations()) {
+    const el = a.effect instanceof KeyframeEffect ? a.effect.target : null;
+    if (!el || !(a instanceof CSSAnimation) || !/^ink-(draw|write|land)$/.test(a.animationName)) continue;
+    const { delay = 0, duration } = a.effect!.getComputedTiming();
+    const start = (a.startTime === null ? now : Number(a.startTime)) + delay;
+    // A drawing's strokes are one part, timed from its first to its last.
+    const part = (el instanceof SVGElement && el.ownerSVGElement) || el;
+    const [from, to] = parts.get(part) ?? [Infinity, 0];
+    parts.set(part, [Math.min(from, start), Math.max(to, start + Number(duration))]);
+  }
+  let free = now;
+  for (const [from, to] of parts.values()) free = Math.max(free, from + Math.min(MAX_LEAD, (to - from) * LEAD));
+  return free;
+}
+
+/** In view by the observer's measure (the bottom 6% of the screen doesn't count). */
+function inView(el: Element) {
+  if (!el.getClientRects().length) return false;
+  const { top, bottom } = el.getBoundingClientRect();
+  return bottom >= 0 && top <= innerHeight * 0.94;
+}
+
+function draw(el: Element) {
+  queued.delete(el);
+  waiting.get(el)?.forEach((s) => s.removeAttribute("data-ink-pending"));
+  waiting.delete(el);
+}
+
+// The pen's next turn: the next drawing still in view is drawn, and the
+// pen is busy with it for its lead. Any scrolled away meanwhile go back to
+// waiting to be seen.
+function next() {
+  turn = undefined;
+  const now = performance.now();
+  if (penFree! > now) return void (turn = setTimeout(next, penFree! - now));
+  while (line.length) {
+    const el = line.shift()!;
+    if (!waiting.has(el)) {
+      queued.delete(el);
+      continue;
+    }
+    if (!inView(el)) {
+      queued.delete(el);
+      views?.observe(el);
+      continue;
+    }
+    draw(el);
+    busy = el;
+    penFree = now + Math.min(MAX_LEAD, penTime(el) * LEAD);
+    if (line.length) turn = setTimeout(next, penFree - now);
+    return;
+  }
+}
+
+// The page scrolled while drawings wait their turn: if what the pen is
+// busy with (or, before it has drawn anything, what loaded) is out of view
+// now, there's no point waiting on it.
+function scrolled() {
+  if (looking || !turn) return;
+  looking = true;
+  requestAnimationFrame(() => {
+    looking = false;
+    if (!turn || (busy && inView(busy))) return;
+    clearTimeout(turn);
+    penFree = performance.now();
+    next();
+  });
+}
+
+function queue(els: Element[]) {
+  // Reduced motion: everything is shown drawn anyway, so nothing waits.
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return els.forEach(draw);
+  for (const el of els) queued.add(el);
+  line = [...line, ...els].sort((a, b) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_PRECEDING ? 1 : -1));
+  if (penFree === undefined) {
+    penFree = loaded();
+    addEventListener("scroll", scrolled, { passive: true });
+  }
+  if (!turn) next();
+}
+
+// What comes into view in the same frame is queued together, so it can be put in order.
+let seen: Element[] = [];
+
+function release(el: Element, drawing: Element) {
   views ??= new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
         if (!entry.isIntersecting) continue;
-        waiting.get(entry.target)?.forEach((s) => s.removeAttribute("data-ink-pending"));
-        waiting.delete(entry.target);
         views?.unobserve(entry.target);
+        if (queued.has(entry.target) || seen.includes(entry.target)) continue;
+        if (!seen.length)
+          requestAnimationFrame(() => {
+            const els = seen;
+            seen = [];
+            queue(els);
+          });
+        seen.push(entry.target);
       }
     },
     { rootMargin: "0px 0px -6% 0px", threshold: 0.01 },
   );
   const list = waiting.get(el);
-  if (list) list.push(svg);
-  else {
-    waiting.set(el, [svg]);
+  if (list) {
+    if (!list.includes(drawing)) list.push(drawing);
+  } else {
+    waiting.set(el, [drawing]);
     views.observe(el);
   }
   return () => {
-    const rest = waiting.get(el)?.filter((s) => s !== svg);
-    if (rest?.length) return void waiting.set(el, rest);
-    waiting.delete(el);
-    views?.unobserve(el);
+    const list = waiting.get(el);
+    if (!list) return;
+    const i = list.indexOf(drawing);
+    if (i >= 0) list.splice(i, 1);
+    // A re-render lets go and registers again straight after: stay observed
+    // (observing anew would report it in a frame of its own, out of order).
+    queueMicrotask(() => {
+      if (waiting.get(el) !== list || list.length) return;
+      waiting.delete(el);
+      views?.unobserve(el);
+    });
   };
 }
 
@@ -137,7 +279,7 @@ function release(el: Element, svg: SVGSVGElement) {
  * A box more than a screen away from the viewport is redrawn to its real
  * size once it comes that close, or once the page is idle, so a long page
  * hydrates without redrawing what nobody can see yet. A `pending` InkSvg is
- * released to draw once it scrolls into view.
+ * released to draw once it scrolls into view and the pen gets to it.
  */
 export function useInkBox(estimate: InkSize, { step = 2 }: { step?: number } = {}) {
   const drawing = useRef<SVGSVGElement | null>(null);
@@ -216,6 +358,28 @@ export function useInkFrame(estimate: InkSize, { pad = 10, step = 2 }: { pad?: n
       style: { left: -pad, top: -pad, width: `calc(100% + ${pad * 2}px)`, height: `calc(100% + ${pad * 2}px)` },
     },
   };
+}
+
+/**
+ * Holds what lands inside an element (.ink-land, or the element itself)
+ * until it scrolls into view and the pen gets to it, in turn with the
+ * drawings around it, the way a pending drawing waits. For content that
+ * has no drawing of its own to wait for: a list that settles in under a
+ * heading. Spread onto it:
+ *   <ul {...useInkStage()}>
+ *     <li className="ink-land" style={{ "--ink-dd": "80ms" }}>…</li>
+ * Nothing waits when the pen draws on "mount" or not at "none".
+ */
+export function useInkStage({ draw }: Pick<Pen, "draw"> = {}) {
+  const pen = usePen({ draw });
+  const node = useRef<HTMLElement | null>(null);
+  const ref = useCallback((el: HTMLElement | null) => void (node.current = el), []);
+  useLayoutEffect(() => {
+    const el = node.current;
+    if (!el?.hasAttribute("data-ink-pending")) return;
+    return release(el, el);
+  });
+  return { ref, "data-ink-stage": "", "data-ink-pending": pen.draw === "mount" || pen.draw === "none" ? undefined : "" };
 }
 
 // ─── Pen settings ───────────────────────────────────────────────────────

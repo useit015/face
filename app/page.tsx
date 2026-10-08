@@ -1,4 +1,4 @@
-import type { ComponentProps, CSSProperties } from "react";
+import type { ComponentProps, CSSProperties, ReactNode } from "react";
 import { Activity } from "@/components/activity";
 import { Contact } from "@/components/contact";
 import { Experience } from "@/components/experience";
@@ -6,6 +6,7 @@ import { Hero } from "@/components/hero";
 import { SignatureRule } from "@/components/marks";
 import { Projects } from "@/components/projects";
 import { Skills } from "@/components/skills";
+import { Stage } from "@/components/stage";
 import { Scrawl, type ScrawlKind } from "@/components/ui/scrawl";
 import { hero } from "@/lib/content";
 import { getStars } from "@/lib/stars";
@@ -32,6 +33,15 @@ function MarginScrawl({
   return <Scrawl className="margin-scrawl absolute" style={style} {...props} />;
 }
 
+/**
+ * A section's margin scratches, drawn ("mount") once the pen gets here: the
+ * end of the section, so they come after it however far up the margin
+ * they sit.
+ */
+function Margin({ children }: { children: ReactNode }) {
+  return <Stage>{children}</Stage>;
+}
+
 export default async function Home() {
   const stars = await getStars([
     { owner: "useit015", name: "whichmodel" },
@@ -40,7 +50,6 @@ export default async function Home() {
 
   return (
     <main id="main" className="relative mx-auto flex min-h-svh w-full max-w-page flex-col gap-section px-5 pt-10 pb-12 sm:px-8 md:pt-14">
-      <MarginScrawl seed="scrawl-corner" kind="corner" side="left" top={10} inset={10} rotate={-6} delay={1200} draw="mount" />
       <Hero />
 
       <Experience />
@@ -48,27 +57,35 @@ export default async function Home() {
       <Skills />
 
       <div className="relative">
-        <MarginScrawl seed="scrawl-activity-r" kind="zigzag" side="right" top={-50} rotate={-14} scale={1.3} delay={300} />
-        <MarginScrawl seed="scrawl-activity-l" kind="slash" side="left" top={110} rotate={-62} scale={0.8} delay={300} />
         <Activity />
+        <Margin>
+          <MarginScrawl seed="scrawl-activity-r" kind="zigzag" side="right" top={-50} rotate={-14} scale={1.3} draw="mount" />
+          <MarginScrawl seed="scrawl-activity-l" kind="slash" side="left" top={110} rotate={-62} scale={0.8} draw="mount" delay={600} />
+        </Margin>
       </div>
 
       <div className="relative">
-        <MarginScrawl seed="scrawl-projects" kind="star" side="right" top={-4} rotate={-8} scale={1.2} delay={300} />
         <Projects stars={stars} />
+        <Margin>
+          <MarginScrawl seed="scrawl-projects" kind="star" side="right" top={-4} rotate={-8} scale={1.2} draw="mount" />
+        </Margin>
       </div>
 
       <div className="relative">
-        <MarginScrawl seed="scrawl-contact" kind="zigzag" side="right" top="calc(100% - 70px)" rotate={-8} delay={300} />
         <Contact />
+        <Margin>
+          <MarginScrawl seed="scrawl-contact" kind="zigzag" side="right" top="calc(100% - 70px)" rotate={-8} draw="mount" />
+        </Margin>
       </div>
 
       <footer className="mt-auto flex items-center gap-4 pt-6 text-sm text-ink-3">
-        <p className="shrink-0">
+        <Stage as="p" className="ink-land shrink-0">
           © {new Date().getFullYear()} {hero.name}
-        </p>
-        <SignatureRule seed="signature" delay={200} className="-mr-1 min-w-0 flex-1" />
+        </Stage>
+        <SignatureRule seed="signature" className="-mr-1 min-w-0 flex-1" />
       </footer>
+      {/* Last in the markup: the pen doodles in the corner once what's in view is drawn. */}
+      <MarginScrawl seed="scrawl-corner" kind="corner" side="left" top={10} inset={10} rotate={-6} />
     </main>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type ReactNode, type RefObject } from "react";
+import { useEffect, useId, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 import { flushSync } from "react-dom";
 import { cn } from "@/lib/utils";
 import { InkGlyph } from "@/lib/ink-glyphs";
@@ -42,14 +42,18 @@ function SeeMore({ open, onToggle, label, controls, seed }: { open: boolean; onT
       onClick={onToggle}
       aria-expanded={open}
       aria-controls={controls}
+      // The words wait for their underline, so they come in after the title.
+      data-ink-stage=""
       // ml-auto: on the smallest screens it drops under the title, still on the right.
-      className="ml-auto shrink-0 gap-1.5 text-ink-2 hover:text-ink focus-visible:text-ink"
+      className="ml-auto shrink-0 text-ink-2 hover:text-ink focus-visible:text-ink"
     >
-      {open ? "See less" : label}
-      <InkGlyph
-        name="chevron-down"
-        className={cn("size-4 transition-transform duration-(--dur-state) ease-out motion-reduce:transition-none", open && "-scale-y-100")}
-      />
+      <span className="ink-land flex items-center gap-1.5" style={{ "--ink-d": "420ms" } as CSSProperties}>
+        {open ? "See less" : label}
+        <InkGlyph
+          name="chevron-down"
+          className={cn("size-4 transition-transform duration-(--dur-state) ease-out motion-reduce:transition-none", open && "-scale-y-100")}
+        />
+      </span>
     </Button>
   );
 }
