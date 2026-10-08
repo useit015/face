@@ -1,7 +1,3 @@
-// Deterministic "ballpoint" geometry. Every shape is derived from a seed, so
-// the server and the client draw the exact same wobble (no hydration drift),
-// and the same box keeps its personality across renders and resizes.
-
 type Pt = readonly [number, number];
 export type Rng = () => number;
 
@@ -95,6 +91,19 @@ function smooth(points: Pt[]) {
     d += `C${pt(c1)} ${pt(c2)} ${pt(p2)}`;
   }
   return d;
+}
+
+/**
+ * A pen line through the given points, each nudged by up to `jitter`, as
+ * one smooth curve. `closed` runs it back round to the start (and a little
+ * past, the way a pen closes a shape).
+ */
+export function handCurve(seed: number, points: readonly Pt[], { jitter = 0.15, closed = false } = {}) {
+  const r = createRng(seed);
+  const pts = points.map((p): Pt => [p[0] + spread(r, jitter), p[1] + spread(r, jitter)]);
+  if (!closed) return smooth(pts);
+  const past: Pt = [(pts[0][0] + pts[1][0]) / 2, (pts[0][1] + pts[1][1]) / 2];
+  return smooth([...pts, pts[0], past]);
 }
 
 /** A loose loop around a box — the "circle it with a pen" gesture. */
@@ -219,13 +228,43 @@ export function hatchStrokes(seed: number, w: number, h: number, { gap = 5, angl
   return lines;
 }
 
-/** A long timeline stroke ending in a two-flick arrowhead. */
+/**
+ * A long line pulled freehand along x, from 0 to w at height y. A hand's
+ * long line is never level: it drifts up or down over the run, bows a
+ * little, and wanders either side of that every finger's width or so.
+ * `sway` scales all three. `points` are where it passes, left to right, so
+ * things set on the line can sit on it.
+ */
+export function wanderStroke(seed: number, w: number, y = 0, { sway = 1 } = {}) {
+  return wander(createRng(seed), w, y, sway);
+}
+
+function wander(r: Rng, w: number, y: number, sway: number) {
+  const n = Math.max(3, Math.round(w / 90));
+  const drift = spread(r, 3 * sway);
+  const arch = spread(r, 3 * sway);
+  const points: Pt[] = [];
+  for (let i = 0; i <= n; i++) {
+    const t = i / n;
+    const end = i === 0 || i === n;
+    const x = i === n ? w : w * t + spread(r, end ? 0.6 : w / n / 6);
+    points.push([n1(x), n1(y + drift * (t * 2 - 1) + arch * Math.sin(t * Math.PI) + spread(r, (end ? 0.4 : 2.6) * sway))]);
+  }
+  return { d: smooth(points), points };
+}
+
+/** A long timeline stroke, pulled freehand, ending in a two-flick arrowhead. */
 export function arrowStroke(seed: number, w: number, y = 6) {
   const r = createRng(seed);
-  const shaft = strokeSegment(r, [0, y], [w, y + spread(r, 0.8)], { bow: 0.35, jitter: 0.5 });
-  const tip = shaft.e;
-  const head = `M${pt([tip[0] - 9 + spread(r, 1), tip[1] - 5.5 + spread(r, 0.8)])}Q${pt([tip[0] - 3, tip[1] - 1.5])} ${pt([tip[0] + 1, tip[1]])}Q${pt([tip[0] - 3, tip[1] + 1.8])} ${pt([tip[0] - 8.5 + spread(r, 1), tip[1] + 5 + spread(r, 0.8)])}`;
-  return { shaft: `M${pt(shaft.s)}C${pt(shaft.c1)} ${pt(shaft.c2)} ${pt(shaft.e)}`, head };
+  const { d, points } = wander(r, w, y, 1);
+  // The head is flicked in along the line's last run.
+  const tip = points[points.length - 1];
+  const before = points[points.length - 2];
+  const angle = Math.atan2(tip[1] - before[1], tip[0] - before[0]);
+  const [cos, sin] = [Math.cos(angle), Math.sin(angle)];
+  const at = (dx: number, dy: number): Pt => [tip[0] + dx * cos - dy * sin, tip[1] + dx * sin + dy * cos];
+  const head = `M${pt(at(-9 + spread(r, 1), -5.5 + spread(r, 0.8)))}Q${pt(at(-3, -1.5))} ${pt(at(1, 0))}Q${pt(at(-3, 1.8))} ${pt(at(-8.5 + spread(r, 1), 5 + spread(r, 0.8)))}`;
+  return { shaft: d, head, points };
 }
 
 /** A small filled ink dot: a tight scribbled spiral. */
@@ -274,7 +313,7 @@ export function crossedBoxStroke(
   seed: number,
   w: number,
   h: number,
-  { overshoot = 5, jitter = 1.2, shift = [0, 0] as Pt } = {},
+  { overshoot = 5, jitter = 1.2, bow = 1.1, shift = [0, 0] as Pt } = {},
 ) {
   const r = createRng(seed);
   const [sx, sy] = shift;
@@ -287,7 +326,7 @@ export function crossedBoxStroke(
   let d = "";
   // Top, right, bottom, left — in the order a hand tends to go.
   for (const [a, b] of [[0, 1], [1, 2], [3, 2], [0, 3]] as const) {
-    const seg = strokeSegment(r, c[a], c[b], { bow: 1.1, jitter: jitter * 0.4, overshoot });
+    const seg = strokeSegment(r, c[a], c[b], { bow, jitter: jitter * 0.4, overshoot });
     d += `M${pt(seg.s)}C${pt(seg.c1)} ${pt(seg.c2)} ${pt(seg.e)}`;
   }
   return d;
@@ -332,6 +371,169 @@ export function cornerTicks(seed: number, w: number, h: number, { count = 5, len
     d += `M${pt(seg.s)}C${pt(seg.c1)} ${pt(seg.c2)} ${pt(seg.e)}`;
   }
   return d;
+}
+
+// ─── Marks for controls ───────────────────────────────────────────────
+// Small shapes drawn inside a box of side `s` (or w×h): ticks, crosses,
+// chevrons, rings and tracks. Each is one path the pen draws in order, so
+// it can draw itself in.
+
+/** A tick: a short drop into the corner, then a long pull up and out past the box. */
+export function tickStroke(seed: number, s: number) {
+  const r = createRng(seed);
+  const a: Pt = [s * (0.1 + spread(r, 0.03)), s * (0.5 + spread(r, 0.04))];
+  const b: Pt = [s * (0.4 + spread(r, 0.03)), s * (0.84 + spread(r, 0.03))];
+  const c: Pt = [s * (1 + r() * 0.1), s * (-0.06 + spread(r, 0.05))];
+  const down = strokeSegment(r, a, b, { bow: 0.3, jitter: 0 });
+  const up = strokeSegment(r, b, c, { bow: 0.9, jitter: 0 });
+  return `M${pt(a)}C${pt(down.c1)} ${pt(down.c2)} ${pt(b)}C${pt(up.c1)} ${pt(up.c2)} ${pt(c)}`;
+}
+
+/** A cross: two pulls, the second a touch shorter, crossing a little off centre. */
+export function crossStroke(seed: number, s: number, { inset = 0.16 } = {}) {
+  const r = createRng(seed);
+  const i = s * inset;
+  const one = strokeSegment(r, [i, i], [s - i, s - i], { bow: 0.6, jitter: s * 0.03 });
+  const two = strokeSegment(r, [s - i * 1.1, i * 1.2], [i * 1.2, s - i * 1.05], { bow: 0.6, jitter: s * 0.03 });
+  return `M${pt(one.s)}C${pt(one.c1)} ${pt(one.c2)} ${pt(one.e)}M${pt(two.s)}C${pt(two.c1)} ${pt(two.c2)} ${pt(two.e)}`;
+}
+
+/** A short level dash across a box of width w (minus, indeterminate). */
+export function dashStroke(seed: number, w: number, y = 0) {
+  const r = createRng(seed);
+  const seg = strokeSegment(r, [w * 0.12, y + spread(r, 0.4)], [w * 0.88, y + spread(r, 0.4)], { bow: 0.5, jitter: 0.2 });
+  return `M${pt(seg.s)}C${pt(seg.c1)} ${pt(seg.c2)} ${pt(seg.e)}`;
+}
+
+/** A plus: a dash across, then one down through it. Fits 0…s. */
+export function plusStroke(seed: number, s: number) {
+  const r = createRng(seed);
+  const across = strokeSegment(r, [s * 0.1, s * 0.5], [s * 0.9, s * 0.5], { bow: 0.5, jitter: s * 0.03 });
+  const down = strokeSegment(r, [s * 0.5, s * 0.1], [s * 0.5, s * 0.9], { bow: 0.5, jitter: s * 0.03 });
+  return `M${pt(across.s)}C${pt(across.c1)} ${pt(across.c2)} ${pt(across.e)}M${pt(down.s)}C${pt(down.c1)} ${pt(down.c2)} ${pt(down.e)}`;
+}
+
+export type Direction = "down" | "up" | "left" | "right";
+
+/** A chevron: two legs meeting in a point, the second pulled a touch longer. Fits 0…w × 0…h. */
+export function chevronStroke(seed: number, w: number, h: number, dir: Direction = "down") {
+  const r = createRng(seed);
+  // Drawn pointing down in a unit square, then turned to face `dir`.
+  const unit: Pt[] = [
+    [0.04 + spread(r, 0.03), 0.22 + spread(r, 0.04)],
+    [0.5 + spread(r, 0.03), 0.8 + spread(r, 0.03)],
+    [0.98 + spread(r, 0.03), 0.16 + spread(r, 0.04)],
+  ];
+  const turn = ([x, y]: Pt): Pt =>
+    dir === "down" ? [x * w, y * h] : dir === "up" ? [x * w, (1 - y) * h] : dir === "right" ? [y * w, x * h] : [(1 - y) * w, x * h];
+  const [a, tip, b] = unit.map(turn);
+  const one = strokeSegment(r, a, tip, { bow: 0.4, jitter: 0 });
+  const two = strokeSegment(r, tip, b, { bow: 0.4, jitter: 0 });
+  return `M${pt(a)}C${pt(one.c1)} ${pt(one.c2)} ${pt(tip)}C${pt(two.c1)} ${pt(two.c2)} ${pt(b)}`;
+}
+
+/** A ring drawn in one go, closing a little past where it started. Fits 0…d. */
+export function ringStroke(seed: number, d: number, { turns = 1.1 } = {}) {
+  return loopStroke(seed, d, d, { turns, pad: 0 });
+}
+
+/**
+ * A rounded box pulled in one motion, the way a hand draws one: starting a
+ * little before the top-left corner, round the outline, and running on past
+ * where it began. `r` is clamped to the box (r = h/2 gives a pill); `shift`
+ * nudges the whole pass, for re-traced outlines that don't line up.
+ * Fits 0…w × 0…h.
+ */
+export function roundedBoxStroke(
+  seed: number,
+  w: number,
+  h: number,
+  r: number,
+  { overrun = 0.08, jitter = 0.45, shift = [0, 0] as Pt } = {},
+) {
+  const rand = createRng(seed);
+  const rad = Math.max(0, Math.min(r, w / 2, h / 2));
+  const runX = Math.max(0, w - 2 * rad);
+  const runY = Math.max(0, h - 2 * rad);
+  const arc = (Math.PI / 2) * rad;
+  const total = 2 * runX + 2 * runY + 4 * arc;
+  if (!total) return "";
+  // Sides and corners in drawing order, clockwise from the top-left.
+  const parts: { len: number; at: (t: number) => Pt }[] = [
+    { len: runX, at: (t) => [rad + t * runX, 0] },
+    { len: arc, at: (t) => corner(w - rad, rad, -Math.PI / 2 + (t * Math.PI) / 2) },
+    { len: runY, at: (t) => [w, rad + t * runY] },
+    { len: arc, at: (t) => corner(w - rad, h - rad, (t * Math.PI) / 2) },
+    { len: runX, at: (t) => [w - rad - t * runX, h] },
+    { len: arc, at: (t) => corner(rad, h - rad, Math.PI / 2 + (t * Math.PI) / 2) },
+    { len: runY, at: (t) => [0, h - rad - t * runY] },
+    { len: arc, at: (t) => corner(rad, rad, Math.PI + (t * Math.PI) / 2) },
+  ];
+  function corner(cx: number, cy: number, a: number): Pt {
+    return [cx + Math.cos(a) * rad, cy + Math.sin(a) * rad];
+  }
+  const pointAt = (l: number): Pt => {
+    l = ((l % total) + total) % total;
+    for (const part of parts) {
+      if (l <= part.len && part.len > 0) return part.at(l / part.len);
+      l -= part.len;
+    }
+    return parts[0].at(0);
+  };
+  // Dense enough to hold the corners' curve, sparse along the runs so the
+  // jitter reads as a hand, not as noise.
+  const step = Math.max(2.5, Math.min(9, rad * 0.6 || 9));
+  const start = -total * (0.015 + rand() * 0.03);
+  const end = total * (1 + overrun);
+  const points: Pt[] = [];
+  for (let l = start; l <= end + 0.01; l += step) {
+    const [x, y] = pointAt(l);
+    points.push([x + shift[0] + spread(rand, jitter), y + shift[1] + spread(rand, jitter)]);
+  }
+  return smooth(points);
+}
+
+// Where each re-traced outline lands relative to the first.
+const passShifts: readonly Pt[] = [
+  [0, 0],
+  [1.8, -1.6],
+  [-1.4, 2.2],
+];
+
+/**
+ * A box outline the way the pen settings describe it, gone over `passes`
+ * times: sides pulled separately past each other ("crossed"), one joined
+ * motion ("joined"), or rounded when `radius` > 0. `roughness` scales every
+ * wobble (0 is ruler-neat); small boxes get shorter overshoots. Fits 0…w × 0…h.
+ */
+export function penBoxStrokes(
+  seed: number,
+  w: number,
+  h: number,
+  { roughness = 1, passes = 2, corners = "crossed" as "crossed" | "joined", radius = 0 } = {},
+): string[] {
+  const q = roughness;
+  const k = Math.min(1, Math.min(w, h) / 40);
+  const r = Math.max(0, Math.min(radius, w / 2, h / 2));
+  return Array.from({ length: Math.max(1, Math.min(3, passes)) }, (_, i) => {
+    const shift: Pt = [passShifts[i][0] * k * q, passShifts[i][1] * k * q];
+    if (r > 0) return roundedBoxStroke(seed + i, w, h, r, { jitter: 0.25 * q, overrun: 0.03 + 0.05 * q, shift });
+    if (corners === "joined") return boxStroke(seed + i, w, h, { overshoot: [2.4, 2.6, 2.2][i] * k * q, jitter: [0.7, 1.5, 1.8][i] * q, bow: q });
+    return crossedBoxStroke(seed + i, w, h, { overshoot: [4, 7, 5][i] * k * q, jitter: [1.2, 1.6, 1.8][i] * q, bow: 1.1 * q, shift });
+  });
+}
+
+/** The exact outline of a rounded box, closed: for fills, masks and clips. */
+export function roundedRectPath(w: number, h: number, r: number) {
+  const rad = Math.max(0, Math.min(r, w / 2, h / 2));
+  if (!rad) return `M0 0H${n1(w)}V${n1(h)}H0Z`;
+  const a = `A${n1(rad)} ${n1(rad)} 0 0 1`;
+  return `M${n1(rad)} 0H${n1(w - rad)}${a} ${n1(w)} ${n1(rad)}V${n1(h - rad)}${a} ${n1(w - rad)} ${n1(h)}H${n1(rad)}${a} 0 ${n1(h - rad)}V${n1(rad)}${a} ${n1(rad)} 0Z`;
+}
+
+/** A capsule (a switch track): a pill pulled in one motion. Fits 0…w × 0…h. */
+export function capsuleStroke(seed: number, w: number, h: number, { overrun = 0.1, jitter = 0.45 } = {}) {
+  return roundedBoxStroke(seed, w, h, h / 2, { overrun, jitter });
 }
 
 /**
@@ -547,6 +749,16 @@ function ribbon(pts: InkPt[]) {
   return d;
 }
 
+/**
+ * A recorded pen line (a signature, a doodle) as one filled ribbon: `w` is
+ * the line's width at each point. A single point, a tap, is a dot.
+ */
+export function inkRibbon(points: readonly { x: number; y: number; w: number }[]) {
+  if (!points.length) return "";
+  if (points.length === 1) return blob([points[0].x, points[0].y], points[0].w * 0.6);
+  return ribbon(points as InkPt[]);
+}
+
 const blob = (p: Pt, rad: number) =>
   `M${n1(p[0] - rad)} ${n1(p[1])}a${n1(rad)} ${n1(rad)} 0 1 0 ${n1(rad * 2)} 0a${n1(rad)} ${n1(rad)} 0 1 0 ${n1(-rad * 2)} 0Z`;
 
@@ -567,9 +779,10 @@ export type InkStroke = {
  * second pass goes over the first run, and a stray dash follows the lift.
  * Fits roughly -18…w+18 by -2…16.
  */
-export function underlineInk(seed: number, w: number, { weight = 2.5 } = {}): InkStroke[] {
+export function underlineInk(seed: number, w: number, { weight = 2.5, lead = 0 } = {}): InkStroke[] {
   const r = createRng(seed);
-  const start: Pt = [-12 - r() * 4, 12.5 + spread(r, 0.8)];
+  // `lead` moves the landing right, for a heading that must not reach into its neighbours.
+  const start: Pt = [lead - 12 - r() * 4, 12.5 + spread(r, 0.8)];
   const turn: Pt = [w * (0.5 + r() * 0.12), 3.6 + spread(r, 0.6)];
   // The snap is short and steep — a flick, not a second line.
   const back: Pt = [turn[0] - Math.min(38, Math.max(15, w * (0.07 + r() * 0.04))), 10.2 + spread(r, 0.6)];
@@ -668,4 +881,91 @@ export function inkPulls(
     at += pass.dur * (again ? 0.9 : 0.6) + gap;
     return pass;
   });
+}
+
+/**
+ * A highlighter swipe across a w×h row: a filled band whose long edges
+ * wander a little and whose ends are left ragged, the way a marker starts
+ * and stops. Closed, for fills and masks.
+ */
+export function swipePath(seed: number, w: number, h: number, { inset = 1.5 } = {}) {
+  const r = createRng(seed);
+  const along = (x: number) => (x / Math.max(w, 1)) * Math.PI * (1 + r() * 0.6);
+  const top = (x: number) => inset + spread(r, 0.9) + Math.sin(along(x)) * 0.6;
+  const bottom = (x: number) => h - inset + spread(r, 0.9) - Math.sin(along(x)) * 0.6;
+  const steps = 6;
+  const xs = Array.from({ length: steps + 1 }, (_, i) => (w * i) / steps);
+  const upper = xs.map((x, i): Pt => [i === 0 ? 2 + r() * 2 : i === steps ? w - 2 - r() * 2 : x, top(x)]);
+  const lower = xs.map((x, i): Pt => [i === 0 ? 1 + r() * 3 : i === steps ? w - 1 - r() * 3 : x, bottom(x)]).reverse();
+  // Ragged ends: the marker bites in a little before lifting.
+  const end: Pt = [w + spread(r, 1.2), h / 2 + spread(r, 2)];
+  const start: Pt = [spread(r, 1.2), h / 2 + spread(r, 2)];
+  return `${smooth([start, ...upper, end])}${smooth([end, ...lower, start]).replace(/^M/, "L")}Z`;
+}
+
+// ─── Underline shapes ───────────────────────────────────────────────────
+// A heading's underline is whatever the hand felt like: one of these, picked
+// by the heading's seed, so each title keeps its own and no two in a row are
+// likely to match. All of them stay inside -4…w and 1…19, so a title never
+// strikes through, or into, the thing beside it.
+
+export const underlineShapes = ["swoosh", "double", "wave", "zigzag", "loop", "flick"] as const;
+export type UnderlineShape = (typeof underlineShapes)[number];
+
+/** The shape a seed picks. */
+export const underlineShapeFor = (seed: number): UnderlineShape => underlineShapes[seed % underlineShapes.length];
+
+/** An underline for a title `w` wide, in one of `underlineShapes`; inside -4…w by 1…19. */
+export function underlineShape(seed: number, w: number, shape: UnderlineShape = underlineShapeFor(seed)): InkStroke[] {
+  const r = createRng(seed);
+  const weight = { weight: 2.4 };
+  switch (shape) {
+    case "swoosh":
+      // The dash after the lift reaches ~30px past the end, so the run is shortened to fit.
+      return underlineInk(seed, Math.max(40, (w - 30) / 1.07), { ...weight, lead: 12 });
+    case "double": {
+      // Two pulls, the second shorter and a little under the first, gone over twice.
+      const y = 7 + r() * 2;
+      const a: Pt[] = [[0, y + 2], [w * 0.5, y - 0.4], [w - 4, y - 1.4]];
+      const b: Pt[] = [[w * (0.1 + r() * 0.1), y + 7.5], [w * 0.55, y + 5.8], [w * (0.8 + r() * 0.1), y + 5]];
+      return inkPulls(seed, [a, b], { ...weight, dur: 330, retrace: 0.5, wander: 1.1, gap: 90 });
+    }
+    case "wave": {
+      // A tilde stretched under the title: two or three swells, dipping from a level line.
+      const swells = Math.max(2, Math.round(w / 70));
+      const y = 9 + r() * 2;
+      const amp = 3.2 + r() * 1.6;
+      const steps = swells * 4;
+      const pts: Pt[] = Array.from({ length: steps + 1 }, (_, i) => [1 + ((w - 5) * i) / steps, y + Math.sin((i / 4) * Math.PI * 2) * amp + (i ? spread(r, 0.5) : 0)]);
+      return inkPulls(seed, [pts], { ...weight, weight: 2.2, dur: 380, bow: 0.3 });
+    }
+    case "zigzag": {
+      // Quick sharp zigs, the way a pen is tried out, with a plain pull to finish.
+      const step = 6 + r() * 3;
+      const pts: Pt[] = [];
+      for (let x = 0, up = true; x < w - 8; x += step, up = !up) pts.push([x + 2 + spread(r, 0.6), (up ? 5 : 13) + spread(r, 1.1)]);
+      return inkPulls(seed, [pts, [[w * 0.1, 16.5], [w - 4, 15 + spread(r, 1)]]], { ...weight, weight: 1.9, dur: 150, gap: 120, bow: 0.25 });
+    }
+    case "loop": {
+      // A long pull that ends in a loop, the pen still going as it lifts.
+      const y = 11 + spread(r, 1);
+      const end = w - 14;
+      const rad = 4.2 + r() * 1.2;
+      const loop: Pt[] = Array.from({ length: 11 }, (_, i) => {
+        const a = (i / 10) * Math.PI * 2 - Math.PI / 2;
+        return [end + Math.cos(a) * rad + i * 0.5, y - 1.6 + Math.sin(a) * rad] as Pt;
+      });
+      return inkPulls(seed, [[[0, y + 3], [w * 0.4, y + 0.2], [end - 4, y - 0.4], ...loop, [w - 3, y - 0.6]]], { ...weight, dur: 600, bow: 0.5 });
+    }
+    case "flick": {
+      // A level pull, then three short ticks flicked off its tail.
+      const y = 11 + r() * 3;
+      const tail = Math.max(24, w * 0.3);
+      const ticks: Pt[][] = [0, 1, 2].map((i) => {
+        const x = w - tail * (0.9 - i * 0.28) - 2;
+        return [[x, y + 6.5 + spread(r, 0.6)], [x + 5 + spread(r, 1), y - 0.8 + spread(r, 0.6)]];
+      });
+      return inkPulls(seed, [[[0, y + 1.5], [w * 0.5, y - 0.6], [w - 4, y + 0.4]], ...ticks], { ...weight, dur: 260, gap: 70, retrace: 0.3 });
+    }
+  }
 }

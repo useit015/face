@@ -7,11 +7,12 @@ with Next.js App Router.
 
 - Next.js 16 (App Router)
 - React 19
-- Motion
+- [Ballpoint](https://ballpoint.st9wd.com) components on Base UI, installed
+  with the shadcn CLI from the `@ballpoint` registry (`components.json`)
 - Tailwind CSS 4
 - TypeScript
 - ESLint 9
-- Gaegu (via `next/font`)
+- Gaegu (Latin subset, self-hosted in `app/fonts/`)
 
 ## Development
 
@@ -40,16 +41,20 @@ Next.js ISR and degrade silently to empty values if unavailable.
 
 ## How the drawing works
 
-- `lib/sketch.ts` — seeded stroke geometry (boxes, underlines, loops, hatching,
-  arrows, the theme-change ink blot). Same seed, same wobble, on server and client.
-  Underlines, margin scrawls, flicks and the footer signature are drawn as
-  ballpoint ink (`underlineInk`, `inkPulls`): filled ribbons whose width
-  follows pen pressure (light landing, thin lift-off, ink pooling at sharp
-  turns), revealed by a mask stroke along each centreline (`InkMarks`).
-- `components/ink/` — SVG primitives built on it. Strokes use `pathLength=1`
-  and draw themselves in when their `Reveal` scrolls into view, on hover, or
-  when an expandable opens (see the "Sketch strokes" and "Reveal" sections of
-  `app/globals.css`).
+- `components/ui/`, `lib/ink*.ts(x)`, `hooks/use-ink-box.ts` — Ballpoint, as
+  `shadcn add @ballpoint/<name>` installed it: buttons, the timeline, section
+  headings, the contribution grid, frames, tooltips, the theme toggle and the
+  engine they share (seeded strokes, same wobble on server and client, drawn
+  in as they scroll into view). They're this repo's code now; local changes
+  are noted where they're made. Update one with
+  `pnpm dlx shadcn@latest add @ballpoint/<name> --overwrite`.
+- `app/globals.css` — Ballpoint's base (tokens, stroke and handwriting CSS),
+  then this page's own: the paper, the glyph atlas, and the hero's load
+  choreography, which runs in CSS alone so it never waits for the script.
+- `components/` — the page's sections built from those parts, plus its own
+  pieces: the expanding sections (`expandable.tsx`, which flies shared items
+  between the short and full versions), the footer signature and flicks
+  (`marks.tsx`), the cursor-following portrait, and the paper doodles.
 - `public/ink/glyphs.webp` (+ `glyphs@3x.webp`), `public/ink/projects.webp` —
   hand-drawn icons packed into alpha-mask atlases (index in `lib/ink-atlas.json`),
   rendered with `mask-image` so they take the current ink colour in either theme.
@@ -61,18 +66,16 @@ Next.js ISR and degrade silently to empty values if unavailable.
   hair and shadows left as paper). Both follow the
   cursor together and theme CSS picks one. `still-*.webp` are the centre pose,
   rendered on the server until the sheets load.
-- `public/paper-{light,dark}.svg` — seamless paper tiles: fractal noise lit
-  with `feDiffuseLighting` for soft crinkle relief, calibrated so each
-  averages out to its theme's `--paper`. Painted on the root, so the paper
-  scrolls with the page.
-- `components/margin-scrawl.tsx` — pen-test scrawls pinned in the page margins.
+- `public/paper/` — Ballpoint's pre-painted paper: a fine tooth over soft
+  crinkle relief, calibrated so each averages out to its theme's `--paper`.
+  Painted on the root, so the paper scrolls with the page.
 - `components/paper-doodles.tsx` — the cursor turns into a pen over empty paper;
   drag (mouse or stylus) to leave grainy ballpoint ink that dries and fades.
 
 ## Structure
 
 - `app/` — routes, layout, global styles (theme tokens live in `app/globals.css`)
-- `components/` — UI components (server components where possible; `"use client"` only where interactivity is needed)
-- `components/ink/` — sketch primitives (strokes, boxes, glyphs, headings, links)
-- `lib/` — site content (`content.ts`), stroke geometry (`sketch.ts`), data helpers
+- `components/` — the page's sections (server components where possible; `"use client"` only where interactivity is needed)
+- `components/ui/` — Ballpoint components
+- `lib/` — site content (`content.ts`), Ballpoint's stroke engine (`ink-sketch.ts`, `ink.tsx`), data helpers
 - `assets/` — fonts and art used only by the generated Open Graph image

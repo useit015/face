@@ -1,9 +1,0 @@
-<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600'>
-<filter id='p' x='0' y='0' width='100%' height='100%' color-interpolation-filters='sRGB'>
-<feTurbulence type='fractalNoise' baseFrequency='.007' numOctaves='4' seed='3' stitchTiles='stitch' result='n'/>
-<feDiffuseLighting in='n' lighting-color='#fff' surfaceScale='5.5' diffuseConstant='1' result='l'><feDistantLight azimuth='225' elevation='55'/></feDiffuseLighting>
-<feComponentTransfer><feFuncR type='linear' slope='0.3' intercept='0.6894'/><feFuncG type='linear' slope='0.3' intercept='0.6698'/><feFuncB type='linear' slope='0.3' intercept='0.6345'/><feFuncA type='linear' slope='0' intercept='1'/></feComponentTransfer>
-</filter>
-<filter id='t' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='9' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .35 0 0 0 0 .3 0 0 0 0 .22 0 0 0 0.060 -0.018'/></filter>
-<rect width='100%' height='100%' filter='url(#p)'/><rect width='100%' height='100%' filter='url(#t)'/>
-</svg>

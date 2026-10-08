@@ -15,15 +15,17 @@ a night-navy page by night, both first-class. Everything else is the same ink
 at lighter pressure (`ink-2` … `ink-5`, mixed in oklab so the hue never
 drifts). Gaegu, an upright monoline print hand, is the whole type system:
 700 for the name, block-capital section titles, and company names, 400 for
-everything else, on a meta 18 / body 21 / heading 28 scale (it runs small, so
-the scale sits a step up). A hair of text-stroke gives it ballpoint weight.
+everything else, on Ballpoint's scale: 17 for meta, 20 for body, 25 for
+company and project names, 28 for section titles (it runs small, so the
+scale sits a step up). A hair of text-stroke gives it ballpoint weight.
 
 Pen-test scrawls (jagged zigzags, a scratched star, a dead-pen coil, slashes,
 a worked-over corner) sit in the margins on wider screens, the way a page
 collects them while someone gets a ballpoint going.
 
 Every line — boxes, underlines, timelines, hatching, the contribution grid — is
-generated from seeded strokes (`lib/sketch.ts`), so it is deterministic
+drawn by [Ballpoint](https://ballpoint.st9wd.com) components from seeded
+strokes (`lib/ink-sketch.ts`), so it is deterministic
 (identical on server and client), resizes cleanly, and can draw itself in.
 Icons and the portrait are hand-drawn raster art stored as alpha masks, so
 they take the current ink colour.
@@ -49,10 +51,10 @@ only transform/opacity for movement so entrances stay on the compositor.
 - **Write**: headings are revealed by a feathered mask sweeping left to right.
 - **Draw**: strokes run their `stroke-dashoffset` from 1 to 0 on the pen curve;
   long strokes (the timeline) use the steadier writing curve.
-- **Ink**: blocks settle in with a 6px rise and a fade; staggers cap at 8 steps.
+- **Land**: blocks settle in with a 3px rise and a fade.
 - **Choreography**: the hero plays from first paint (no JS wait), finished in
-  ~1.2s; the Experience columns land exactly as the timeline's pen reaches them.
-- **Circle**: hover and focus loop a pen circle around icons; links get a second pass.
+  ~1.3s; the Experience stops land exactly as the timeline's pen reaches them.
+- **Box**: hover and focus rule a pen box round icons and skills; links get a second pass.
 - **Lift**: buttons rise off a drawn block shadow; pressing flattens them.
 - **Boil**: hovered icons jitter a few frames a second, as hand-drawn animation does.
 - **Blot**: theme changes spread an ink blot from the toggle (View Transitions).

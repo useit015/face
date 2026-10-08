@@ -1,10 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Gaegu } from "next/font/google";
+import localFont from "next/font/local";
 import { preload } from "react-dom";
-import { MotionProvider } from "@/components/motion-provider";
 import { PaperDoodles } from "@/components/paper-doodles";
 import { PaperMarks } from "@/components/paper-marks";
-import { InkSettle } from "@/components/ink/settle";
+import { ThemeChrome } from "@/components/theme-chrome";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import {
   siteJsonLd,
   siteDescription,
@@ -17,11 +17,17 @@ import { themeColors } from "@/lib/theme";
 import "./globals.css";
 
 // Gaegu: an upright, monoline print hand, the closest type to a ballpoint.
-const hand = Gaegu({
-  variable: "--font-hand",
-  weight: ["300", "400", "700"],
-  subsets: ["latin"],
+// Ballpoint's base installs it from Google Fonts, whose CSS splits Gaegu into
+// ~90 Korean slices per weight, and next/font preloaded every one of them.
+// These are the Latin slices only, in the two weights the page uses, with
+// fallback metrics adjusted so the swap doesn't move anything.
+const hand = localFont({
+  variable: "--font-sans",
   display: "swap",
+  src: [
+    { path: "./fonts/gaegu-400.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/gaegu-700.woff2", weight: "700", style: "normal" },
+  ],
 });
 
 export const metadata: Metadata = {
@@ -72,15 +78,16 @@ export const viewport: Viewport = {
   colorScheme: "light dark",
 };
 
-// `js` arms the reveal choreography. If the app hasn't hydrated within four
-// seconds (slow network, blocked script), disarm it so nothing stays hidden.
-const jsClassScript = `(function(){var d=document.documentElement;d.classList.add("js");setTimeout(function(){if(!d.classList.contains("hydrated"))d.classList.remove("js")},4000)})()`;
-
 // Resolve the theme before first paint, and start fetching that theme's
 // portrait sheet (the avatar module requests it with fetch()).
 const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d=t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches;document.documentElement.classList.toggle("dark",d);var l=document.createElement("link");l.rel="preload";l.as="fetch";l.crossOrigin="anonymous";l.href="/avatar/ink/sheet-"+(d?"dark":"light")+".webp";document.head.appendChild(l)}catch(e){}})()`;
 
-const consoleScript = `try{console.log("%cReading the source. Fair, that's how I'd check too.","font-weight:600;font-size:13px");console.log("%cEvery line on this page is drawn at runtime from seeded strokes. Drag on the empty paper to add your own.","color:#5b67c9");console.log("%cHiring? useit015@gmail.com","color:#8a8578")}catch(e){}`;
+// Drawings below the fold wait, undrawn, until the app sees them scroll into
+// view. If it hasn't come to life within four seconds (a blocked or failed
+// script), let them go, so no heading is left unwritten.
+const failsafeScript = `setTimeout(function(){var d=document.documentElement;if(d.hasAttribute("data-hydrated"))return;d.querySelectorAll("[data-ink-pending]").forEach(function(e){e.removeAttribute("data-ink-pending")})},4000)`;
+
+const consoleScript = `try{console.log("%cReading the source. Fair, that's how I'd check too.","font-weight:600;font-size:13px");console.log("%cEvery line on this page is drawn at runtime from seeded strokes, with Ballpoint (ballpoint.st9wd.com). Drag on the empty paper to add your own.","color:#5b67c9");console.log("%cHiring? useit015@gmail.com","color:#8a8578")}catch(e){}`;
 
 const whisperScript = `(function(){try{var t=document.title,w=["Still here.","The ink is drying.","The other tab is slower."],i=Math.floor(Math.random()*w.length);document.addEventListener("visibilitychange",function(){document.title=document.hidden?w[i++%w.length]:t})}catch(e){}})()`;
 
@@ -97,32 +104,25 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   });
 
   return (
-    <html
-      lang="en"
-      className={`${hand.variable} h-full`}
-      suppressHydrationWarning
-    >
+    <html lang="en" className={hand.variable} suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: jsClassScript }} />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script dangerouslySetInnerHTML={{ __html: failsafeScript }} />
         <script dangerouslySetInnerHTML={{ __html: consoleScript }} />
         <script dangerouslySetInnerHTML={{ __html: whisperScript }} />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: jsonLdScript }}
-        />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript }} />
       </head>
-      <body className="relative min-h-full flex flex-col">
+      <body className="relative flex min-h-dvh flex-col">
         <PaperMarks />
         <a
           href="#main"
-          className="ink-tip sr-only px-3 py-1.5 text-meta focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:bg-paper focus:px-3 focus:py-1.5 focus:text-sm"
         >
           Skip to content
         </a>
-        <MotionProvider>{children}</MotionProvider>
+        <TooltipProvider delay={300}>{children}</TooltipProvider>
         <PaperDoodles />
-        <InkSettle />
+        <ThemeChrome />
       </body>
     </html>
   );

@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { boxStroke, hashSeed, underlineStroke } from "@/lib/sketch";
+import { boxStroke, hashSeed, underlineStroke } from "@/lib/ink-sketch";
 
 export const alt = "Oussama Nahiz, senior full-stack engineer, drawn in blue ballpoint";
 export const size = { width: 1200, height: 630 };

@@ -5,8 +5,17 @@ export function isDarkTheme() {
   return document.documentElement.classList.contains("dark");
 }
 
+/**
+ * Calls back whenever the theme changes. The toggle (InkThemeToggle) only
+ * flips `dark` on <html>, so this watches for exactly that.
+ */
 export function subscribeTheme(callback: () => void) {
-  window.addEventListener("themechange", callback);
-  return () => window.removeEventListener("themechange", callback);
+  let dark = isDarkTheme();
+  const observer = new MutationObserver(() => {
+    if (isDarkTheme() === dark) return;
+    dark = !dark;
+    callback();
+  });
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+  return () => observer.disconnect();
 }
-

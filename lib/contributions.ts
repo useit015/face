@@ -1,10 +1,21 @@
+import { contact } from "@/lib/content";
+
 export type ContributionDay = {
   date: string;
   count: number;
   level: 0 | 1 | 2 | 3 | 4;
 };
 
-// Shared by the server layout (month labels) and the client grid.
-// 53 weeks at this pitch span the page column exactly.
-export const CELL = 11.5;
-export const PITCH = 14.5;
+/** This year's GitHub contributions, or null when the API can't be reached. */
+export async function getContributions(year: number): Promise<ContributionDay[] | null> {
+  try {
+    const res = await fetch(`https://github-contributions-api.jogruber.de/v4/${contact.githubUser}?y=${year}`, {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as { contributions?: ContributionDay[] };
+    return data.contributions?.length ? data.contributions : null;
+  } catch {
+    return null;
+  }
+}
