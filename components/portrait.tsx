@@ -3,8 +3,9 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { preloadModule } from "react-dom";
-import { SketchBox } from "@/components/ink/sketch";
-import { isDarkTheme } from "@/lib/theme";
+import { cn } from "@/lib/utils";
+import { Frame } from "@/components/ui/frame";
+import { isDarkTheme, subscribeTheme } from "@/lib/theme";
 
 type Theme = "light" | "dark";
 
@@ -20,7 +21,7 @@ type AvatarElement = HTMLElement & {
 const MODULE_SRC = "/cursor-avatar.js";
 const SHEET_BASE = "/avatar/ink/";
 const THEMES: Theme[] = ["light", "dark"];
-// The element renders at this size; the mobile frame scales it down.
+// The element renders at this size and is scaled to the frame's.
 const AVATAR_PX = 164;
 const DEFAULT_STEP_MS = 70;
 const PLAYFUL_STEP_MS = 45;
@@ -87,8 +88,7 @@ export function Portrait({ label, className = "" }: { label: string; className?:
     const cancelIdle = window.cancelIdleCallback ?? window.clearTimeout;
     const idleId = idle(() => mount(current === "dark" ? "light" : "dark"), { timeout: 4000 });
     // A switch before idle fired still gets its sheet straight away.
-    const onTheme = () => mount(isDarkTheme() ? "dark" : "light");
-    window.addEventListener("themechange", onTheme);
+    const unsubscribe = subscribeTheme(() => mount(isDarkTheme() ? "dark" : "light"));
 
     // Click: a quick look all the way around the ring, on both sheets so they
     // stay in step.
@@ -125,15 +125,17 @@ export function Portrait({ label, className = "" }: { label: string; className?:
       cancelled = true;
       timers.forEach((t) => window.clearTimeout(t));
       cancelIdle(idleId as number);
-      window.removeEventListener("themechange", onTheme);
+      unsubscribe();
       slot.removeEventListener("click", onClick);
       THEMES.forEach((t) => avatars[t]?.remove());
     };
   }, [label]);
 
   return (
-    <div className={`portrait relative size-[120px] shrink-0 sm:size-[160px] md:size-[204px] ${className}`}>
-      <div className="absolute inset-[5px] overflow-hidden sm:inset-[6px]">
+    // Ruled round in pen. The picture is 84 (the smallest phones), 108, 148
+    // or 192px square, inside the frame's 6px gap.
+    <Frame seed="portrait-frame" gap={6} className={cn("portrait shrink-0", className)}>
+      <div className="relative size-[84px] overflow-hidden min-[360px]:size-[108px] sm:size-[148px] md:size-[192px]">
         {THEMES.map((theme) => (
           <Image
             key={theme}
@@ -153,15 +155,10 @@ export function Portrait({ label, className = "" }: { label: string; className?:
           ref={slotRef}
           data-ready-light={ready.light}
           data-ready-dark={ready.dark}
-          className="portrait-slot relative origin-top-left scale-[0.6707] cursor-pointer select-none sm:scale-[0.9024] md:scale-[1.1707]"
+          className="portrait-slot relative origin-top-left scale-[0.5122] cursor-pointer select-none min-[360px]:scale-[0.6585] sm:scale-[0.9024] md:scale-[1.1707]"
           style={{ width: AVATAR_PX, height: AVATAR_PX }}
         />
       </div>
-      <div className="absolute inset-0 text-ink">
-        <SketchBox crossed w={120} h={120} seed="portrait-frame-sm" delay={180} pad={14} className="sm:hidden" />
-        <SketchBox crossed w={160} h={160} seed="portrait-frame-md" delay={180} pad={14} className="hidden sm:block md:hidden" />
-        <SketchBox crossed w={204} h={204} seed="portrait-frame" delay={180} pad={14} className="hidden md:block" />
-      </div>
-    </div>
+    </Frame>
   );
 }

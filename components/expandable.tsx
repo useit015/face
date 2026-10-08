@@ -2,8 +2,10 @@
 
 import { useEffect, useId, useRef, useState, type ReactNode, type RefObject } from "react";
 import { flushSync } from "react-dom";
-import { SeeMore } from "@/components/ink/see-more";
-import { SectionHeader } from "@/components/ink/heading";
+import { cn } from "@/lib/utils";
+import { InkGlyph } from "@/lib/ink-glyphs";
+import { Button } from "@/components/ui/button";
+import { SectionHeading } from "@/components/ui/section-heading";
 
 // Height and flights share one curve and one duration, so an item in flight
 // never strays outside the box that is growing or shrinking around it.
@@ -30,6 +32,27 @@ const PANE_CLASS: Record<PaneState, string> = {
   overlay: "pointer-events-none absolute left-3 right-3 top-0",
   hidden: "pointer-events-none invisible absolute left-3 right-3 top-0 h-0 overflow-hidden",
 };
+
+/** "See 7 more", lightly underlined; its chevron turns over when open. */
+function SeeMore({ open, onToggle, label, controls, seed }: { open: boolean; onToggle: () => void; label: ReactNode; controls: string; seed: string }) {
+  return (
+    <Button
+      variant="link"
+      seed={seed}
+      onClick={onToggle}
+      aria-expanded={open}
+      aria-controls={controls}
+      // ml-auto: on the smallest screens it drops under the title, still on the right.
+      className="ml-auto shrink-0 gap-1.5 text-ink-2 hover:text-ink focus-visible:text-ink"
+    >
+      {open ? "See less" : label}
+      <InkGlyph
+        name="chevron-down"
+        className={cn("size-4 transition-transform duration-(--dur-state) ease-out motion-reduce:transition-none", open && "-scale-y-100")}
+      />
+    </Button>
+  );
+}
 
 type Run = { animations: Animation[]; fade: Animation | null; hidden: HTMLElement[]; holding: boolean };
 
@@ -84,7 +107,7 @@ export function Expandable({
   specks,
 }: {
   headingId: string;
-  title: ReactNode;
+  title: string;
   children: ReactNode;
   collapsed: ReactNode;
   label?: ReactNode;
@@ -212,12 +235,13 @@ export function Expandable({
 
   return (
     <div className="expander relative" data-open={open} data-moving={moving || undefined}>
-      <SectionHeader
-        id={headingId}
-        title={title}
-        action={<SeeMore open={open} label={label} controls={regionId} onToggle={toggle} />}
-        specks={specks}
-      />
+      {/* The toggle sits on the title's line, not under its underline. */}
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4">
+        <SectionHeading id={headingId} specks={specks}>
+          {title}
+        </SectionHeading>
+        <SeeMore open={open} label={label} controls={regionId} onToggle={toggle} seed={`${headingId}-more`} />
+      </div>
       <div ref={regionRef} id={regionId} className={`relative -mx-3 px-3 ${moving ? "overflow-clip" : ""}`}>
         <div ref={longRef} inert={!open} className={PANE_CLASS[paneState(true)]}>
           {children}

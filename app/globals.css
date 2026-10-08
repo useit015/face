@@ -1,85 +1,400 @@
 @import "tailwindcss";
 
-/* ─── Paper & ink ────────────────────────────────────────────────────────
-   One ink, one paper. Everything else is the same ink at lighter pressure,
-   mixed toward the paper so it stays in family in both themes. */
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+    --color-paper: var(--paper);
+    --color-ink: var(--ink);
+    --color-ink-2: var(--ink-2);
+    --color-ink-3: var(--ink-3);
+    --color-ink-line: var(--ink-line);
+    --color-ink-4: var(--ink-4);
+    --color-ink-5: var(--ink-5);
+    --color-pen-red: var(--pen-red);
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+    --text-xs: 0.9375rem;
+    --text-xs--line-height: 1.3;
+    --text-sm: 1.0625rem;
+    --text-sm--line-height: 1.35;
+    --text-base: 1.25rem;
+    --text-base--line-height: 1.45;
+    --text-lg: 1.375rem;
+    --text-lg--line-height: 1.4;
+    --text-xl: 1.5625rem;
+    --text-xl--line-height: 1.3;
+    --text-2xl: 1.75rem;
+    --text-2xl--line-height: 1.2;
+    --text-3xl: 2.125rem;
+    --text-3xl--line-height: 1.15;
+    --text-4xl: 2.625rem;
+    --text-4xl--line-height: 1.1;
+    --text-5xl: 3.5rem;
+    --text-5xl--line-height: 1.05;
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+    --ease-pen: cubic-bezier(0.45, 0.05, 0.25, 1);
+    --ease-write: cubic-bezier(0.37, 0, 0.63, 1);
+    --font-sans: var(--font-sans);
+    --color-stain: var(--stain);
+  @keyframes ink-write {
+  from {
+    --ink-write: 0%;
+    mask-image: linear-gradient(90deg, #000 45.5%, transparent 50%);
+        }
+  to {
+    --ink-write: 130%;
+    mask-image: linear-gradient(90deg, #000 45.5%, transparent 50%);
+        }
+    }
+  @keyframes ink-land {
+  from {
+    opacity: 0;
+    translate: 0 3px;
+        }
+    }
+  @keyframes ink-scribble {
+  0% {
+    stroke-dashoffset: 1.05;
+        }
+  45%, 100% {
+    stroke-dashoffset: 0;
+        }
+    }
+  @keyframes ink-progress {
+  from {
+    translate: -110% 0;
+        }
+  to {
+    translate: 320% 0;
+        }
+    }
+  @keyframes ink-draw {
+  from {
+    stroke-dashoffset: 1.05;
+        }
+  to {
+    stroke-dashoffset: 0;
+        }
+    }
+  @keyframes ink-blot {
+  from {
+    --ink-blot-size: 0px;
+        }
+  to {
+    --ink-blot-size: var(--ink-theme-reach);
+        }
+    }
+  @keyframes ink-undraw {
+  from {
+    stroke-dashoffset: 0;
+        }
+  to {
+    stroke-dashoffset: 1.05;
+        }
+    }
+}
 
 :root {
-  color-scheme: light;
-  /* The paper tile averages out to exactly --paper, so overscroll and
-     anything painted in --paper sit flush with it. */
-  --paper: #ede8df;
-  --paper-tile: url("/paper-light.svg");
-  --ink: oklch(0.4 0.185 267);
-  --stain: oklch(0.5 0.075 62);
-  --stain-strength: 0.5;
-  --stain-blend: multiply;
-  --lamp: none;
+    --paper: #ede8df;
+    --ink: oklch(0.4 0.185 267);
+    --pen-red: oklch(0.5 0.19 27);
+    --stain: oklch(0.5 0.075 62);
+    --hand-radius: 14px 5px 12px 6px / 6px 12px 5px 14px;
+    --ink-fill: 0.78;
+    --ink-weight: 1;
+    --ink-speed: 1;
+    --dur-press: 90ms;
+    --dur-hover: 220ms;
+    --dur-state: 300ms;
+    --dur-enter: 560ms;
+    --stain-strength: 0.5;
+    --stain-blend: multiply;
+    --lamp: none;
 }
 
 .dark {
-  color-scheme: dark;
-  --paper: oklch(0.215 0.038 266);
-  --paper-tile: url("/paper-dark.svg");
-  --ink: oklch(0.9 0.045 258);
-  /* At night a dried coffee ring catches the light: a faint warm tide
-     line on the navy rather than a dark mark. */
-  --stain: oklch(0.78 0.05 70);
-  --stain-strength: 0.14;
-  --stain-blend: screen;
-  /* A desk lamp: the sheet is lit a touch warmer near the top and falls
-     off toward the edges. Fixed to the viewport, so it stays with you. */
-  --lamp:
-    radial-gradient(90% 70% at 50% 18%, oklch(0.75 0.06 80 / 0.07), transparent 70%),
-    radial-gradient(130% 100% at 50% 40%, transparent 55%, oklch(0.1 0.03 266 / 0.55) 100%);
+    --paper: oklch(0.215 0.038 266);
+    --ink: oklch(0.9 0.045 258);
+    --pen-red: oklch(0.74 0.14 25);
+    --stain: oklch(0.78 0.05 70);
+    --ink-fill: 0.72;
+    --stain-strength: 0.14;
+    --stain-blend: screen;
+    --lamp: radial-gradient(90% 70% at 50% 18%, oklch(0.75 0.06 80 / 0.07), transparent 70%), radial-gradient(130% 100% at 50% 40%, transparent 55%, oklch(0.1 0.03 266 / 0.55) 100%);
+}
+  :root, .dark, [data-ink-scope] {
+    --ink-2: color-mix(in oklab, var(--ink) 86%, var(--paper));
+    --ink-3: color-mix(in oklab, var(--ink) 77%, var(--paper));
+    --ink-line: color-mix(in oklab, var(--ink) 60%, var(--paper));
+    --ink-4: color-mix(in oklab, var(--ink) 40%, var(--paper));
+    --ink-5: color-mix(in oklab, var(--ink) 16%, var(--paper));
+    --background: var(--paper);
+    --foreground: var(--ink);
+    --card: var(--paper);
+    --card-foreground: var(--ink);
+    --popover: var(--paper);
+    --popover-foreground: var(--ink);
+    --primary: var(--ink);
+    --primary-foreground: var(--paper);
+    --secondary: var(--ink-5);
+    --secondary-foreground: var(--ink);
+    --muted: var(--ink-5);
+    --muted-foreground: var(--ink-3);
+    --accent: var(--ink-5);
+    --accent-foreground: var(--ink);
+    --destructive: var(--pen-red);
+    --border: var(--ink-4);
+    --input: var(--ink-line);
+    --ring: var(--ink);
 }
 
-:root {
-  --ink-2: color-mix(in oklab, var(--ink) 86%, var(--paper));
-  --ink-3: color-mix(in oklab, var(--ink) 77%, var(--paper));
-  --ink-4: color-mix(in oklab, var(--ink) 40%, var(--paper));
-  --ink-5: color-mix(in oklab, var(--ink) 16%, var(--paper));
-  --section-gap: 2.25rem;
-  --hand-radius: 14px 5px 12px 6px / 6px 12px 5px 14px;
-
-  /* Motion. Exponential ease-outs for things arriving, a quick ease-in for
-     things leaving, and a pen curve (accelerate, then settle) for strokes. */
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --ease-pen: cubic-bezier(0.45, 0.05, 0.25, 1);
-  --ease-write: cubic-bezier(0.37, 0, 0.63, 1);
-  --dur-press: 90ms;
-  --dur-hover: 220ms;
-  --dur-state: 300ms;
-  --dur-enter: 560ms;
+@layer base {
+  html {
+    background-color: var(--paper);
+    @apply font-sans;
+    }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
+    -webkit-text-stroke: 0.2px currentColor;
+    -webkit-font-smoothing: antialiased;
+    }
+  ::selection {
+    background-color: color-mix(in oklab, var(--ink) 20%, var(--paper));
+    }
 }
 
-@media (min-width: 640px) {
-  :root {
-    --section-gap: 2.5rem;
-  }
+@layer components {
+  .ink-sketch, .ink-glyph {
+    pointer-events: none;
+    overflow: visible;
+    color: inherit;
+    }
+  :is(.ink-sketch, .ink-glyph) path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: calc(var(--ink-weight, 1) * var(--ink-w) * 1px);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    }
+  .ink-sketch .ink-ribbon, .ink-sketch .ink-fill {
+    fill: currentColor;
+    stroke: none;
+    }
+  .ink-sketch .ink-fill {
+    opacity: var(--ink-fill);
+    }
+  .ink-sketch .ink-guide {
+    stroke: #fff;
+    }
+  .ink-sketch .ink-reveal.ink-drawn {
+    mask: none;
+    }
+  :is(.ink-sketch, .ink-glyph) .ink-draw {
+    stroke-dasharray: 1.05 1.05;
+    animation: ink-draw calc(var(--ink-d) / var(--ink-speed, 1)) var(--ease-pen) calc(var(--ink-dd) / var(--ink-speed, 1)) both;
+    }
+  :is(.ink-sketch, .ink-glyph) .ink-draw.ink-drawn {
+    stroke-dasharray: none;
+    animation: none;
+    }
+
+@media (scripting: enabled) {
+  :is(.ink-sketch[data-ink-pending], [data-ink-stage]:has(> .ink-sketch[data-ink-pending])) .ink-draw {
+    animation: none;
+    stroke-dashoffset: 1.05;
+        }
+  :has(> .ink-sketch[data-ink-pending]) > .ink-write {
+    --ink-write: 0%;
+    mask-image: linear-gradient(90deg, #000 45.5%, transparent 50%);
+    animation: none;
+        }
+  :is(.ink-sketch[data-ink-pending], [data-ink-stage]:has(> .ink-sketch[data-ink-pending])) .ink-land {
+    opacity: 0;
+    animation: none;
+        }
+    }
+  :is(.ink-sketch, .ink-glyph) :is(.ink-hover-draw, .ink-focus-draw, .ink-checked-draw, .ink-indeterminate-draw) {
+    --out: calc(var(--ink-d) * 0.65 / var(--ink-speed, 1));
+    stroke-dasharray: 1.05 1.05;
+    stroke-dashoffset: 1.05;
+    opacity: 0;
+    transition: stroke-dashoffset var(--out) var(--ease-in),
+      opacity 0s linear var(--out);
+    }
+  .ink-hover:focus-visible .ink-hover-draw, .ink-within:focus-within .ink-focus-draw, [data-checked] > :is(.ink-sketch, .ink-glyph) .ink-checked-draw, [data-indeterminate] > :is(.ink-sketch, .ink-glyph) .ink-indeterminate-draw {
+    --in: calc(var(--ink-dd) / var(--ink-speed, 1));
+    stroke-dashoffset: 0;
+    opacity: 1;
+    transition: stroke-dashoffset calc(var(--ink-d) / var(--ink-speed, 1)) var(--ease-pen) var(--in),
+      opacity 0s linear var(--in);
+    }
+
+@media (hover: hover) {
+  .ink-hover:hover .ink-hover-draw {
+    stroke-dashoffset: 0;
+    opacity: 1;
+    transition: stroke-dashoffset calc(var(--ink-d) / var(--ink-speed, 1)) var(--ease-out),
+        opacity 0s;
+        }
+    }
+  .ink-write {
+    padding-inline: 0.12em 0.3em;
+    margin-inline: -0.12em -0.3em;
+    mask-size: 400% 100%;
+    mask-repeat: no-repeat;
+    mask-position: calc((200% - var(--ink-write)) / 3) 0;
+    animation: ink-write calc(var(--ink-d) / var(--ink-speed, 1)) var(--ease-write) calc(var(--ink-dd) / var(--ink-speed, 1)) backwards;
+    }
+  .ink-land {
+    animation: ink-land calc(var(--ink-d) / var(--ink-speed, 1)) var(--ease-out) calc(var(--ink-dd) / var(--ink-speed, 1)) both;
+    }
+  .ink-paper {
+    background-color: var(--popover);
+    background-image: var(--paper-texture, none);
+    background-size: var(--paper-texture-size, auto);
+    }
+}
+  @property --ink-write {
+    syntax: "<percentage>";
+    inherits: false;
+    initial-value: 130%;
+}
+  @property --ink-w {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 1.3;
+}
+  @property --ink-d {
+    syntax: "<time>";
+    inherits: false;
+    initial-value: 500ms;
+}
+  @property --ink-dd {
+    syntax: "<time>";
+    inherits: false;
+    initial-value: 0ms;
+}
+  .ink-progress[data-indeterminate] {
+    width: 25%;
+    animation: ink-progress 1.6s ease-in-out infinite;
 }
 
-@theme inline {
-  --color-paper: var(--paper);
-  --color-ink: var(--ink);
-  --color-ink-2: var(--ink-2);
-  --color-ink-3: var(--ink-3);
-  --color-ink-4: var(--ink-4);
-  --color-ink-5: var(--ink-5);
-  --font-sans: var(--font-hand), "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive;
-  /* Gaegu runs small (low x-height), so the scale sits a step above a
-     typical sans. */
-  --text-meta: 1.125rem;
-  --text-meta--line-height: 1.35;
-  --text-label: 1.0625rem;
-  --text-label--line-height: 1.25;
-  --text-body: 1.3125rem;
-  --text-body--line-height: 1.45;
-  --text-heading: 1.75rem;
-  --text-heading--line-height: 1.1;
+@media (prefers-reduced-motion: reduce) {
+  :is(.ink-sketch, .ink-glyph) .ink-draw {
+    animation: none;
+    stroke-dashoffset: 0;
+    }
+  :is(.ink-sketch, .ink-glyph) :is(.ink-hover-draw, .ink-focus-draw, .ink-checked-draw, .ink-indeterminate-draw) {
+    transition: none;
+    }
+  .ink-sketch .ink-scribble {
+    animation: none;
+    stroke-dashoffset: 0;
+    }
+  .ink-progress[data-indeterminate] {
+    animation: none;
+    translate: 100% 0;
+    }
+  .ink-write, :has(> .ink-sketch[data-ink-pending]) > .ink-write {
+    --ink-write: 130%;
+    mask-image: none;
+    animation: none;
+    }
+  .ink-sketch .ink-reveal {
+    mask: none;
+    }
+  .ink-land, :is(.ink-sketch[data-ink-pending], [data-ink-stage]:has(> .ink-sketch[data-ink-pending])) .ink-land {
+    opacity: 1;
+    animation: none;
+    }
+  [data-armed] > .ink-theme-icon path {
+    animation: none !important;
+    }
+}
+
+@media (prefers-contrast: more) {
+  :root, .dark, [data-ink-scope] {
+    --ink-2: var(--ink);
+    --ink-3: var(--ink);
+    --ink-line: var(--ink);
+    --ink-4: color-mix(in oklab, var(--ink) 70%, var(--paper));
+    }
+}
+  @property --ink-blot-size {
+    syntax: "<length>";
+    inherits: false;
+    initial-value: 0px;
+}
+  :root[data-ink-theme-transition]::view-transition-old(root), :root[data-ink-theme-transition]::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
+  :root[data-ink-theme-transition]::view-transition-group(root) {
+    animation: none;
+}
+  :root[data-ink-theme-transition]::view-transition-old(root) {
+    z-index: 1;
+}
+  :root[data-ink-theme-transition]::view-transition-new(root) {
+    z-index: 2;
+    --ink-blot-size: 0px;
+    mask-image: var(--ink-blot);
+    mask-repeat: no-repeat;
+    mask-size: var(--ink-blot-size) var(--ink-blot-size);
+    mask-position: calc(var(--ink-theme-x) - var(--ink-blot-size) / 2) calc(var(--ink-theme-y) - var(--ink-blot-size) / 2);
+}
+  :root[data-ink-theme-animating]::view-transition-new(root) {
+    animation: ink-blot 720ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+  :root[data-ink-theme-transition]::view-transition {
+    pointer-events: none;
+}
+  :root[data-ink-theme-transition] *, :root[data-ink-theme-transition] *::before, :root[data-ink-theme-transition] *::after {
+    transition: none !important;
+}
+  .ink-theme-icon path {
+    stroke-dasharray: 1.05 1.05;
+}
+  :root:not(.dark) .ink-theme-icon .ink-moon path, .dark .ink-theme-icon .ink-sun path {
+    stroke-dashoffset: 1.05;
+}
+  :root:not(.dark) .ink-theme-icon .ink-sun path, .dark .ink-theme-icon .ink-moon path {
+    stroke-dashoffset: 0;
+}
+  :root:not(.dark) [data-armed] > .ink-theme-icon .ink-sun path, .dark [data-armed] > .ink-theme-icon .ink-moon path {
+    animation: ink-draw 360ms var(--ease-pen) calc(var(--ink-dd, 0ms) + 160ms) both;
+}
+  :root:not(.dark) [data-armed] > .ink-theme-icon .ink-moon path, .dark [data-armed] > .ink-theme-icon .ink-sun path {
+    animation: ink-undraw 180ms var(--ease-in) both;
+}
+/* ─── The portfolio ──────────────────────────────────────────────────────
+   Everything above is Ballpoint's base, as `shadcn add` installed it.
+   What follows is this page's own: the sheet it's drawn on, the raster
+   glyphs, and a few pieces of choreography. */
+
+@theme {
   --text-display: clamp(2.75rem, 2.3rem + 2vw, 3.5rem);
   --text-display--line-height: 1.05;
 }
@@ -101,145 +416,75 @@
   }
 }
 
-@utility hand-radius {
-  border-radius: var(--hand-radius);
+:root {
+  color-scheme: light;
+  --section-gap: 3rem;
+  /* The paper, in layers (made by Ballpoint's scripts/paper-tiles.ts): a
+     fine tooth over soft crinkle relief, lit like a sheet under a window.
+     The relief averages out to exactly --paper, so overscroll and anything
+     painted in --paper sit flush with it. */
+  --paper-tile: url("../public/paper/tooth-light.svg"), url("../public/paper/cream-light.png");
+  --paper-tile-size: 128px 128px, 600px 600px;
 }
 
-/* ─── Base ─────────────────────────────────────────────────────────────── */
+.dark {
+  color-scheme: dark;
+  --paper-tile: url("../public/paper/tooth-dark.svg"), url("../public/paper/cream-dark.png");
+}
 
-/* The paper: a seamless tile of soft crinkle relief (noise lit like a
-   sheet under a window, see public/paper-*.svg). Painted on the root so it
-   scrolls with the writing, the way a page would. */
+@media (min-width: 40rem) {
+  :root {
+    --section-gap: 3.5rem;
+  }
+}
+
+/* The page is one sheet, painted on the root so it scrolls with the
+   writing, the way a page would. */
 html {
   scroll-behavior: smooth;
+  /* Strokes overshoot their boxes; never let that scroll the page. */
   overflow-x: clip;
-  background: var(--paper) var(--paper-tile) 0 0 / 600px 600px repeat;
+  background-color: var(--paper);
+  background-image: var(--paper-tile);
+  background-size: var(--paper-tile-size);
   scrollbar-color: var(--ink-4) transparent;
 }
 
 body {
   background: transparent;
-  color: var(--ink);
-  font-family: var(--font-sans);
-  font-weight: 400;
-  font-size: 1.3125rem;
-  line-height: 1.45;
-  /* Gaegu is drawn with a fine nib; a hair of stroke gives it the weight of
-     a ballpoint line without changing its shapes. */
-  -webkit-text-stroke: 0.2px currentColor;
-  -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-::selection {
-  background: color-mix(in oklab, var(--ink) 20%, var(--paper));
-}
-
-:focus-visible {
-  outline: 1.5px solid var(--ink);
-  outline-offset: 4px;
-  border-radius: var(--hand-radius);
-}
-
-/* ─── Sketch strokes ───────────────────────────────────────────────────── */
-
-.sketch {
-  color: inherit;
-}
-
-.sketch path {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.3;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-/* Ballpoint ribbons are filled shapes; their draw-on masks are strokes. */
-.sketch .ink-ribbon {
-  fill: currentColor;
-  stroke: none;
-}
-
-.sketch .ink-guide {
-  stroke: #fff;
-  stroke-linecap: round;
-}
-
-.sketch .ink-fill {
-  fill: currentColor;
-  stroke: none;
-  opacity: 0.9;
-}
-
-.draw,
-.hover-draw {
-  stroke-dasharray: 1.05 1.05;
-}
-
-@keyframes draw {
-  from {
-    stroke-dashoffset: 1.05;
-  }
-  to {
-    stroke-dashoffset: 0;
+/* A default ring for anything focusable; in the base layer, so a
+   component's own outline utilities win. */
+@layer base {
+  :focus-visible {
+    outline: 1.5px solid var(--ring);
+    outline-offset: 4px;
+    border-radius: var(--hand-radius);
   }
 }
 
-/* Strokes wait undrawn until their section scrolls in, then the pen runs. */
-.js [data-reveal]:not(.is-inview) .draw {
-  stroke-dashoffset: 1.05;
+/* ─── Choreography ─────────────────────────────────────────────────────
+   The introduction draws as the page loads, in CSS alone, so it never
+   waits for the script. A part that should start once the words around it
+   have landed gets .ink-after and an --ink-after time; its strokes keep
+   their own pacing after that. */
+
+.ink-after :is(.ink-sketch, .ink-glyph) .ink-draw {
+  animation-delay: calc((var(--ink-dd) + var(--ink-after)) / var(--ink-speed, 1));
 }
 
-.js [data-reveal].is-inview .draw {
-  animation: draw var(--d, 500ms) var(--ease-pen) var(--dd, 0ms) both;
-}
-
-/* Long strokes (the timeline) are pulled at an even pace, like a hand
-   drawing a line across the page. */
-.js [data-reveal].is-inview .draw.steady {
-  animation-timing-function: var(--ease-write);
-}
-
-.js [data-reveal].is-inview .draw.drawn {
-  stroke-dasharray: none;
-  animation: none;
-}
-
-/* Hover strokes: drawn in on hover/focus, pulled back out (faster) on
-   leave. The opacity hand-off hides the round cap that would otherwise sit
-   at rest. */
-.hover-draw {
-  --out: calc(var(--d, 320ms) * 0.65);
-  stroke-dashoffset: 1.05;
-  opacity: 0;
-  transition:
-    stroke-dashoffset var(--out) var(--ease-in),
-    opacity 0s linear var(--out);
-}
-
-.ink-hover:hover .hover-draw,
-.ink-hover:focus-visible .hover-draw,
-.ink-hover[aria-expanded="true"] .hover-draw.stay-open {
+/* A row that is one link (a stretched link over the whole row) inks its
+   hover strokes for the keyboard too. */
+.ink-hover:has(:focus-visible) .ink-hover-draw {
   stroke-dashoffset: 0;
   opacity: 1;
-  transition:
-    stroke-dashoffset var(--d, 320ms) var(--ease-out),
+  transition: stroke-dashoffset calc(var(--ink-d) / var(--ink-speed, 1)) var(--ease-pen),
     opacity 0s;
 }
 
-@media (hover: none) {
-  .ink-hover:hover .hover-draw {
-    stroke-dashoffset: 1.05;
-    opacity: 0;
-  }
-}
-
-.has-loop:focus-visible {
-  outline: none;
-}
-
-/* Line boil: a few discrete jitters per second, the way hand-drawn animation
+/* Line boil: a few discrete jitters a second, the way hand-drawn animation
    never quite holds still. Only while hovered. */
 @keyframes boil {
   0% {
@@ -259,283 +504,31 @@ body {
   }
 }
 
-/* ─── Glyphs (alpha-mask atlas, tinted with currentColor) ────────────── */
+/* ─── Glyphs: a hand-drawn alpha-mask atlas, tinted with currentColor ── */
 
 .glyph {
   display: inline-block;
   flex-shrink: 0;
   background-color: currentColor;
-  -webkit-mask-image: url("/ink/glyphs.webp");
+  /* Absolute URLs, so they match the preload in the layout. 64px cells
+     cover 1–2× screens; 3× phones get the 96px sheet. */
   mask-image: url("/ink/glyphs.webp");
-  /* 64px cells cover 1–2× screens; 3× phones get the 96px sheet. */
-  -webkit-mask-image: -webkit-image-set(url("/ink/glyphs.webp") 2x, url("/ink/glyphs@3x.webp") 3x);
   mask-image: image-set(url("/ink/glyphs.webp") 2x, url("/ink/glyphs@3x.webp") 3x);
-  -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
-  -webkit-mask-size: 1000% 800%;
   mask-size: 1000% 800%;
-  -webkit-mask-position: var(--gx) var(--gy);
   mask-position: var(--gx) var(--gy);
 }
 
 .glyph-projects {
-  -webkit-mask-image: url("/ink/projects.webp");
   mask-image: url("/ink/projects.webp");
-  -webkit-mask-size: 500% 100%;
   mask-size: 500% 100%;
 }
 
-/* ─── Reveal choreography ─────────────────────────────────────────────── */
+/* ─── Portrait ─────────────────────────────────────────────────────────
+   A server-rendered still hands over to the live sketch, per theme. Both
+   themes' avatars sit in the same box and follow the same cursor; theme CSS
+   only decides which one shows, so a switch is instant. */
 
-@property --write {
-  syntax: "<percentage>";
-  inherits: false;
-  initial-value: 130%;
-}
-
-@keyframes write {
-  from {
-    --write: 0%;
-  }
-  to {
-    --write: 130%;
-  }
-}
-
-/* Ink settling: a short rise with a fade. Transform and opacity only, so it
-   stays on the compositor even while the main thread is busy hydrating. */
-@keyframes ink-in {
-  from {
-    opacity: 0;
-    translate: 0 6px;
-  }
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
-@keyframes rise-in {
-  from {
-    opacity: 0;
-    translate: 0 10px;
-  }
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* Handwriting: a feathered mask sweeps left to right across the words. */
-.write-text {
-  padding-inline: 0.12em 0.3em;
-  margin-inline: -0.12em -0.3em;
-  -webkit-mask-image: linear-gradient(90deg, #000 calc(var(--write) - 18%), transparent var(--write));
-  mask-image: linear-gradient(90deg, #000 calc(var(--write) - 18%), transparent var(--write));
-}
-
-.js [data-reveal]:not(.is-inview) .write-text {
-  --write: 0%;
-}
-
-.js [data-reveal].is-inview .write-text {
-  animation: write var(--write-d, 650ms) var(--ease-write) var(--write-dd, 0ms) both;
-}
-
-.js [data-reveal="ink"] {
-  opacity: 0;
-}
-
-.js [data-reveal="ink"].is-inview {
-  animation: ink-in 640ms var(--ease-out) var(--reveal-delay, 0ms) both;
-}
-
-.js [data-reveal="fade"] {
-  opacity: 0;
-}
-
-.js [data-reveal="fade"].is-inview {
-  animation: fade-in 360ms var(--ease-out) var(--reveal-delay, 0ms) both;
-}
-
-.js [data-reveal="rise"] {
-  opacity: 0;
-}
-
-.js [data-reveal="rise"].is-inview {
-  animation: rise-in var(--dur-enter) var(--ease-out-expo) var(--reveal-delay, 0ms) both;
-}
-
-.js [data-reveal="stagger"] > * {
-  opacity: 0;
-}
-
-.js [data-reveal="stagger"].is-inview > * {
-  animation: ink-in var(--dur-enter) var(--ease-out) both;
-  /* Stagger capped at eight steps so long lists never drag. */
-  animation-delay: calc(var(--reveal-delay, 0ms) + min(var(--i, 0), 8) * 60ms);
-}
-
-/* Timeline columns arrive as the arrow's pen passes their dot (delays are
-   set per column from the arrow's easing). */
-.js [data-reveal]:not(.is-inview) .strip-col {
-  opacity: 0;
-}
-
-/* --at-N: when the pen reaches this stop with N columns showing. */
-.strip-col {
-  --col-at: var(--at-2, 0ms);
-}
-
-@container (min-width: 33rem) {
-  .strip-col {
-    --col-at: var(--at-3, 0ms);
-  }
-}
-
-@container (min-width: 45rem) {
-  .strip-col {
-    --col-at: var(--at-4, 0ms);
-  }
-}
-
-.js [data-reveal].is-inview .strip-col {
-  animation: ink-in 480ms var(--ease-out) calc(var(--col-at) - 40ms) both;
-}
-
-.js [data-reveal].is-inview .strip-col .draw {
-  animation-delay: calc(var(--col-at) + var(--dd, 0ms));
-}
-
-/* ─── Controls ────────────────────────────────────────────────────────── */
-
-.ink-btn {
-  position: relative;
-  isolation: isolate;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  height: 3rem;
-  padding-inline: 1.15rem;
-  font-weight: 400;
-  font-size: 1.375rem;
-  white-space: nowrap;
-  user-select: none;
-  cursor: pointer;
-  transition: translate var(--dur-hover) var(--ease-out);
-}
-
-/* Hover lifts the face up and to the left, revealing a solid drawn shadow
-   underneath; pressing flattens it back onto the paper. */
-.ink-btn .btn-shadow {
-  opacity: 0;
-  transition:
-    translate var(--dur-hover) var(--ease-out),
-    opacity 120ms var(--ease-out);
-}
-
-@media (hover: hover) {
-  .ink-btn:hover {
-    translate: -1.5px -1.5px;
-  }
-
-  .ink-btn:hover .btn-shadow {
-    opacity: 1;
-    translate: 5px 5px;
-  }
-
-  .ink-btn:hover .nudge {
-    translate: 2px -2px;
-  }
-}
-
-.ink-btn:focus-visible {
-  translate: -1.5px -1.5px;
-}
-
-.ink-btn:focus-visible .btn-shadow {
-  opacity: 1;
-  translate: 5px 5px;
-}
-
-.ink-btn:active {
-  translate: 0 0;
-}
-
-.ink-btn:active,
-.ink-btn:active .btn-shadow {
-  transition-duration: var(--dur-press);
-}
-
-.ink-btn:active .btn-shadow {
-  translate: 0 0;
-}
-
-/* Phones: the two calls to action split the width evenly. */
-@media (max-width: 639px) {
-  .hero-cta > .ink-btn {
-    width: 100%;
-    padding-inline: 0.5rem;
-  }
-}
-
-.ink-btn--solid {
-  color: var(--paper);
-}
-
-.ink-btn--solid .sketch {
-  color: var(--ink);
-}
-
-/* Let the shading strokes read through the fill, like a pen-coloured box. */
-.ink-btn--solid .ink-fill {
-  opacity: 0.72;
-}
-
-.nudge {
-  transition: translate var(--dur-hover) var(--ease-out);
-}
-
-.link-underline {
-  color: var(--ink);
-}
-
-/* Tooltip: paper slip with a wobbly hand-drawn border. */
-.ink-tip {
-  border: 1.3px solid var(--ink);
-  border-radius: var(--hand-radius);
-  background: var(--paper);
-  color: var(--ink);
-  box-shadow: 3px 3px 0 -1px color-mix(in oklab, var(--ink) 18%, transparent);
-  animation: tip-in 160ms var(--ease-out-expo) both;
-}
-
-@keyframes tip-in {
-  from {
-    opacity: 0;
-    translate: 0 4px;
-    rotate: -2deg;
-  }
-  to {
-    opacity: 1;
-    translate: 0 0;
-    rotate: -0.6deg;
-  }
-}
-
-/* Portrait: a server-rendered still hands over to the live sketch, per
-   theme. Both themes' avatars sit in the same box and follow the same cursor;
-   theme CSS only decides which one is visible, so a switch is instant. */
 .portrait-avatar {
   position: absolute;
   inset: 0;
@@ -557,342 +550,12 @@ body {
   opacity: 0;
 }
 
-:root:not(.dark) .portrait-avatar--dark,
-:root:not(.dark) .portrait-still--dark,
-.dark .portrait-avatar--light,
-.dark .portrait-still--light {
+:root:not(.dark) :is(.portrait-avatar--dark, .portrait-still--dark),
+.dark :is(.portrait-avatar--light, .portrait-still--light) {
   visibility: hidden;
 }
 
-/* Contribution cells */
-.contrib-col {
-  opacity: 1;
-}
-
-.js [data-reveal]:not(.is-inview) .contrib-col {
-  opacity: 0;
-}
-
-.js [data-reveal].is-inview .contrib-col {
-  animation: fade-in 280ms var(--ease-out) both;
-  animation-delay: calc(var(--c, 0) * 12ms + 120ms);
-}
-
-/* ─── Theme change: an ink blot spreads from the toggle ───────────────── */
-
-@property --blot-size {
-  syntax: "<length>";
-  inherits: false;
-  initial-value: 0px;
-}
-
-@keyframes blot-spread {
-  from {
-    --blot-size: 0px;
-  }
-  to {
-    --blot-size: var(--theme-reach);
-  }
-}
-
-:root[data-theme-transition]::view-transition-old(root),
-:root[data-theme-transition]::view-transition-new(root) {
-  animation: none;
-  mix-blend-mode: normal;
-}
-
-:root[data-theme-transition]::view-transition-group(root) {
-  animation: none;
-}
-
-:root[data-theme-transition]::view-transition-old(root) {
-  z-index: 1;
-}
-
-:root[data-theme-transition]::view-transition-new(root) {
-  z-index: 2;
-  --blot-size: 0px;
-  -webkit-mask-image: var(--blot);
-  mask-image: var(--blot);
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-size: var(--blot-size) var(--blot-size);
-  mask-size: var(--blot-size) var(--blot-size);
-  -webkit-mask-position: calc(var(--theme-cx) - var(--blot-size) / 2) calc(var(--theme-cy) - var(--blot-size) / 2);
-  mask-position: calc(var(--theme-cx) - var(--blot-size) / 2) calc(var(--theme-cy) - var(--blot-size) / 2);
-}
-
-:root[data-theme-animating]::view-transition-new(root) {
-  /* Ink hits the page fast, then creeps to a stop. */
-  animation: blot-spread 720ms var(--ease-out) both;
-}
-
-:root[data-theme-transition]::view-transition {
-  pointer-events: none;
-}
-
-:root[data-theme-transition] *,
-:root[data-theme-transition] *::before,
-:root[data-theme-transition] *::after {
-  transition: none !important;
-}
-
-/* ─── Reduced motion: no movement, no drawing — the page simply fades in ── */
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  /* The drawing and handwriting are already finished. */
-  .js [data-reveal] .draw,
-  .js [data-reveal]:not(.is-inview) .draw {
-    stroke-dashoffset: 0 !important;
-    animation: none !important;
-  }
-
-  .js [data-reveal] .write-text {
-    --write: 130% !important;
-    animation: none !important;
-  }
-
-  /* Entrances keep a short crossfade, without the rise or the stagger. */
-  .js [data-reveal="ink"].is-inview,
-  .js [data-reveal="rise"].is-inview,
-  .js [data-reveal="fade"].is-inview,
-  .js [data-reveal="stagger"].is-inview > *,
-  .js [data-reveal].is-inview .strip-col {
-    animation: fade-in 200ms var(--ease-out) both !important;
-  }
-
-  .js [data-reveal] .contrib-col {
-    opacity: 1 !important;
-    animation: none !important;
-  }
-
-  .hover-draw,
-  .ink-btn,
-  .ink-btn .btn-shadow,
-  .nudge,
-  .portrait-avatar,
-  .portrait-still {
-    transition: none !important;
-  }
-
-  .ink-tip {
-    animation: none;
-  }
-}
-
-/* ─── Theme toggle: the sun and moon draw themselves in and out ───────── */
-
-.theme-toggle .ts {
-  stroke-dasharray: 1.05 1.05;
-}
-
-/* Match the size and stroke weight of the hand-drawn raster icons beside
-   it (they fill ~58% of their box with ~2.2px strokes). */
-.theme-icon path {
-  stroke-width: 2.6;
-}
-
-.theme-icon .theme-moon path {
-  stroke-width: 1.9;
-}
-
-:root:not(.dark) .theme-toggle .theme-moon .ts,
-.dark .theme-toggle .theme-sun .ts {
-  stroke-dashoffset: 1.05;
-}
-
-:root:not(.dark) .theme-toggle .theme-sun .ts,
-.dark .theme-toggle .theme-moon .ts {
-  stroke-dashoffset: 0;
-}
-
-@keyframes ts-in {
-  from {
-    stroke-dashoffset: 1.05;
-  }
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes ts-out {
-  from {
-    stroke-dashoffset: 0;
-  }
-  to {
-    stroke-dashoffset: 1.05;
-  }
-}
-
-:root:not(.dark) .theme-toggle[data-armed] .theme-sun .ts,
-.dark .theme-toggle[data-armed] .theme-moon .ts {
-  animation: ts-in 360ms var(--ease-pen) calc(var(--dd, 0ms) + 160ms) both;
-}
-
-:root:not(.dark) .theme-toggle[data-armed] .theme-moon .ts,
-.dark .theme-toggle[data-armed] .theme-sun .ts {
-  animation: ts-out 180ms var(--ease-in) both;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .theme-toggle[data-armed] .ts {
-    animation: none !important;
-  }
-}
-
-.copied-tick path {
-  stroke-dasharray: 1.05 1.05;
-  animation: draw 240ms var(--ease-pen) both;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .copied-tick path {
-    animation: none;
-  }
-}
-
-/* ─── Pen underlines (CSS-only, stretch to any width) ─────────────────── */
-
-:root {
-  --pen-rest: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 200 6%27 preserveAspectRatio=%27none%27%3E%3Cpath d=%27M1.5 3.9C38 2.6 84 4.6 128 3.2S183 2.1 198.5 2.7%27 fill=%27none%27 stroke=%27%231d36a9%27 stroke-opacity=%270.72%27 stroke-width=%271.7%27 stroke-linecap=%27round%27/%3E%3C/svg%3E");
-  --pen-line: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 200 6%27 preserveAspectRatio=%27none%27%3E%3Cpath d=%27M1 3.1C46 4.3 97 2.2 146 3.4S188 4.1 199 2.9%27 fill=%27none%27 stroke=%27%231d36a9%27 stroke-opacity=%271%27 stroke-width=%271.5%27 stroke-linecap=%27round%27/%3E%3C/svg%3E");
-}
-
-.dark {
-  --pen-rest: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 200 6%27 preserveAspectRatio=%27none%27%3E%3Cpath d=%27M1.5 3.9C38 2.6 84 4.6 128 3.2S183 2.1 198.5 2.7%27 fill=%27none%27 stroke=%27%23cce0fc%27 stroke-opacity=%270.72%27 stroke-width=%271.7%27 stroke-linecap=%27round%27/%3E%3C/svg%3E");
-  --pen-line: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 200 6%27 preserveAspectRatio=%27none%27%3E%3Cpath d=%27M1 3.1C46 4.3 97 2.2 146 3.4S188 4.1 199 2.9%27 fill=%27none%27 stroke=%27%23cce0fc%27 stroke-opacity=%271%27 stroke-width=%271.5%27 stroke-linecap=%27round%27/%3E%3C/svg%3E");
-}
-
-/* Hover-only underline that wipes in left to right, like a quick pen pass. */
-.pen-underline {
-  padding-bottom: 2px;
-  background-image: var(--pen-line);
-  background-repeat: no-repeat;
-  background-position: 0 100%;
-  background-size: 0% 6px;
-  transition: background-size 200ms var(--ease-in);
-}
-
-@media (hover: hover) {
-  .ink-hover:hover .pen-underline {
-    background-size: 100% 6px;
-    transition: background-size 280ms var(--ease-out);
-  }
-}
-
-.ink-hover:focus-visible .pen-underline {
-  background-size: 100% 6px;
-}
-
-/* "See more" carries a light underline at rest, inked over on hover. */
-.see-more .pen-underline {
-  background-image: var(--pen-line), var(--pen-rest);
-  background-position: 0 100%, 0 100%;
-  background-size: 0% 6px, 100% 6px;
-}
-
-@media (hover: hover) {
-  .see-more.ink-hover:hover .pen-underline {
-    background-size: 100% 6px, 100% 6px;
-  }
-}
-
-.see-more.ink-hover:focus-visible .pen-underline {
-  background-size: 100% 6px, 100% 6px;
-}
-
-/* Inline links: always underlined lightly, inked over on hover. */
-.ink-link {
-  padding-bottom: 2px;
-  font-weight: 400;
-  white-space: nowrap;
-  background-image: var(--pen-line), var(--pen-rest);
-  background-repeat: no-repeat;
-  background-position: 0 100%, 0 100%;
-  background-size: 0% 6px, 100% 6px;
-  transition: background-size 200ms var(--ease-in);
-}
-
-@media (hover: hover) {
-  .ink-link:hover {
-    background-size: 100% 6px, 100% 6px;
-    transition: background-size 280ms var(--ease-out);
-  }
-}
-
-.ink-link:focus-visible {
-  background-size: 100% 6px, 100% 6px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .pen-underline,
-  .ink-link {
-    transition: none;
-  }
-}
-
-.cell-loop {
-  stroke-dasharray: 1.05 1.05;
-  animation: draw 280ms var(--ease-pen) both;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .cell-loop {
-    animation: none;
-  }
-}
-
-/* ─── Horizontal scrollers fade only the edges that hide content ─────── */
-
-@utility scroll-fade-x {
-  --scroll-fade-size: 1.75rem;
-  --scroll-fade-s: 0px;
-  --scroll-fade-e: 0px;
-  mask-image: linear-gradient(
-    to right,
-    transparent 0,
-    #000 var(--scroll-fade-s),
-    #000 calc(100% - var(--scroll-fade-e)),
-    transparent 100%
-  );
-}
-
-/* While an expandable moves, its scrolling rows clip sideways only, so
-   items can fly in from above or below (a scroller clips both ways, and
-   the fade mask clips to its box). */
-.expander[data-moving] .scroll-fade-x {
-  overflow-x: clip;
-  overflow-y: visible;
-  mask-clip: no-clip;
-  mask-repeat: repeat-y;
-}
-
-/* Registered as <length> so the edge fades slide instead of popping. */
-@property --scroll-fade-s {
-  syntax: "<length>";
-  inherits: false;
-  initial-value: 0px;
-}
-
-@property --scroll-fade-e {
-  syntax: "<length>";
-  inherits: false;
-  initial-value: 0px;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .scroll-fade-x {
-    transition:
-      --scroll-fade-s 240ms var(--ease-out),
-      --scroll-fade-e 240ms var(--ease-out);
-  }
-}
-
-/* ─── Projects ────────────────────────────────────────────────────────── */
+/* ─── Projects ─────────────────────────────────────────────────────────── */
 
 .project-glyph,
 .star-glyph {
@@ -901,8 +564,8 @@ body {
     scale var(--dur-state) var(--ease-out);
 }
 
+/* A pen scribble fills the star. */
 .star-fill {
-  color: var(--ink);
   clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
   background: repeating-linear-gradient(-50deg, currentColor 0 1.2px, transparent 1.2px 2.5px);
   opacity: 0;
@@ -928,29 +591,70 @@ body {
   }
 }
 
-.project-row:focus-visible .star-fill {
+.project-row:has(:focus-visible) .star-fill {
   opacity: 1;
   scale: 1;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .project-glyph,
-  .star-glyph,
-  .star-fill {
-    transition: none;
+/* ─── Sideways scrollers fade only the edges that hide something ─────── */
+
+@utility scroll-fade-x {
+  --scroll-fade-size: 1.75rem;
+  mask-image: linear-gradient(to right, transparent 0, #000 var(--scroll-fade-s), #000 calc(100% - var(--scroll-fade-e)), transparent 100%);
+}
+
+/* Registered as lengths, so the fades slide in instead of popping. */
+@property --scroll-fade-s {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --scroll-fade-e {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-fade-x {
+    transition:
+      --scroll-fade-s 240ms var(--ease-out),
+      --scroll-fade-e 240ms var(--ease-out);
   }
 }
 
+/* While a section expands, its scrolling rows clip sideways only, so items
+   can fly in from above or below (a scroller clips both ways, and the fade
+   mask clips to its box). */
+.expander[data-moving] .scroll-fade-x {
+  overflow-x: clip;
+  overflow-y: visible;
+  mask-clip: no-clip;
+  mask-repeat: repeat-y;
+}
 
-/* ─── Paper marks: coffee rings, age spots, lamp light ───────────────── */
+/* ─── What the sheet picked up on a desk ─────────────────────────────────
+   Coffee rings, age spots and lamp light: only where there's room to enjoy
+   them, so a phone never pays for a blended full-page layer. */
 
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -20;
-  pointer-events: none;
-  background: var(--lamp);
+.paper-marks {
+  display: none;
+}
+
+@media (min-width: 48rem) {
+  .paper-marks {
+    display: block;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -20;
+    pointer-events: none;
+    background: var(--lamp);
+  }
 }
 
 .paper-stain,
@@ -963,8 +667,7 @@ body::before {
 
 .paper-stain {
   translate: -50% -50%;
-  -webkit-mask: url("/stain-ring.svg") center / contain no-repeat;
-  mask: url("/stain-ring.svg") center / contain no-repeat;
+  mask: url("../public/stain-ring.svg") center / contain no-repeat;
 }
 
 .paper-stain.opacity-55 {
@@ -974,43 +677,45 @@ body::before {
 .paper-foxing {
   inset: 0;
   opacity: calc(var(--stain-strength) * 0.8);
-  -webkit-mask: url("/stain-foxing.svg") 0 0 / 900px 1300px repeat;
-  mask: url("/stain-foxing.svg") 0 0 / 900px 1300px repeat;
+  mask: url("../public/stain-foxing.svg") 0 0 / 900px 1300px repeat;
 }
 
-/* The footer rule is cut on the left when the footer is narrow; fade it in
-   there so it reads as the pen landing, not a crop. */
-.signature-rule {
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 3rem);
-  mask-image: linear-gradient(90deg, transparent, #000 3rem);
-}
-
-/* ─── Margin scrawls: only where the page has margin to spare ────────── */
-
+/* Scratches in the margin, only where the margin clears the page column
+   (52rem, plus room for a scrawl either side). */
 .margin-scrawl {
   display: none;
 }
 
-/* Only where the margin clears the page column (52rem + two scrawls). */
 @media (min-width: 62rem) {
   .margin-scrawl {
     display: block;
   }
 }
 
-/* ─── Accessibility & print ───────────────────────────────────────────── */
+/* The footer rule is cut on the left when the footer is narrow; fade it in
+   there, so it reads as the pen landing rather than a crop. */
+.signature-rule {
+  mask-image: linear-gradient(90deg, transparent, #000 3rem);
+}
 
-/* Asked for more contrast: drop the lighter pen pressures. */
-@media (prefers-contrast: more) {
-  :root {
-    --ink-2: var(--ink);
-    --ink-3: var(--ink);
-    --ink-4: color-mix(in oklab, var(--ink) 70%, var(--paper));
+/* ─── Preferences, forced colours and print ──────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .portrait-avatar,
+  .portrait-still,
+  .project-glyph,
+  .star-glyph,
+  .star-fill {
+    transition: none;
   }
 }
 
 /* Forced colours paint over backgrounds, which would erase the mask-based
-   icons; pin them to the system text colour instead. */
+   glyphs; pin them to the system text colour instead. */
 @media (forced-colors: active) {
   .glyph {
     forced-color-adjust: none;
@@ -1025,22 +730,21 @@ body::before {
 
   body::before,
   canvas,
-  .theme-toggle,
+  button:has(> .ink-theme-icon),
   .margin-scrawl,
   .paper-marks {
     display: none !important;
   }
 
-  .js [data-reveal],
-  .js [data-reveal="stagger"] > * {
+  .ink-land,
+  .ink-write {
     opacity: 1 !important;
+    mask-image: none !important;
     animation: none !important;
   }
 
-  .js [data-reveal] .draw,
-  .js [data-reveal] .write-text {
+  :is(.ink-sketch, .ink-glyph) .ink-draw {
     stroke-dashoffset: 0 !important;
-    --write: 130% !important;
     animation: none !important;
   }
 }
