@@ -1,29 +1,31 @@
 import type { CSSProperties } from "react";
 import { Expandable } from "@/components/expandable";
 import { Glyph } from "@/components/glyph";
+import { HoverUnderline } from "@/components/hover-underline";
 import { ScrollFadeX } from "@/components/scroll-fade-x";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { skillGroups } from "@/lib/content";
 import type { GlyphName } from "@/lib/glyphs";
 
 type Skill = { readonly name: string; readonly icon: GlyphName; readonly url: string };
 
-/** A skill: its glyph and name, boxed in with the pen on hover. Links to the tool's own site. */
+/** A skill: its glyph and name, the name underlined with the pen on hover. Links to the tool's own site. */
 function SkillChip({ skill, flip, style }: { skill: Skill; flip: string; style?: CSSProperties }) {
   return (
     <li data-flip={flip} className="shrink-0" style={style}>
-      <Button
-        variant="ghost"
-        seed={`skill-${skill.name}`}
-        nativeButton={false}
-        render={<a href={skill.url} target="_blank" rel="noreferrer" />}
-        className="h-11 gap-2 px-2.5 text-ink"
+      <a
+        href={skill.url}
+        target="_blank"
+        rel="noreferrer"
+        className="ink-hover flex h-11 items-center gap-2 px-2.5 whitespace-nowrap text-ink outline-none focus-visible:outline-solid focus-visible:outline-[1.5px] focus-visible:-outline-offset-2 focus-visible:outline-ring focus-visible:[border-radius:var(--hand-radius)]"
       >
         <Glyph name={skill.icon} className="boil size-[30px]" />
-        {skill.name}
+        <span className="relative">
+          {skill.name}
+          <HoverUnderline seed={`skill-${skill.name}`} />
+        </span>
         <span className="sr-only"> (opens in a new tab)</span>
-      </Button>
+      </a>
     </li>
   );
 }

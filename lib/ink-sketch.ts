@@ -228,13 +228,43 @@ export function hatchStrokes(seed: number, w: number, h: number, { gap = 5, angl
   return lines;
 }
 
-/** A long timeline stroke ending in a two-flick arrowhead. */
+/**
+ * A long line pulled freehand along x, from 0 to w at height y. A hand's
+ * long line is never level: it drifts up or down over the run, bows a
+ * little, and wanders either side of that every finger's width or so.
+ * `sway` scales all three. `points` are where it passes, left to right, so
+ * things set on the line can sit on it.
+ */
+export function wanderStroke(seed: number, w: number, y = 0, { sway = 1 } = {}) {
+  return wander(createRng(seed), w, y, sway);
+}
+
+function wander(r: Rng, w: number, y: number, sway: number) {
+  const n = Math.max(3, Math.round(w / 90));
+  const drift = spread(r, 3 * sway);
+  const arch = spread(r, 3 * sway);
+  const points: Pt[] = [];
+  for (let i = 0; i <= n; i++) {
+    const t = i / n;
+    const end = i === 0 || i === n;
+    const x = i === n ? w : w * t + spread(r, end ? 0.6 : w / n / 6);
+    points.push([n1(x), n1(y + drift * (t * 2 - 1) + arch * Math.sin(t * Math.PI) + spread(r, (end ? 0.4 : 2.6) * sway))]);
+  }
+  return { d: smooth(points), points };
+}
+
+/** A long timeline stroke, pulled freehand, ending in a two-flick arrowhead. */
 export function arrowStroke(seed: number, w: number, y = 6) {
   const r = createRng(seed);
-  const shaft = strokeSegment(r, [0, y], [w, y + spread(r, 0.8)], { bow: 0.35, jitter: 0.5 });
-  const tip = shaft.e;
-  const head = `M${pt([tip[0] - 9 + spread(r, 1), tip[1] - 5.5 + spread(r, 0.8)])}Q${pt([tip[0] - 3, tip[1] - 1.5])} ${pt([tip[0] + 1, tip[1]])}Q${pt([tip[0] - 3, tip[1] + 1.8])} ${pt([tip[0] - 8.5 + spread(r, 1), tip[1] + 5 + spread(r, 0.8)])}`;
-  return { shaft: `M${pt(shaft.s)}C${pt(shaft.c1)} ${pt(shaft.c2)} ${pt(shaft.e)}`, head };
+  const { d, points } = wander(r, w, y, 1);
+  // The head is flicked in along the line's last run.
+  const tip = points[points.length - 1];
+  const before = points[points.length - 2];
+  const angle = Math.atan2(tip[1] - before[1], tip[0] - before[0]);
+  const [cos, sin] = [Math.cos(angle), Math.sin(angle)];
+  const at = (dx: number, dy: number): Pt => [tip[0] + dx * cos - dy * sin, tip[1] + dx * sin + dy * cos];
+  const head = `M${pt(at(-9 + spread(r, 1), -5.5 + spread(r, 0.8)))}Q${pt(at(-3, -1.5))} ${pt(at(1, 0))}Q${pt(at(-3, 1.8))} ${pt(at(-8.5 + spread(r, 1), 5 + spread(r, 0.8)))}`;
+  return { shaft: d, head, points };
 }
 
 /** A small filled ink dot: a tight scribbled spiral. */
