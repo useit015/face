@@ -211,6 +211,13 @@ export const projects: Project[] = [
     repo: { owner: "useit015", name: "ballpoint", url: "https://github.com/useit015/ballpoint" },
   },
   {
+    name: "Meowtal: Rooftop Rumble",
+    icon: "meowtal",
+    description: "Browser platform fighter on Moroccan rooftops, where damage builds up and bigger damage means bigger launches.",
+    stack: ["WebGL2", "Vanilla ES modules", "GSAP"],
+    url: "https://meowtal.st9wd.com",
+  },
+  {
     name: "whichmodel",
     icon: "whichmodel",
     description: "A CLI that takes a task in plain English and names the AI model to use, at three budgets.",
@@ -229,13 +236,6 @@ export const projects: Project[] = [
     icon: "asset-forge",
     description: "Generates and stores game art and characters, built on fal.ai.",
     stack: ["React", "Express", "Supabase", "Cloudflare R2"],
-  },
-  {
-    name: "souk-fighter",
-    icon: "souk-fighter",
-    description: "Browser fighting game in the King of Fighters mold, with its own character builder.",
-    stack: ["React 19", "Pixi.js 8", "IndexedDB"],
-    repo: { owner: "useit015", name: "souk-fighter", url: "https://github.com/useit015/souk-fighter" },
   },
 ];
 

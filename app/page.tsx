@@ -45,7 +45,6 @@ function Margin({ children }: { children: ReactNode }) {
 export default async function Home() {
   const stars = await getStars([
     { owner: "useit015", name: "whichmodel" },
-    { owner: "useit015", name: "souk-fighter" },
   ]);
 
   return (
